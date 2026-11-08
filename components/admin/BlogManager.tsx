@@ -114,7 +114,7 @@ export function BlogManager({ posts, onPostsUpdate, showToast }: BlogManagerProp
       author: authorsList[0],
       summary: 'Resumo técnico introdutório para orientar os leitores.',
       content: initialContent,
-      image: '/images/cat_escavadeira_1793461101073.jpg',
+      image: '/images/hero/hero-miniescavadeira.jpg',
       imageAlt: `${initialTitle} - EquiparLoc`,
       seo: analyzePostSeo({
         title: initialTitle,
@@ -1221,11 +1221,12 @@ export function BlogManager({ posts, onPostsUpdate, showToast }: BlogManagerProp
                     onChange={(e) => updateEditingPost({ image: e.target.value })}
                     className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg bg-white"
                   >
-                    <option value="/images/cat_escavadeira_1793461101073.jpg">Escavadeira Hidráulica 21t</option>
-                    <option value="/images/cat_plataforma_1793461101024.jpg">Plataforma Articulada 16m</option>
-                    <option value="/images/hero_heavy_machinery_1793461100728.jpg">Canteiro Pesado de Obras</option>
-                    <option value="/images/cat_retroescavadeira_1793461100792.jpg">Retroescavadeira 4x4</option>
-                    <option value="/images/cat_gerador_1793461141901.jpg">Gerador Silenciado 150 kVA</option>
+                    <option value="/images/hero/hero-obra-escavadeira-betoneira.jpg">Canteiro de obras</option>
+                    <option value="/images/hero/hero-miniescavadeira.jpg">Miniescavadeira</option>
+                    <option value="/images/hero/hero-miniescavadeira-basculante.jpg">Miniescavadeira e minidumper</option>
+                    <option value="/images/hero/hero-compactador.jpg">Rolo compactador</option>
+                    <option value="/images/produtos/aluguel-retroescavadeira-compacta-jcb-1cx.jpg">Retroescavadeira</option>
+                    <option value="/images/produtos/aluguel-gerador-5-5-kva-toyama-td6000cx.jpg">Gerador</option>
                   </select>
                 </div>
 

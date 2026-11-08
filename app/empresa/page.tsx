@@ -58,8 +58,8 @@ export default function AboutPage() {
           <div className="lg:col-span-6">
             <div className="relative w-full h-[380px] sm:h-[460px] rounded-[6px] overflow-hidden border border-concreto">
               <Image
-                src="/images/hero_heavy_machinery_1793461100728.jpg"
-                alt="Operação de equipamentos pesados e escavadeiras hidráulicas EquiparLoc"
+                src="/images/hero/hero-miniescavadeira-basculante.jpg"
+                alt="Miniescavadeira e minidumper trabalhando em obra"
                 fill
                 className="object-cover"
                 referrerPolicy="no-referrer"

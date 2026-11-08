@@ -18,7 +18,7 @@ const INITIAL_SETTINGS: CompanySettings = {
   whatsapp: '5531991970322',
   email: 'comercial@equiparloc.com.br',
   address: 'Av. Elias Antônio Issa, 695 - Candelária, Belo Horizonte - MG, CEP 31570-010',
-  businessHours: 'Segunda a Sexta: 07h30 às 18h00 | Atendimento de emergência 24h',
+  businessHours: 'Segunda a Sexta: 08h às 17h | Atendimento de emergência 24h',
   gaMeasurementId: 'G-EQPR360X99',
   adminPin: '1234',
 };
@@ -190,8 +190,8 @@ O tempo de ciclo padrão de uma escavadeira moderna de 21 toneladas varia entre 
 Modelos equipados com modos operacionais automáticos (Eco / Power) ajustam o regime de rotação do motor em função da pressão de carga hidráulica, reduzindo o consumo específico para faixas entre 14 e 18 litros/hora em regime contínuo. 
 
 Na EquiparLoc, nossa equipe de engenharia analisa os parâmetros topográficos e de solo do seu projeto para indicar a máquina com melhor relação custo-benefício por metro cúbico movimentado. Consulte nosso [catálogo de escavadeiras](/locacao) para cotar modelos de pronta mobilização.`,
-    image: '/images/cat_escavadeira_1793461101073.jpg',
-    imageAlt: 'Escavadeira hidráulica de 21 toneladas sobre esteiras em canteiro de obras de terraplenagem',
+    image: '/images/hero/hero-miniescavadeira.jpg',
+    imageAlt: 'Miniescavadeira sobre esteiras em obra',
     seo: analyzePostSeo({
       title: 'Como dimensionar a escavadeira hidráulica correta para sua obra de terraplenagem',
       slug: 'como-dimensionar-escavadeira-hidraulica-para-obra',
@@ -200,7 +200,7 @@ Na EquiparLoc, nossa equipe de engenharia analisa os parâmetros topográficos e
       focusKeyword: 'escavadeira hidráulica terraplenagem',
       metaTitle: 'Como dimensionar escavadeira hidráulica para terraplenagem | EquiparLoc',
       metaDescription: 'Guia técnico de dimensionamento de escavadeiras hidráulicas para obras de terraplenagem: cálculo de ciclo, consumo e caçamba. Consulte locação na EquiparLoc.',
-      imageAlt: 'Escavadeira hidráulica de 21 toneladas sobre esteiras em canteiro de obras de terraplenagem',
+      imageAlt: 'Miniescavadeira sobre esteiras em obra',
     }),
     comments: [
       {
@@ -247,8 +247,8 @@ O operador e os ajudantes no cesto devem estar conectados exclusivamente aos pon
 O perímetro de atuação da lança ou tesoura deve ser isolado com cones e fita zebrada para impedir a circulação de operários no nível do solo sob a área de projeção de carga suspensa.
 
 Todas as plataformas locadas pela EquiparLoc passam por inspeção de 40 pontos com emissão de ART e checklist digital assinado antes de cada saída do pátio central. Veja as opções disponíveis em nosso [catálogo de plataformas](/locacao?cat=Trabalho+em+Altura).`,
-    image: '/images/cat_plataforma_1793461101024.jpg',
-    imageAlt: 'Plataforma elevatória articulada com cesto duplo em inspeção de segurança NR-18',
+    image: '/images/hero/hero-miniescavadeira-basculante.jpg',
+    imageAlt: 'Miniescavadeira e minidumper trabalhando em obra',
     seo: analyzePostSeo({
       title: 'Segurança em trabalho em altura: requisitos NR-18 e NR-35 para plataformas elevatórias',
       slug: 'seguranca-em-trabalho-em-altura-requisitos-nr18-para-plataformas-elevatorias',
@@ -257,7 +257,7 @@ Todas as plataformas locadas pela EquiparLoc passam por inspeção de 40 pontos 
       focusKeyword: 'segurança plataformas elevatórias NR-18',
       metaTitle: 'Segurança em Plataformas Elevatórias: Requisitos NR-18 | EquiparLoc',
       metaDescription: 'Requisitos de segurança para plataformas elevatórias segundo NR-18 e NR-35: checklist diário, ancoragem e isolamento. Consulte locação na EquiparLoc.',
-      imageAlt: 'Plataforma elevatória articulada com cesto duplo em inspeção de segurança NR-18',
+      imageAlt: 'Miniescavadeira e minidumper trabalhando em obra',
     }),
     comments: [],
   },
@@ -288,8 +288,8 @@ Após o término do contrato da obra, o equipamento próprio frequentemente perm
 Em caso de ocorrência mecânica que não possa ser sanada no canteiro em até 24 horas, realizamos a substituição integral da máquina sem custos adicionais de mobilização.
 
 Solicite uma análise comparativa de viabilidade com nossa equipe através da página de [solicitação de orçamento](/orcamento).`,
-    image: '/images/hero_heavy_machinery_1793461100728.jpg',
-    imageAlt: 'Frota de equipamentos pesados e análise de custo de locação de máquinas',
+    image: '/images/hero/hero-obra-escavadeira-betoneira.jpg',
+    imageAlt: 'Canteiro de obras com escavadeira, betoneira e gerador',
     seo: analyzePostSeo({
       title: 'Locação vs. Compra de maquinário pesado: análise de custo operacional e disponibilidade',
       slug: 'locacao-vs-compra-de-maquinario-pesado-analise-de-custo-operacional',
@@ -298,7 +298,7 @@ Solicite uma análise comparativa de viabilidade com nossa equipe através da p�
       focusKeyword: 'locação vs compra maquinário pesado',
       metaTitle: 'Locação vs. Compra de Maquinário Pesado: Custos OPEX | EquiparLoc',
       metaDescription: 'Análise financeira comparativa entre locação e compra de máquinas pesadas: vantagens de OPEX, depreciação zero e suporte. EquiparLoc.',
-      imageAlt: 'Frota de equipamentos pesados e análise de custo de locação de máquinas',
+      imageAlt: 'Canteiro de obras com escavadeira, betoneira e gerador',
     }),
     comments: [],
   },
@@ -339,8 +339,38 @@ export function slugify(text: string): string {
  * código (lib/servicos.ts) em categorias da linha "Serviços", editáveis no painel.
  * Devolve true se mudou algo (para gravar).
  */
+/** Fotos antigas geradas por IA, trocadas por fotos reais. */
+const REPLACED_IMAGES: Record<string, string> = {
+  '/images/cat_escavadeira_1793461101073.jpg': '/images/hero/hero-miniescavadeira.jpg',
+  '/images/cat_plataforma_1793461101024.jpg': '/images/hero/hero-miniescavadeira-basculante.jpg',
+  '/images/hero_heavy_machinery_1793461100728.jpg': '/images/hero/hero-obra-escavadeira-betoneira.jpg',
+  '/images/cat_retroescavadeira_1793461100792.jpg': '/images/produtos/aluguel-retroescavadeira-compacta-jcb-1cx.jpg',
+  '/images/cat_gerador_1793461141901.jpg': '/images/produtos/aluguel-gerador-5-5-kva-toyama-td6000cx.jpg',
+  '/images/cat_compactador_1793461140543.jpg': '/images/hero/hero-compactador.jpg',
+  '/images/cat_minicarregadeira_1793461141803.jpg': '/images/produtos/aluguel-minicarregadeira-new-holland-l170.jpg',
+  '/images/cat_manipulador_1793461103170.jpg': '/images/hero/hero-miniescavadeira-basculante.jpg',
+};
+
+/** Atualiza fotos removidas e o horário antigo em bancos já existentes. */
+function upgradeContent(db: DatabaseSchema): boolean {
+  let changed = false;
+  const before = JSON.stringify(db);
+  let after = before;
+  for (const [from, to] of Object.entries(REPLACED_IMAGES)) after = after.split(from).join(to);
+  if (after !== before) {
+    Object.assign(db, JSON.parse(after));
+    changed = true;
+  }
+  if (db.settings?.businessHours?.includes('07h30 às 18h00')) {
+    db.settings.businessHours = db.settings.businessHours.replace('07h30 às 18h00', '08h às 17h');
+    changed = true;
+  }
+  return changed;
+}
+
 function upgradeDatabase(db: DatabaseSchema): boolean {
-  if (Array.isArray(db.productLines) && db.productLines.length) return false;
+  const contentChanged = upgradeContent(db);
+  if (Array.isArray(db.productLines) && db.productLines.length) return contentChanged;
   db.productLines = DEFAULT_PRODUCT_LINES.map((l) => ({ ...l }));
   if (!db.categories.some((c) => c.group === 'servicos')) {
     const maxOrder = db.categories.reduce((max, c) => Math.max(max, c.order), 0);

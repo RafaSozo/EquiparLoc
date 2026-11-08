@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
             },
       summary,
       content: body.content,
-      image: body.image || '/images/hero_heavy_machinery_1793461100728.jpg',
+      image: body.image || '/images/hero/hero-obra-escavadeira-betoneira.jpg',
       imageAlt,
       seo: seoAnalysis,
       comments: [],

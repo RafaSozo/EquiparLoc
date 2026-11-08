@@ -17,7 +17,7 @@ export const metadata: Metadata = {
       'Artigos técnicos sobre terraplenagem, requisitos NR-12 e NR-18, dimensionamento de escavadeiras e gestão de frotas pesadas.',
     type: 'website',
     url: '/blog',
-    images: ['/images/hero_heavy_machinery_1793461100728.jpg'],
+    images: ['/images/hero/hero-obra-escavadeira-betoneira.jpg'],
   },
 };
 

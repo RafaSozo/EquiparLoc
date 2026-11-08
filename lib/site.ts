@@ -7,7 +7,7 @@ export const SITE_URL = (process.env.APP_URL && !process.env.APP_URL.includes('M
 
 export const SITE_NAME = 'EquiparLoc';
 export const SITE_LEGAL_NAME = 'EQUIPAR Locação de Equipamentos Ltda.';
-export const DEFAULT_OG_IMAGE = '/images/hero_heavy_machinery_1793461100728.jpg';
+export const DEFAULT_OG_IMAGE = '/images/hero/hero-obra-escavadeira-betoneira.jpg';
 
 /** Converte um caminho relativo ("/locacao") em URL absoluta ("https://.../locacao"). */
 export function absoluteUrl(path: string = '/'): string {

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     title: 'Solicitar Orçamento de Locação | EquiparLoc',
     description: 'Receba uma proposta de locação de máquinas pesadas para a sua obra.',
     url: '/orcamento',
-    images: ['/images/hero_heavy_machinery_1793461100728.jpg'],
+    images: ['/images/hero/hero-obra-escavadeira-betoneira.jpg'],
   },
 };
 

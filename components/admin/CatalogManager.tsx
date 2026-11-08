@@ -19,7 +19,7 @@ function useLineMeta() {
 }
 import { PhotoManager, isPlaceholderImage } from './PhotoManager';
 
-const FALLBACK_IMAGE = '/images/cat_escavadeira_1793461101073.jpg';
+const FALLBACK_IMAGE = '/images/hero/hero-miniescavadeira.jpg';
 
 type ViewFilter = 'todos' | 'publicados' | 'rascunhos' | 'destaques' | 'incompletos';
 

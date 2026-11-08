@@ -63,8 +63,8 @@ export async function POST(req: NextRequest) {
       slug,
       code,
       status: body.status || 'active',
-      gallery: body.gallery && body.gallery.length ? body.gallery : [body.image || '/images/cat_escavadeira_1793461101073.jpg'],
-      image: body.image || '/images/cat_escavadeira_1793461101073.jpg',
+      gallery: body.gallery && body.gallery.length ? body.gallery : [body.image || '/images/hero/hero-miniescavadeira.jpg'],
+      image: body.image || '/images/hero/hero-miniescavadeira.jpg',
     };
 
     const saved = saveEquipment(newEquipment);

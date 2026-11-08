@@ -97,7 +97,7 @@ export function Footer({ menu }: { menu?: SiteMenu }) {
               </li>
               <li className="flex items-start gap-2">
                 <Clock className="w-3.5 h-3.5 text-[#9AA4AD] shrink-0 mt-0.5" />
-                <span>Segunda a Sexta: 07h30 às 18h00 | Suporte de Emergência 24h</span>
+                <span>Segunda a Sexta: 08h às 17h | Suporte de Emergência 24h</span>
               </li>
             </ul>
           </div>

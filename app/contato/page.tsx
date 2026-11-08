@@ -141,7 +141,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <strong className="block text-aco font-semibold mb-0.5">Horário de Operação</strong>
-                    <span>Segunda a Sexta: 07h30 às 18h00</span>
+                    <span>Segunda a Sexta: 08h às 17h</span>
                     <span className="block text-liberado font-medium mt-0.5">Plantão técnico 24h para emergências em canteiro</span>
                   </div>
                 </li>
