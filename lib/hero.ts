@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import type { HeroSettings } from './types';
+import { DATA_DIR } from './data-dir';
 
 /** Textos e foto padrão da abertura (usados até alguém salvar pelo painel). */
 export const DEFAULT_HERO: HeroSettings = {
@@ -26,7 +27,7 @@ export const HERO_LIMITS = {
 /** Fotos que vêm com o site (pasta pública) */
 const PUBLIC_HERO_DIR = path.join(process.cwd(), 'public', 'images', 'hero');
 /** Fotos enviadas pelo painel (fora da pasta pública; servidas por /api/midia/hero) */
-export const UPLOAD_HERO_DIR = path.join(process.cwd(), 'data', 'uploads', 'hero');
+export const UPLOAD_HERO_DIR = path.join(DATA_DIR, 'uploads', 'hero');
 export const UPLOAD_NAME_RE = /^[a-z0-9][a-z0-9-]{2,80}\.jpg$/;
 
 export interface HeroImage {

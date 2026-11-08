@@ -4,8 +4,8 @@ import { DatabaseSchema, Equipment, QuoteRequest, BlogPost, CompanySettings, Blo
 import { DEFAULT_HERO } from './hero';
 import { analyzePostSeo } from './seo-optimizer';
 import catalogoInicial from './catalogo-inicial.json';
+import { DATA_DIR } from './data-dir';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
 const DB_PATH = path.join(DATA_DIR, 'database.json');
 
 const INITIAL_SETTINGS: CompanySettings = {
