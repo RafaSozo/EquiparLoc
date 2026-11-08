@@ -3,19 +3,10 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { Category, CategoryGroup, CategoryWithCount, CATEGORY_GROUP_LABELS } from '@/lib/types';
-import { Plus, Edit, Trash2, X, Save, Loader2, ImageOff, Hammer, Truck, ExternalLink } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Save, Loader2, ImageOff, Hammer, Truck, ExternalLink, ArrowUp, ArrowDown } from 'lucide-react';
+import { PhotoManager } from './PhotoManager';
 import { categoryPath } from '@/lib/site';
 
-export const CATEGORY_IMAGE_OPTIONS = [
-  { value: '', label: 'Sem imagem' },
-  { value: '/images/cat_escavadeira_1793461101073.jpg', label: 'Escavadeira' },
-  { value: '/images/cat_retroescavadeira_1793461100792.jpg', label: 'Retroescavadeira' },
-  { value: '/images/cat_plataforma_1793461101024.jpg', label: 'Plataforma' },
-  { value: '/images/cat_manipulador_1793461103170.jpg', label: 'Manipulador telescópico' },
-  { value: '/images/cat_compactador_1793461140543.jpg', label: 'Rolo compactador' },
-  { value: '/images/cat_gerador_1793461141901.jpg', label: 'Gerador' },
-  { value: '/images/cat_minicarregadeira_1793461141803.jpg', label: 'Minicarregadeira' },
-];
 
 interface CategoryManagerProps {
   categories: CategoryWithCount[];
@@ -34,17 +25,15 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<CategoryWithCount | null>(null);
-  const [customImage, setCustomImage] = useState(false);
+  const [moving, setMoving] = useState(false);
 
   const openNew = (group: CategoryGroup) => {
     setError(null);
-    setCustomImage(false);
     setDraft(EMPTY_DRAFT(group));
   };
 
   const openEdit = (cat: CategoryWithCount) => {
     setError(null);
-    setCustomImage(Boolean(cat.image) && !CATEGORY_IMAGE_OPTIONS.some((o) => o.value === cat.image));
     setDraft({ ...cat });
   };
 
@@ -99,6 +88,37 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
     }
   };
 
+  /** Troca a posição de duas categorias do mesmo grupo (a ordem vale para o site todo). */
+  const move = async (list: CategoryWithCount[], index: number, dir: -1 | 1) => {
+    const a = list[index];
+    const b = list[index + dir];
+    if (!a || !b || moving) return;
+    setMoving(true);
+    try {
+      // Renumera o grupo inteiro para não haver empate de ordem
+      const reordered = [...list];
+      [reordered[index], reordered[index + dir]] = [b, a];
+      const base = Math.min(...list.map((c) => c.order));
+      const changed = reordered
+        .map((c, i) => ({ ...c, order: base + i }))
+        .filter((c) => c.order !== list.find((o) => o.id === c.id)?.order);
+      for (const c of changed) {
+        const res = await fetch(`/api/categorias/${c.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...c, order: c.order }),
+        });
+        if (!res.ok) throw new Error();
+      }
+      const listRes = await fetch('/api/categorias');
+      onChange((await listRes.json()).categories);
+    } catch {
+      showToast('Não foi possível mudar a ordem. Tente novamente.');
+    } finally {
+      setMoving(false);
+    }
+  };
+
   const groups: CategoryGroup[] = ['maquinas', 'ferramentas'];
 
   return (
@@ -121,7 +141,7 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
       </div>
 
       {groups.map((group) => {
-        const list = categories.filter((c) => c.group === group);
+        const list = categories.filter((c) => c.group === group).sort((x, y) => x.order - y.order);
         const Icon = group === 'maquinas' ? Truck : Hammer;
         return (
           <section key={group} className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
@@ -147,10 +167,32 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
               </p>
             ) : (
               <ul className="divide-y divide-slate-100">
-                {list.map((cat) => {
+                {list.map((cat, index) => {
                   const total = usage[cat.name] || 0;
                   return (
                     <li key={cat.id} className="p-4 flex items-center gap-4">
+                      <div className="flex flex-col shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => move(list, index, -1)}
+                          disabled={index === 0 || moving}
+                          className="p-1 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded disabled:opacity-25"
+                          aria-label={`Subir ${cat.name}`}
+                          title="Subir"
+                        >
+                          <ArrowUp className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => move(list, index, 1)}
+                          disabled={index === list.length - 1 || moving}
+                          className="p-1 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded disabled:opacity-25"
+                          aria-label={`Descer ${cat.name}`}
+                          title="Descer"
+                        >
+                          <ArrowDown className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                       <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center">
                         {cat.image ? (
                           <Image src={cat.image} alt="" fill sizes="56px" className="object-cover" />
@@ -304,42 +346,19 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
               </div>
 
               <div>
-                <label htmlFor="categoria-imagem" className="block text-xs font-semibold text-slate-700 mb-1">
-                  Imagem
-                </label>
-                {customImage ? (
-                  <input
-                    id="categoria-imagem"
-                    type="text"
-                    value={draft.image || ''}
-                    onChange={(e) => setDraft({ ...draft, image: e.target.value })}
-                    placeholder="/images/minha-foto.jpg"
-                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
-                  />
-                ) : (
-                  <select
-                    id="categoria-imagem"
-                    value={draft.image || ''}
-                    onChange={(e) => setDraft({ ...draft, image: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
-                  >
-                    {CATEGORY_IMAGE_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
-                      </option>
-                    ))}
-                  </select>
+                <p className="block text-xs font-semibold text-slate-700 mb-1">Foto da categoria</p>
+                <PhotoManager
+                  single
+                  photos={draft.image ? [draft.image] : []}
+                  main={draft.image || ''}
+                  nameHint={draft.name ? `categoria-${draft.name}` : 'categoria'}
+                  onChange={(_photos, main) => setDraft({ ...draft, image: main })}
+                />
+                {draft.image?.startsWith('/images/cat_') && (
+                  <p className="text-[11px] text-amber-700 mt-1">
+                    Esta é uma foto genérica do modelo do site. Envie uma foto real da categoria.
+                  </p>
                 )}
-                <button
-                  type="button"
-                  onClick={() => setCustomImage(!customImage)}
-                  className="text-[11px] text-[#FF6500] hover:underline mt-1"
-                >
-                  {customImage ? 'Escolher da lista' : 'Usar outro endereço de imagem'}
-                </button>
-                <p className="text-[11px] text-slate-400">
-                  Para fotos novas, coloque o arquivo na pasta public/images do projeto.
-                </p>
               </div>
 
               <div>

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, optionalAuth } from '@/lib/api-auth';
 import { getAllEquipments, saveEquipment } from '@/lib/db';
 import { Equipment } from '@/lib/types';
-import { pickEquipmentFields } from '@/lib/equipment-input';
+import { pickEquipmentFields, uniqueSlug } from '@/lib/equipment-input';
 
 export async function GET(req: NextRequest) {
   try {
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     }
 
     const id = `eq-${Date.now()}`;
-    const slug = body.slug || body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const slug = uniqueSlug(body.slug || body.name, getAllEquipments(), id);
     const code = body.code || `EQ-${Math.floor(100 + Math.random() * 900)}`;
 
     const newEquipment: Equipment = {

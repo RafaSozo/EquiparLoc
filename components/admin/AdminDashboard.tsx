@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession, signIn, signOut } from 'next-auth/react';
-import { Equipment, QuoteRequest, BlogPost, CompanySettings, QuoteStatus, CategoryWithCount, CATEGORY_GROUP_LABELS, CategoryGroup } from '@/lib/types';
+import { Equipment, QuoteRequest, BlogPost, CompanySettings, QuoteStatus, CategoryWithCount } from '@/lib/types';
 import {
   LayoutDashboard,
   Truck,
@@ -13,15 +13,11 @@ import {
   FileText,
   Settings,
   LogOut,
-  Plus,
   Search,
   Filter,
   CheckCircle2,
   Clock,
   AlertCircle,
-  Eye,
-  Edit,
-  Trash2,
   MessageSquare,
   Mail,
   ShieldCheck,
@@ -42,7 +38,7 @@ import {
 import { BlogManager } from '@/components/admin/BlogManager';
 import { CategoryManager } from '@/components/admin/CategoryManager';
 import { HeroManager } from '@/components/admin/HeroManager';
-import { equipmentPath } from '@/lib/site';
+import { CatalogManager } from '@/components/admin/CatalogManager';
 
 interface AdminDashboardProps {
   /** Login confirmado no servidor. Sem login, nenhum dado da empresa é enviado ao navegador. */
@@ -95,7 +91,6 @@ export function AdminDashboard({
     acc[eq.category] = (acc[eq.category] || 0) + 1;
     return acc;
   }, {});
-  const defaultCategory = categories[0]?.name || '';
   const [quotes, setQuotes] = useState<QuoteRequest[]>(initialQuotes);
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>(initialBlog);
   const [settings, setSettings] = useState<CompanySettings>(initialSettings);
@@ -103,14 +98,10 @@ export function AdminDashboard({
   // Filters & search
   const [quoteStatusFilter, setQuoteStatusFilter] = useState<string>('todos');
   const [quoteSearch, setQuoteSearch] = useState('');
-  const [equipmentSearch, setEquipmentSearch] = useState('');
 
   // Modals
   const [selectedQuote, setSelectedQuote] = useState<QuoteRequest | null>(null);
   const [newNoteText, setNewNoteText] = useState('');
-  const [equipmentModalOpen, setEquipmentModalOpen] = useState(false);
-  const [editingEquipment, setEditingEquipment] = useState<Partial<Equipment> | null>(null);
-  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -204,75 +195,6 @@ export function AdminDashboard({
     }
   };
 
-  // Equipment Save / Delete
-  const handleSaveEquipment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingEquipment?.name || !editingEquipment?.category) {
-      alert('Nome e categoria são obrigatórios');
-      return;
-    }
-
-    try {
-      const isNew = !editingEquipment.id;
-      const url = isNew ? '/api/equipamentos' : `/api/equipamentos/${editingEquipment.id}`;
-      const method = isNew ? 'POST' : 'PUT';
-
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...editingEquipment,
-          status: editingEquipment.status || 'active',
-          isFeatured: Boolean(editingEquipment.isFeatured),
-          specs: editingEquipment.specs || {
-            operatingWeight: '10.000 kg',
-            power: '100 HP',
-            fuelType: 'Diesel S10',
-          },
-          features: editingEquipment.features || ['Cabine com certificação de segurança', 'Telemetria integrada'],
-          applications: editingEquipment.applications || ['Construção civil', 'Infraestrutura viária'],
-          safetyNotes: editingEquipment.safetyNotes || 'Laudos NR-12 vigentes.',
-          deliveryTime: editingEquipment.deliveryTime || 'Pronta entrega',
-          gallery: editingEquipment.gallery || [editingEquipment.image || '/images/cat_escavadeira_1793461101073.jpg'],
-        }),
-      });
-
-      if (res.ok) {
-        const saved = await res.json();
-        if (isNew) {
-          setEquipments((prev) => [saved, ...prev]);
-        } else {
-          setEquipments((prev) => prev.map((eq) => (eq.id === saved.id ? saved : eq)));
-        }
-        setEquipmentModalOpen(false);
-        setEditingEquipment(null);
-        showToast(isNew ? 'Equipamento cadastrado com sucesso!' : 'Equipamento atualizado!');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Erro ao salvar equipamento.');
-    }
-  };
-
-  const handleDeleteEquipment = async (id: string) => {
-    if (currentUser.role !== 'admin') {
-      showToast('Permissão negada: apenas o Administrador Chefe pode excluir maquinário.');
-      setDeleteConfirmId(null);
-      return;
-    }
-
-    try {
-      const res = await fetch(`/api/equipamentos/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        setEquipments((prev) => prev.filter((eq) => eq.id !== id));
-        setDeleteConfirmId(null);
-        showToast('Equipamento excluído do sistema.');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Erro ao excluir.');
-    }
-  };
 
   // Settings Save
   const handleSaveSettings = async (e: React.FormEvent) => {
@@ -320,16 +242,6 @@ export function AdminDashboard({
     return true;
   });
 
-  // Filtered equipments
-  const filteredEquipments = equipments.filter((eq) => {
-    if (!equipmentSearch.trim()) return true;
-    const term = equipmentSearch.toLowerCase();
-    return (
-      eq.name.toLowerCase().includes(term) ||
-      eq.code.toLowerCase().includes(term) ||
-      eq.category.toLowerCase().includes(term)
-    );
-  });
 
   // Status visual helper
   const getStatusBadge = (status: QuoteStatus) => {
@@ -555,7 +467,7 @@ export function AdminDashboard({
           >
             <span className="flex items-center gap-3">
               <Truck className="w-4 h-4 text-[#FF6500]" />
-              <span>Equipamentos e ferramentas</span>
+              <span>Catálogo</span>
             </span>
             <span className="text-[11px] font-mono opacity-70">{equipments.length}</span>
           </button>
@@ -780,139 +692,14 @@ export function AdminDashboard({
 
           {/* TAB 2: EQUIPAMENTOS */}
           {activeTab === 'equipamentos' && (
-            <div className="space-y-6 max-w-6xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900">Gerenciador de Equipamentos</h2>
-                  <p className="text-xs text-slate-500">Cadastre, edite especificações técnicas, fotos e gerencie status da frota.</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingEquipment({
-                      category: defaultCategory,
-                      status: 'active',
-                      isFeatured: false,
-                      specs: {
-                        operatingWeight: '',
-                        power: '',
-                        fuelType: 'Diesel S10',
-                      },
-                      features: ['Cabine climatizada', 'Telemetria 4G'],
-                      applications: ['Obras de infraestrutura'],
-                      safetyNotes: 'Conformidade integral com NR-11 e NR-12.',
-                      deliveryTime: 'Pronta entrega',
-                      image: '/images/cat_escavadeira_1793461101073.jpg',
-                    });
-                    setEquipmentModalOpen(true);
-                  }}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-[#FF6500] hover:bg-[#E55B00] rounded-lg transition-colors shadow-xs"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Novo Equipamento</span>
-                </button>
-              </div>
-
-              {/* Search Bar */}
-              <div className="bg-white p-3 border border-slate-200 rounded-xl shadow-xs">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    value={equipmentSearch}
-                    onChange={(e) => setEquipmentSearch(e.target.value)}
-                    placeholder="Filtrar por nome, modelo, categoria ou código..."
-                    className="w-full pl-9 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
-                  />
-                </div>
-              </div>
-
-              {/* Equipments Table */}
-              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-                <table className="w-full text-xs text-left">
-                  <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
-                    <tr>
-                      <th className="p-3">Foto</th>
-                      <th className="p-3">Código</th>
-                      <th className="p-3">Nome do Equipamento</th>
-                      <th className="p-3">Categoria</th>
-                      <th className="p-3">Peso / Potência</th>
-                      <th className="p-3">Destaque</th>
-                      <th className="p-3">Status</th>
-                      <th className="p-3 text-right">Ações</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {filteredEquipments.map((eq) => (
-                      <tr key={eq.id} className="hover:bg-slate-50">
-                        <td className="p-3">
-                          <div className="relative w-10 h-8 rounded bg-slate-200 overflow-hidden">
-                            <Image
-                              src={eq.image}
-                              alt={eq.name}
-                              fill
-                              className="object-cover"
-                              referrerPolicy="no-referrer"
-                            />
-                          </div>
-                        </td>
-                        <td className="p-3 font-mono font-bold text-[#FF6500]">{eq.code}</td>
-                        <td className="p-3 font-bold text-slate-900 max-w-xs truncate">{eq.name}</td>
-                        <td className="p-3 text-slate-600">{eq.category}</td>
-                        <td className="p-3 text-slate-600 font-mono">
-                          {eq.specs.operatingWeight} · {eq.specs.power}
-                        </td>
-                        <td className="p-3">
-                          {eq.isFeatured ? (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                              Sim
-                            </span>
-                          ) : (
-                            <span className="text-slate-400 text-[10px]">Não</span>
-                          )}
-                        </td>
-                        <td className="p-3">
-                          {eq.status === 'active' ? (
-                            <span className="text-emerald-700 font-semibold">Ativo</span>
-                          ) : (
-                            <span className="text-slate-400 font-semibold">Rascunho</span>
-                          )}
-                        </td>
-                        <td className="p-3 text-right space-x-1 whitespace-nowrap">
-                          <Link
-                            href={equipmentPath(eq)}
-                            target="_blank"
-                            className="p-1.5 text-slate-500 hover:text-slate-900 inline-block"
-                            title="Ver no site"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </Link>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditingEquipment(eq);
-                              setEquipmentModalOpen(true);
-                            }}
-                            className="p-1.5 text-slate-600 hover:text-[#FF6500] inline-block"
-                            title="Editar"
-                          >
-                            <Edit className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setDeleteConfirmId(eq.id)}
-                            className="p-1.5 text-slate-400 hover:text-red-600 inline-block"
-                            title="Excluir"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <CatalogManager
+              equipments={equipments}
+              onChange={setEquipments}
+              categories={categories}
+              isAdmin={currentUser.role === 'admin'}
+              showToast={showToast}
+              onManageCategories={() => setActiveTab('categorias')}
+            />
           )}
 
           {/* TAB 3: ORÇAMENTOS CRM */}
@@ -1250,267 +1037,6 @@ export function AdminDashboard({
         </main>
       </div>
 
-      {/* MODAL: CRIAR / EDITAR EQUIPAMENTO */}
-      {equipmentModalOpen && editingEquipment && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs"
-        >
-          <div
-            className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between px-6 py-4 bg-[#101820] text-white">
-              <h3 className="text-base font-bold text-white">
-                {editingEquipment.id ? 'Editar Equipamento' : 'Cadastrar Novo Equipamento'}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setEquipmentModalOpen(false)}
-                className="p-1 text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveEquipment} className="p-6 overflow-y-auto space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Nome do Equipamento *</label>
-                  <input
-                    type="text"
-                    required
-                    value={editingEquipment.name || ''}
-                    onChange={(e) => setEditingEquipment({ ...editingEquipment, name: e.target.value })}
-                    placeholder="Ex: Escavadeira Hidráulica 21t"
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#FF6500]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Código de Referência</label>
-                  <input
-                    type="text"
-                    value={editingEquipment.code || ''}
-                    onChange={(e) => setEditingEquipment({ ...editingEquipment, code: e.target.value })}
-                    placeholder="Ex: EQ-ESC-210"
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#FF6500] font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Categoria *</label>
-                  <select
-                    value={editingEquipment.category || defaultCategory}
-                    onChange={(e) => setEditingEquipment({ ...editingEquipment, category: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-[#FF6500]"
-                  >
-                    {(['maquinas', 'ferramentas'] as CategoryGroup[]).map((group) => {
-                      const list = categories.filter((c) => c.group === group);
-                      if (!list.length) return null;
-                      return (
-                        <optgroup key={group} label={CATEGORY_GROUP_LABELS[group]}>
-                          {list.map((c) => (
-                            <option key={c.id} value={c.name}>{c.name}</option>
-                          ))}
-                        </optgroup>
-                      );
-                    })}
-                    {editingEquipment.category && !categories.some((c) => c.name === editingEquipment.category) && (
-                      <option value={editingEquipment.category}>{editingEquipment.category} (sem cadastro)</option>
-                    )}
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEquipmentModalOpen(false);
-                      setActiveTab('categorias');
-                    }}
-                    className="text-[11px] text-[#FF6500] hover:underline mt-1"
-                  >
-                    Criar ou editar categorias
-                  </button>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Foto Principal (URL / Imagem)</label>
-                  <select
-                    value={editingEquipment.image || '/images/cat_escavadeira_1793461101073.jpg'}
-                    onChange={(e) => setEditingEquipment({ ...editingEquipment, image: e.target.value })}
-                    className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-[#FF6500]"
-                  >
-                    <option value="/images/cat_escavadeira_1793461101073.jpg">Escavadeira Hidráulica 21t</option>
-                    <option value="/images/cat_retroescavadeira_1793461100792.jpg">Retroescavadeira 4x4</option>
-                    <option value="/images/cat_plataforma_1793461101024.jpg">Plataforma Articulada 16m</option>
-                    <option value="/images/cat_manipulador_1793461103170.jpg">Manipulador Telescópico 17m</option>
-                    <option value="/images/cat_compactador_1793461140543.jpg">Rolo Compactador Tandem 12t</option>
-                    <option value="/images/cat_gerador_1793461141901.jpg">Gerador Silenciado 150 kVA</option>
-                    <option value="/images/cat_minicarregadeira_1793461141803.jpg">Minicarregadeira 850kg</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Specs subgrid */}
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
-                <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">
-                  Especificações Técnicas
-                </span>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">Peso Operacional</label>
-                    <input
-                      type="text"
-                      value={editingEquipment.specs?.operatingWeight || ''}
-                      onChange={(e) =>
-                        setEditingEquipment({
-                          ...editingEquipment,
-                          specs: { ...(editingEquipment.specs as any), operatingWeight: e.target.value },
-                        })
-                      }
-                      placeholder="Ex: 21.800 kg"
-                      className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">Potência</label>
-                    <input
-                      type="text"
-                      value={editingEquipment.specs?.power || ''}
-                      onChange={(e) =>
-                        setEditingEquipment({
-                          ...editingEquipment,
-                          specs: { ...(editingEquipment.specs as any), power: e.target.value },
-                        })
-                      }
-                      placeholder="Ex: 158 HP"
-                      className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">Combustível</label>
-                    <input
-                      type="text"
-                      value={editingEquipment.specs?.fuelType || 'Diesel S10'}
-                      onChange={(e) =>
-                        setEditingEquipment({
-                          ...editingEquipment,
-                          specs: { ...(editingEquipment.specs as any), fuelType: e.target.value },
-                        })
-                      }
-                      className="w-full px-2.5 py-1.5 text-xs border border-slate-300 rounded-lg"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Resumo Técnico (Exibido no Card)</label>
-                <input
-                  type="text"
-                  value={editingEquipment.summary || ''}
-                  onChange={(e) => setEditingEquipment({ ...editingEquipment, summary: e.target.value })}
-                  placeholder="Breve descrição dos principais atributos da máquina..."
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Descrição Completa</label>
-                <textarea
-                  rows={3}
-                  value={editingEquipment.description || ''}
-                  onChange={(e) => setEditingEquipment({ ...editingEquipment, description: e.target.value })}
-                  placeholder="Detalhamento operacional da máquina..."
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg resize-none"
-                />
-              </div>
-
-              <div className="flex items-center gap-6 pt-2">
-                <label className="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={Boolean(editingEquipment.isFeatured)}
-                    onChange={(e) => setEditingEquipment({ ...editingEquipment, isFeatured: e.target.checked })}
-                    className="w-4 h-4 text-[#FF6500] rounded"
-                  />
-                  <span>Exibir na seção de Destaques da Homepage</span>
-                </label>
-
-                <label className="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={editingEquipment.status === 'active'}
-                    onChange={(e) =>
-                      setEditingEquipment({
-                        ...editingEquipment,
-                        status: e.target.checked ? 'active' : 'draft',
-                      })
-                    }
-                    className="w-4 h-4 text-emerald-600 rounded"
-                  />
-                  <span>Publicado no Catálogo Online</span>
-                </label>
-              </div>
-
-              <div className="pt-4 border-t border-slate-200 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setEquipmentModalOpen(false)}
-                  className="px-4 py-2 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 text-xs font-bold text-white bg-[#FF6500] hover:bg-[#E55B00] rounded-lg shadow-xs"
-                >
-                  Salvar Equipamento
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL: CONFIRMAÇÃO DE EXCLUSÃO */}
-      {deleteConfirmId && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs"
-        >
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-xl">
-            <div className="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center">
-              <Trash2 className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-slate-900">Excluir Equipamento?</h3>
-              <p className="text-xs text-slate-600 mt-1">
-                Esta ação removerá o equipamento do catálogo. Deseja prosseguir com a exclusão?
-              </p>
-            </div>
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setDeleteConfirmId(null)}
-                className="px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-100 rounded-lg"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={() => handleDeleteEquipment(deleteConfirmId)}
-                className="px-4 py-1.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-xs"
-              >
-                Sim, Excluir
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

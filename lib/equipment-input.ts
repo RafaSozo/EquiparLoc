@@ -70,3 +70,19 @@ export function pickEquipmentFields(body: unknown): Partial<Equipment> {
 
   return out;
 }
+
+/** Transforma um texto em endereço de página (sem acentos) e garante que nenhum outro equipamento use o mesmo. */
+export function uniqueSlug(text: string, all: Pick<Equipment, 'id' | 'slug'>[], ownId?: string): string {
+  const base =
+    text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+      .slice(0, 120) || 'equipamento';
+  const taken = new Set(all.filter((e) => e.id !== ownId).map((e) => e.slug));
+  let slug = base;
+  for (let n = 2; taken.has(slug); n++) slug = `${base}-${n}`;
+  return slug;
+}

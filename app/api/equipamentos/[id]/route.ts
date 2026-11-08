@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth, optionalAuth } from '@/lib/api-auth';
-import { getEquipmentById, saveEquipment, deleteEquipment } from '@/lib/db';
+import { getEquipmentById, getAllEquipments, saveEquipment, deleteEquipment } from '@/lib/db';
 import { Equipment } from '@/lib/types';
-import { pickEquipmentFields } from '@/lib/equipment-input';
+import { pickEquipmentFields, uniqueSlug } from '@/lib/equipment-input';
 
 export async function GET(
   req: NextRequest,
@@ -42,6 +42,8 @@ export async function PUT(
       ...body,
       id,
     };
+    // Endereço da página: nunca vazio e nunca igual ao de outro equipamento
+    if (body.slug !== undefined) updated.slug = uniqueSlug(body.slug || updated.name, getAllEquipments(), id);
 
     const saved = saveEquipment(updated);
     return NextResponse.json(saved);
