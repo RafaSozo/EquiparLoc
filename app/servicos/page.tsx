@@ -7,10 +7,10 @@ import { SERVICOS } from '@/lib/servicos';
 import { SITE_URL, absoluteUrl, jsonLdHtml, categoryPath } from '@/lib/site';
 
 export const metadata: Metadata = {
-  title: 'Serviços de Furos em Concreto e Terraplenagem | EquiparLoc',
+  title: 'Serviço de Terraplenagem | EquiparLoc',
   alternates: { canonical: '/servicos' },
   description:
-    'Furos em concreto para passagem de tubulações e terraplenagem com miniescavadeira, minicarregadeira e retroescavadeira, com equipe e operador próprios. Peça seu orçamento.',
+    'Terraplenagem com miniescavadeira, minicarregadeira e retroescavadeira, com equipe e operador próprios. Peça seu orçamento.',
 };
 
 export default function ServicosPage() {
@@ -36,8 +36,9 @@ export default function ServicosPage() {
             Serviços para a sua obra
           </h1>
           <p className="mt-4 text-base sm:text-lg text-aco-medio max-w-2xl leading-relaxed">
-            Além da locação, fazemos furos em concreto e terraplenagem com equipe e máquinas próprias.
+            Além da locação, fazemos terraplenagem com equipe e máquinas próprias.
           </p>
+          {SERVICOS.length > 1 && (
           <nav aria-label="Serviços" className="mt-6 flex flex-wrap gap-2">
             {SERVICOS.map((s) => (
               <a
@@ -49,6 +50,7 @@ export default function ServicosPage() {
               </a>
             ))}
           </nav>
+          )}
         </div>
       </section>
 

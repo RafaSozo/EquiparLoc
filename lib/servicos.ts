@@ -13,24 +13,6 @@ export interface Servico {
 
 export const SERVICOS: Servico[] = [
   {
-    id: 'furos-em-concreto',
-    nome: 'Furos em concreto',
-    resumo: 'Furação em lajes, vigas, pilares e paredes para passagem de tubulações e instalações.',
-    paragrafos: [
-      'Abrimos furos em concreto e alvenaria para a passagem de tubulações elétricas, hidráulicas, de esgoto, gás e ar-condicionado, sem quebrar a estrutura em volta.',
-      'O serviço é feito por equipe própria, com equipamento e broca escolhidos para cada diâmetro e profundidade.',
-    ],
-    itens: [
-      'Furos em lajes, vigas, pilares e paredes',
-      'Passagem de tubulação elétrica, hidráulica e de gás',
-      'Furos para instalação de ar-condicionado e exaustão',
-      'Acabamento limpo, sem quebra em volta do furo',
-    ],
-    imagem: '/images/hero/hero-miniescavadeira-basculante.jpg',
-    imagemAlt: 'Canteiro de obras com miniescavadeira e mini basculante',
-    informe: 'Informe o diâmetro, a profundidade, a quantidade de furos e o tipo de superfície.',
-  },
-  {
     id: 'terraplenagem',
     nome: 'Terraplenagem',
     resumo: 'Escavação, nivelamento, aterro e abertura de valas com máquina e operador.',
