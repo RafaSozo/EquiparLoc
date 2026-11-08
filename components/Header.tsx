@@ -10,15 +10,11 @@ import { useQuoteModal } from '@/lib/quote-modal-context';
 import { Menu, X, ShieldCheck, Phone, Search, ChevronDown } from 'lucide-react';
 import { FiboLiveSearch } from './search/FiboLiveSearch';
 import { categoryPath } from '@/lib/site';
-import { SERVICOS } from '@/lib/servicos';
-import { CATEGORY_GROUP_LABELS, type CategoryGroup } from '@/lib/types';
+import type { SiteMenu } from '@/lib/types';
 
-/** Grupo de equipamentos mostrado no menu "Locação" */
-export interface MenuCategory {
-  name: string;
-  count: number;
-  group: CategoryGroup;
-}
+export type { MenuCategory } from '@/lib/types';
+
+const EMPTY_MENU: SiteMenu = { lines: [], categories: [], services: [] };
 
 type Dropdown = 'locacao' | 'servicos' | null;
 
@@ -34,7 +30,8 @@ const NAV: { label: string; href: string; dropdown?: Exclude<Dropdown, null> }[]
 
 const PANEL_SPRING = { type: 'spring', bounce: 0, duration: 0.28 } as const;
 
-export function Header({ categories = [] }: { categories?: MenuCategory[] }) {
+export function Header({ menu = EMPTY_MENU }: { menu?: SiteMenu }) {
+  const { categories, services } = menu;
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<Dropdown>(null);
@@ -95,8 +92,8 @@ export function Header({ categories = [] }: { categories?: MenuCategory[] }) {
 
   const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`));
 
-  const groups = (['maquinas', 'ferramentas'] as CategoryGroup[])
-    .map((g) => ({ group: g, items: categories.filter((c) => c.group === g) }))
+  const groups = menu.lines
+    .map((line) => ({ group: line.id, name: line.name, items: categories.filter((c) => c.group === line.id) }))
     .filter((g) => g.items.length);
   const total = categories.reduce((n, c) => n + c.count, 0);
 
@@ -187,9 +184,9 @@ export function Header({ categories = [] }: { categories?: MenuCategory[] }) {
                         {item.dropdown === 'locacao' ? (
                           <div className="w-[min(40rem,calc(100vw-2rem))] bg-white rounded-[6px] border border-concreto shadow-[0_24px_48px_-16px_rgba(27,34,40,0.35)] p-5">
                             <div className="grid grid-cols-2 gap-6">
-                              {groups.map(({ group, items }) => (
+                              {groups.map(({ group, name, items }) => (
                                 <div key={group}>
-                                  <p className="px-2 mb-1.5 text-xs font-bold text-aco-medio">{CATEGORY_GROUP_LABELS[group]}</p>
+                                  <p className="px-2 mb-1.5 text-xs font-bold text-aco-medio">{name}</p>
                                   <ul>
                                     {items.map((c) => (
                                       <li key={c.name}>
@@ -217,12 +214,17 @@ export function Header({ categories = [] }: { categories?: MenuCategory[] }) {
                           </div>
                         ) : (
                           <div className="w-80 bg-white rounded-[6px] border border-concreto shadow-[0_24px_48px_-16px_rgba(27,34,40,0.35)] p-2">
-                            {SERVICOS.map((s) => (
-                              <Link key={s.id} href={`/servicos#${s.id}`} className="block px-3 py-2.5 rounded-[4px] hover:bg-chapa group">
-                                <span className="block text-[15px] font-semibold text-aco group-hover:text-laranja-texto">{s.nome}</span>
-                                <span className="block text-xs font-normal text-aco-medio leading-snug mt-0.5">{s.resumo}</span>
+                            {services.map((s) => (
+                              <Link key={s.slug} href={`/servicos#${s.slug}`} className="block px-3 py-2.5 rounded-[4px] hover:bg-chapa group">
+                                <span className="block text-[15px] font-semibold text-aco group-hover:text-laranja-texto">{s.name}</span>
+                                {s.summary && (
+                                  <span className="block text-xs font-normal text-aco-medio leading-snug mt-0.5">{s.summary}</span>
+                                )}
                               </Link>
                             ))}
+                            <Link href="/servicos" className="block px-3 py-2 text-sm font-bold text-laranja-texto">
+                              Ver todos os serviços
+                            </Link>
                           </div>
                         )}
                       </motion.div>
@@ -334,10 +336,10 @@ export function Header({ categories = [] }: { categories?: MenuCategory[] }) {
                                 </li>
                               </>
                             ) : (
-                              SERVICOS.map((s) => (
-                                <li key={s.id}>
-                                  <Link href={`/servicos#${s.id}`} className="block px-3 py-2 text-[15px] text-aco">
-                                    {s.nome}
+                              services.map((s) => (
+                                <li key={s.slug}>
+                                  <Link href={`/servicos#${s.slug}`} className="block px-3 py-2 text-[15px] text-aco">
+                                    {s.name}
                                   </Link>
                                 </li>
                               ))

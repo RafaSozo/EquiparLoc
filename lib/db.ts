@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { DatabaseSchema, Equipment, QuoteRequest, BlogPost, CompanySettings, BlogComment, Category, CategoryGroup, CategoryWithCount, HeroSettings } from './types';
+import { DatabaseSchema, Equipment, QuoteRequest, BlogPost, CompanySettings, BlogComment, Category, CategoryGroup, CategoryWithCount, HeroSettings, ProductLine, DEFAULT_PRODUCT_LINES } from './types';
+import { SERVICOS } from './servicos';
 import { namesInBranch } from './category-tree';
 import { DEFAULT_HERO } from './hero';
 import { analyzePostSeo } from './seo-optimizer';
@@ -332,6 +333,35 @@ export function slugify(text: string): string {
     .replace(/(^-|-$)+/g, '');
 }
 
+/**
+ * Atualiza bancos antigos para a versão com linhas de produto editáveis.
+ * Na primeira vez cria as linhas padrão e transforma os serviços que eram fixos no
+ * código (lib/servicos.ts) em categorias da linha "Serviços", editáveis no painel.
+ * Devolve true se mudou algo (para gravar).
+ */
+function upgradeDatabase(db: DatabaseSchema): boolean {
+  if (Array.isArray(db.productLines) && db.productLines.length) return false;
+  db.productLines = DEFAULT_PRODUCT_LINES.map((l) => ({ ...l }));
+  if (!db.categories.some((c) => c.group === 'servicos')) {
+    const maxOrder = db.categories.reduce((max, c) => Math.max(max, c.order), 0);
+    SERVICOS.forEach((sv, i) => {
+      const id = `cat-${slugify(sv.nome)}`;
+      if (db.categories.some((c) => c.id === id || c.name.toLowerCase() === sv.nome.toLowerCase())) return;
+      db.categories.push({
+        id,
+        name: sv.nome,
+        group: 'servicos',
+        description: sv.resumo,
+        image: sv.imagem,
+        order: maxOrder + i + 1,
+        content: [...sv.paragrafos, sv.informe].join('\n\n'),
+        highlights: [...sv.itens],
+      });
+    });
+  }
+  return true;
+}
+
 // In-memory cache for fast runtime response
 let memoryDb: DatabaseSchema | null = null;
 
@@ -374,12 +404,14 @@ export function getDatabase(): DatabaseSchema {
     }
     // Bancos antigos não tinham categorias cadastradas: cria a partir do padrão
     // e de qualquer categoria já usada nos equipamentos.
+    let changed = false;
     if (!Array.isArray(parsed.categories)) {
       parsed.categories = buildCategoriesFromEquipments(parsed.equipments || []);
-      memoryDb = parsed;
-      saveDatabase(parsed);
+      changed = true;
     }
+    if (upgradeDatabase(parsed)) changed = true;
     memoryDb = parsed;
+    if (changed) saveDatabase(parsed);
     return memoryDb;
   }
 
@@ -391,6 +423,7 @@ export function getDatabase(): DatabaseSchema {
     blogPosts: INITIAL_BLOG,
     settings: INITIAL_SETTINGS,
   };
+  upgradeDatabase(initialData);
 
   saveDatabase(initialData);
   memoryDb = initialData;
@@ -451,6 +484,64 @@ export function saveDatabase(data: DatabaseSchema): void {
   }
 }
 
+// Linhas de produto (máquinas, ferramentas, serviços...)
+export function getProductLines(): ProductLine[] {
+  const db = getDatabase();
+  return [...(db.productLines || DEFAULT_PRODUCT_LINES)].sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+}
+
+export function saveProductLine(input: Partial<ProductLine> & { name: string }): ProductLine {
+  const db = getDatabase();
+  const lines = (db.productLines ||= DEFAULT_PRODUCT_LINES.map((l) => ({ ...l })));
+  const name = input.name.trim().slice(0, 40);
+  if (!name) throw new CategoryError('Informe o nome da linha.');
+  if (lines.some((l) => l.id !== input.id && l.name.toLowerCase() === name.toLowerCase())) {
+    throw new CategoryError(`Já existe uma linha chamada "${name}".`);
+  }
+  const kind = input.kind === 'servico' ? 'servico' : 'locacao';
+  const description = (input.description || '').trim().slice(0, 200);
+  const existing = input.id ? lines.find((l) => l.id === input.id) : undefined;
+  if (existing) {
+    existing.name = name;
+    existing.kind = kind;
+    existing.description = description;
+    if (Number.isFinite(Number(input.order)) && input.order !== undefined) existing.order = Number(input.order);
+    saveDatabase(db);
+    return existing;
+  }
+  let id = slugify(name) || `linha-${Date.now()}`;
+  if (lines.some((l) => l.id === id)) id = `${id}-${Date.now()}`;
+  const created: ProductLine = {
+    id,
+    name,
+    kind,
+    description,
+    order: lines.reduce((max, l) => Math.max(max, l.order), 0) + 1,
+  };
+  lines.push(created);
+  saveDatabase(db);
+  return created;
+}
+
+/** Exclui a linha. Se tiver categorias, elas vão para a linha `moveTo`. */
+export function deleteProductLine(id: string, moveTo?: string): void {
+  const db = getDatabase();
+  const lines = db.productLines || [];
+  const line = lines.find((l) => l.id === id);
+  if (!line) throw new CategoryError('Linha não encontrada.');
+  if (lines.length <= 1) throw new CategoryError('O catálogo precisa de pelo menos uma linha.');
+  const inUse = db.categories.filter((c) => c.group === id);
+  if (inUse.length) {
+    const target = moveTo ? lines.find((l) => l.id === moveTo && l.id !== id) : undefined;
+    if (!target) {
+      throw new CategoryError(`A linha "${line.name}" tem ${inUse.length} categoria(s). Escolha para qual linha elas vão.`);
+    }
+    inUse.forEach((c) => (c.group = target.id));
+  }
+  db.productLines = lines.filter((l) => l.id !== id);
+  saveDatabase(db);
+}
+
 // Helper methods for Categories
 export function getAllCategories(): Category[] {
   const db = getDatabase();
@@ -490,7 +581,8 @@ export function saveCategory(raw: Partial<Category> & { name: string }): Categor
 
   // Categoria principal (só um nível de subcategoria, como no WordPress simples)
   let parentId: string | undefined;
-  let group: CategoryGroup = input.group === 'ferramentas' ? 'ferramentas' : 'maquinas';
+  const lines = getProductLines();
+  let group: CategoryGroup = lines.some((l) => l.id === input.group) ? (input.group as string) : lines[0]?.id || 'maquinas';
   if (input.parentId) {
     const parent = db.categories.find((c) => c.id === input.parentId);
     if (!parent) throw new CategoryError('A categoria principal escolhida não existe mais.');
@@ -541,6 +633,8 @@ export function saveCategory(raw: Partial<Category> & { name: string }): Categor
     ...(parentId ? { parentId } : {}),
     description: input.description?.trim() || '',
     image: input.image || '',
+    ...(input.content?.trim() ? { content: input.content.trim() } : {}),
+    ...(input.highlights?.length ? { highlights: input.highlights.map((h) => h.trim()).filter(Boolean) } : {}),
     order: Number.isFinite(Number(input.order)) && input.order !== undefined ? Number(input.order) : maxOrder + 1,
   };
   db.categories.push(created);
@@ -548,15 +642,23 @@ export function saveCategory(raw: Partial<Category> & { name: string }): Categor
   return created;
 }
 
-export function deleteCategory(id: string): void {
+/**
+ * Exclui a categoria. Se ela tiver itens, eles vão para `moveTo` (outra categoria),
+ * como o WordPress faz ao mandar os posts para "Sem categoria".
+ */
+export function deleteCategory(id: string, moveTo?: string): void {
   const db = getDatabase();
   const category = db.categories.find((c) => c.id === id);
   if (!category) throw new CategoryError('Categoria não encontrada.');
-  const inUse = db.equipments.filter((eq) => eq.category === category.name).length;
-  if (inUse > 0) {
-    throw new CategoryError(
-      `A categoria "${category.name}" tem ${inUse} ${inUse === 1 ? 'item' : 'itens'}. Mova-os para outra categoria antes de excluir.`
-    );
+  const inUse = db.equipments.filter((eq) => eq.category === category.name);
+  if (inUse.length > 0) {
+    const target = moveTo ? db.categories.find((c) => c.name === moveTo && c.id !== id) : undefined;
+    if (!target) {
+      throw new CategoryError(
+        `A categoria "${category.name}" tem ${inUse.length} ${inUse.length === 1 ? 'item' : 'itens'}. Escolha para qual categoria mover os produtos.`
+      );
+    }
+    inUse.forEach((eq) => (eq.category = target.name));
   }
   db.categories = db.categories.filter((c) => c.id !== id);
   // Como no WordPress: as subcategorias da excluída viram categorias principais

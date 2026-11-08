@@ -4,7 +4,8 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import { MotionConfig } from 'motion/react';
 import { QuoteModalProvider } from '@/lib/quote-modal-context';
-import { Header, type MenuCategory } from './Header';
+import { Header } from './Header';
+import type { SiteMenu } from '@/lib/types';
 import { Footer } from './Footer';
 import { QuoteModal } from './QuoteModal';
 import { CookieBanner } from './CookieBanner';
@@ -12,7 +13,7 @@ import { GlobalSearchModal } from './search/GlobalSearchModal';
 
 import { AuthProvider } from './auth/AuthProvider';
 
-export function ClientLayoutWrapper({ children, menuCategories = [] }: { children: React.ReactNode; menuCategories?: MenuCategory[] }) {
+export function ClientLayoutWrapper({ children, menu }: { children: React.ReactNode; menu?: SiteMenu }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin');
 
@@ -29,11 +30,11 @@ export function ClientLayoutWrapper({ children, menuCategories = [] }: { childre
             Pular para o conteúdo
           </a>
         )}
-        {!isAdmin && <Header categories={menuCategories} />}
+        {!isAdmin && <Header menu={menu} />}
         <div id="conteudo" tabIndex={-1} className="outline-none">
           {children}
         </div>
-        {!isAdmin && <Footer categories={menuCategories} />}
+        {!isAdmin && <Footer menu={menu} />}
         <QuoteModal />
         <CookieBanner />
         {!isAdmin && <GlobalSearchModal />}

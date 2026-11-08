@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { getAllEquipments, getAllQuotes, getAllBlogPosts, getCompanySettings, getCategoriesWithCount } from '@/lib/db';
+import { getAllEquipments, getAllQuotes, getAllBlogPosts, getCompanySettings, getCategoriesWithCount, getProductLines } from '@/lib/db';
 import { getServerAuthSession, hasConfiguredUsers } from '@/lib/auth';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import type { CompanySettings } from '@/lib/types';
@@ -40,6 +40,7 @@ export default async function AdminPage() {
         authenticated={false}
         loginConfigured={hasConfiguredUsers()}
         initialCategories={[]}
+        initialLines={[]}
         initialEquipments={[]}
         initialQuotes={[]}
         initialBlog={[]}
@@ -56,6 +57,7 @@ export default async function AdminPage() {
       authenticated
       loginConfigured
       initialCategories={getCategoriesWithCount()}
+      initialLines={getProductLines()}
       initialEquipments={getAllEquipments()}
       initialQuotes={getAllQuotes()}
       initialBlog={getAllBlogPosts()}

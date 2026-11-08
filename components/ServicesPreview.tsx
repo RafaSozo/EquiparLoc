@@ -1,10 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { SERVICOS } from '@/lib/servicos';
+import type { SiteMenu } from '@/lib/types';
 
-/** Bloco "Serviços" da página inicial (mesma ordem do menu). */
-export function ServicesPreview() {
+/** Bloco "Serviços" da página inicial (mesmos serviços do menu, cadastrados no painel). */
+export function ServicesPreview({ services }: { services: SiteMenu['services'] }) {
+  if (!services.length) return null;
   return (
     <section className="py-16 sm:py-24 bg-white border-b border-concreto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -24,26 +25,30 @@ export function ServicesPreview() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {SERVICOS.map((s) => (
+          {services.map((s) => (
             <Link
-              key={s.id}
-              href={`/servicos#${s.id}`}
+              key={s.slug}
+              href={`/servicos#${s.slug}`}
               className="group relative isolate overflow-hidden rounded-[6px] min-h-[18rem] flex items-end p-6 sm:p-8 text-white"
             >
+              {s.image ? (
               <Image
-                src={s.imagem}
+                src={s.image}
                 alt=""
                 fill
                 sizes="(min-width: 768px) 50vw, 100vw"
                 className="-z-20 object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               />
+              ) : (
+                <span aria-hidden="true" className="absolute inset-0 -z-20 bg-aco" />
+              )}
               <span
                 aria-hidden="true"
                 className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(15,20,24,0.15)_0%,rgba(15,20,24,0.88)_75%)]"
               />
               <span>
-                <span className="block type-display text-[2.25rem] sm:text-[2.75rem]">{s.nome}</span>
-                <span className="block mt-2 text-sm text-[#D5DBE0] max-w-md">{s.resumo}</span>
+                <span className="block type-display text-[2.25rem] sm:text-[2.75rem]">{s.name}</span>
+                {s.summary && <span className="block mt-2 text-sm text-[#D5DBE0] max-w-md">{s.summary}</span>}
                 <span className="inline-block mt-4 text-sm font-bold underline underline-offset-4 decoration-laranja decoration-2">
                   Saiba mais
                 </span>

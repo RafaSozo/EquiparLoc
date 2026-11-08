@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
-import { getEquipmentBySlug, getAllEquipments, getAllCategories } from '@/lib/db';
+import { getEquipmentBySlug, getAllEquipments, getAllCategories, getProductLines } from '@/lib/db';
 import { parentOf } from '@/lib/category-tree';
 import { EquipmentDetailClient } from '@/components/EquipmentDetailClient';
 import { SITE_URL, absoluteUrl, jsonLdHtml, slugify, categoryPath, equipmentPath } from '@/lib/site';
@@ -79,6 +79,9 @@ export default async function EquipmentDetailPage({ params }: Props) {
   const allCategories = getAllCategories();
   const ownCategory = allCategories.find((c) => c.name === equipment.category);
   const parentCategory = ownCategory ? parentOf(ownCategory, allCategories) : undefined;
+  // Itens de linhas do tipo Serviço ficam sob "Serviços" no caminho da página
+  const isService = !!ownCategory && getProductLines().find((l) => l.id === ownCategory.group)?.kind === 'servico';
+  const root = isService ? { name: 'Serviços', href: '/servicos' } : { name: 'Locação', href: '/locacao' };
 
   const all = getAllEquipments();
   const related = all
@@ -117,7 +120,7 @@ export default async function EquipmentDetailPage({ params }: Props) {
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Início', item: SITE_URL },
-          { '@type': 'ListItem', position: 2, name: 'Locação', item: absoluteUrl('/locacao') },
+          { '@type': 'ListItem', position: 2, name: root.name, item: absoluteUrl(root.href) },
           ...[...(parentCategory ? [parentCategory.name] : []), equipment.category].map((name, i) => ({
             '@type': 'ListItem',
             position: 3 + i,
@@ -140,6 +143,7 @@ export default async function EquipmentDetailPage({ params }: Props) {
         equipment={equipment}
         relatedEquipments={related}
         parentCategoryName={parentCategory?.name}
+        root={root}
       />
     </main>
   );

@@ -28,13 +28,15 @@ export async function PUT(req: NextRequest, { params }: Params) {
   }
 }
 
-export async function DELETE(_req: NextRequest, { params }: Params) {
+export async function DELETE(req: NextRequest, { params }: Params) {
   const auth = await requireAuth({ adminOnly: true });
   if (auth.error) return auth.error;
 
   try {
     const { id } = await params;
-    deleteCategory(id);
+    // Para onde vão os itens da categoria excluída (nome de outra categoria)
+    const moveTo = req.nextUrl.searchParams.get('moverPara') || undefined;
+    deleteCategory(id, moveTo);
     return NextResponse.json({ ok: true });
   } catch (error) {
     if (error instanceof CategoryError) {

@@ -1,7 +1,8 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { permanentRedirect } from 'next/navigation';
-import { getAllEquipments, getCategoriesWithCount } from '@/lib/db';
+import { getAllEquipments, getProductLines } from '@/lib/db';
+import { getRentalCategoriesWithCount } from '@/lib/site-menu';
 import { CatalogClient } from '@/components/CatalogClient';
 import { categoryPath } from '@/lib/site';
 
@@ -30,12 +31,16 @@ export default async function LocacaoPage({ searchParams }: Props) {
   // Links antigos com ?cat=Grupo levam à página própria do grupo
   if (cat && cat !== 'Todas') permanentRedirect(categoryPath(cat));
 
-  const activeEquipments = getAllEquipments().filter((eq) => eq.status === 'active');
+  // Só as linhas do tipo Locação (os serviços têm a página /servicos)
+  const lines = getProductLines().filter((l) => l.kind !== 'servico');
+  const categories = getRentalCategoriesWithCount();
+  const names = new Set(categories.map((c) => c.name));
+  const activeEquipments = getAllEquipments().filter((eq) => eq.status === 'active' && names.has(eq.category));
 
   return (
     <main className="min-h-screen bg-chapa pb-20">
       <Suspense fallback={<div className="p-12 text-center text-xs text-slate-400">Carregando equipamentos...</div>}>
-        <CatalogClient initialEquipments={activeEquipments} categories={getCategoriesWithCount(true)} />
+        <CatalogClient initialEquipments={activeEquipments} categories={categories} lines={lines} />
       </Suspense>
     </main>
   );

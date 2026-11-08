@@ -1,13 +1,50 @@
 /** Nome da categoria (as categorias são cadastradas no painel CRM). */
 export type EquipmentCategory = string;
 
-/** Linha de produto: máquinas pesadas ou ferramentas. */
-export type CategoryGroup = 'maquinas' | 'ferramentas';
+/** Identificador da linha de produto (ex.: "maquinas", "ferramentas", "servicos"). */
+export type CategoryGroup = string;
 
-export const CATEGORY_GROUP_LABELS: Record<CategoryGroup, string> = {
-  maquinas: 'Máquinas pesadas',
-  ferramentas: 'Ferramentas',
+/** Tipo da linha: itens para alugar (página Locação) ou serviços prestados (página Serviços). */
+export type ProductLineKind = 'locacao' | 'servico';
+
+/** Linha de produto, editável no painel (ex.: Máquinas pesadas, Ferramentas, Serviços). */
+export interface ProductLine {
+  /** Identificador fixo (não muda ao renomear) */
+  id: string;
+  name: string;
+  /** Frase curta que aparece no site acima das categorias da linha */
+  description: string;
+  kind: ProductLineKind;
+  order: number;
+}
+
+/** Dados do menu e do rodapé do site (montados no servidor). */
+export interface MenuCategory {
+  name: string;
+  count: number;
+  group: CategoryGroup;
+}
+
+export interface SiteMenu {
+  /** Linhas de locação, na ordem do painel */
+  lines: { id: string; name: string }[];
+  /** Categorias principais das linhas de locação com itens no site */
+  categories: MenuCategory[];
+  /** Serviços (categorias das linhas do tipo Serviço) */
+  services: { slug: string; name: string; summary: string; image: string }[];
+}
+
+export const PRODUCT_LINE_KIND_LABELS: Record<ProductLineKind, string> = {
+  locacao: 'Locação',
+  servico: 'Serviço',
 };
+
+/** Linhas iniciais (bancos antigos recebem estas na primeira leitura). */
+export const DEFAULT_PRODUCT_LINES: ProductLine[] = [
+  { id: 'maquinas', name: 'Máquinas pesadas', description: '', kind: 'locacao', order: 1 },
+  { id: 'ferramentas', name: 'Ferramentas', description: '', kind: 'locacao', order: 2 },
+  { id: 'servicos', name: 'Serviços', description: 'Além da locação, fazemos o serviço com equipe e máquinas próprias.', kind: 'servico', order: 3 },
+];
 
 export interface Category {
   id: string;
@@ -20,6 +57,10 @@ export interface Category {
   image: string;
   /** Ordem de exibição (menor aparece primeiro) */
   order: number;
+  /** Texto completo (parágrafos separados por linha em branco). Usado na página Serviços. */
+  content?: string;
+  /** Lista "o que está incluído", um item por linha */
+  highlights?: string[];
 }
 
 /** Categoria com a quantidade de itens ativos (para exibição no site) */
@@ -170,6 +211,8 @@ export interface CompanySettings {
 }
 
 export interface DatabaseSchema {
+  /** Linhas de produto (máquinas, ferramentas, serviços...). Bancos antigos não têm. */
+  productLines?: ProductLine[];
   categories: Category[];
   equipments: Equipment[];
   quotes: QuoteRequest[];

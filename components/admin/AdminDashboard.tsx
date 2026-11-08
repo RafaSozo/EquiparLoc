@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession, signIn, signOut } from 'next-auth/react';
-import { Equipment, QuoteRequest, BlogPost, CompanySettings, QuoteStatus, CategoryWithCount } from '@/lib/types';
+import { Equipment, QuoteRequest, BlogPost, CompanySettings, QuoteStatus, CategoryWithCount, ProductLine } from '@/lib/types';
 import {
   LayoutDashboard,
   Truck,
@@ -46,6 +46,8 @@ interface AdminDashboardProps {
   /** Há usuário configurado no .env? (orienta a configuração na tela de login) */
   loginConfigured: boolean;
   initialCategories: CategoryWithCount[];
+  /** Linhas de produto (Máquinas pesadas, Ferramentas, Serviços...) */
+  initialLines: ProductLine[];
   initialEquipments: Equipment[];
   initialQuotes: QuoteRequest[];
   initialBlog: BlogPost[];
@@ -56,6 +58,7 @@ export function AdminDashboard({
   authenticated,
   loginConfigured,
   initialCategories,
+  initialLines,
   initialEquipments,
   initialQuotes,
   initialBlog,
@@ -85,6 +88,7 @@ export function AdminDashboard({
   // Data states
   const [equipments, setEquipments] = useState<Equipment[]>(initialEquipments);
   const [categories, setCategories] = useState<CategoryWithCount[]>(initialCategories);
+  const [lines, setLines] = useState<ProductLine[]>(initialLines);
 
   // Itens por categoria (ativos + rascunhos) para avisos de exclusão
   const categoryUsage = equipments.reduce<Record<string, number>>((acc, eq) => {
@@ -686,6 +690,11 @@ export function AdminDashboard({
               categories={categories}
               onChange={setCategories}
               usage={categoryUsage}
+              lines={lines}
+              onLinesChange={setLines}
+              onItemsMoved={(from, to) =>
+                setEquipments((list) => list.map((eq) => (eq.category === from ? { ...eq, category: to } : eq)))
+              }
               showToast={showToast}
             />
           )}
@@ -697,6 +706,7 @@ export function AdminDashboard({
               onChange={setEquipments}
               categories={categories}
               onCategoriesChange={setCategories}
+              lines={lines}
               isAdmin={currentUser.role === 'admin'}
               showToast={showToast}
               onManageCategories={() => setActiveTab('categorias')}

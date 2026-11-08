@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getAllEquipments, getCategoriesWithCount } from '@/lib/db';
+import { getAllEquipments, getCategoriesWithCount, getProductLines } from '@/lib/db';
 import { CatalogClient } from '@/components/CatalogClient';
 import { SITE_URL, absoluteUrl, categoryPath, equipmentPath, jsonLdHtml, slugify } from '@/lib/site';
 import { namesInBranch, parentOf } from '@/lib/category-tree';
@@ -44,6 +44,8 @@ export default async function CategoryPage({ params }: Props) {
   const branch = namesInBranch(category.name, categories);
   const items = active.filter((eq) => branch.has(eq.category));
   const parent = parentOf(category, categories);
+  const lines = getProductLines();
+  const isService = lines.find((l) => l.id === category.group)?.kind === 'servico';
   const pageUrl = absoluteUrl(categoryPath(category.name));
 
   const jsonLd = {
@@ -70,7 +72,9 @@ export default async function CategoryPage({ params }: Props) {
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Início', item: SITE_URL },
-          { '@type': 'ListItem', position: 2, name: 'Locação', item: absoluteUrl('/locacao') },
+          isService
+            ? { '@type': 'ListItem', position: 2, name: 'Serviços', item: absoluteUrl('/servicos') }
+            : { '@type': 'ListItem', position: 2, name: 'Locação', item: absoluteUrl('/locacao') },
           ...(parent
             ? [{ '@type': 'ListItem', position: 3, name: parent.name, item: absoluteUrl(categoryPath(parent.name)) }]
             : []),
@@ -84,7 +88,7 @@ export default async function CategoryPage({ params }: Props) {
     <main className="min-h-screen bg-chapa pb-20">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }} />
       <Suspense fallback={<div className="p-12 text-center text-xs text-slate-400">Carregando equipamentos...</div>}>
-        <CatalogClient initialEquipments={active} categories={categories} fixedCategory={category} />
+        <CatalogClient initialEquipments={active} categories={categories} fixedCategory={category} lines={lines} />
       </Suspense>
     </main>
   );

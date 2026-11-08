@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { Equipment, CategoryWithCount, CategoryGroup, CATEGORY_GROUP_LABELS } from '@/lib/types';
+import type { Equipment, CategoryWithCount, CategoryGroup, ProductLineKind } from '@/lib/types';
 import { EquipmentCard } from './EquipmentCard';
 import { SuggestInput } from './search/SuggestInput';
 import { Search, SlidersHorizontal, RotateCcw, PackageSearch, Filter } from 'lucide-react';
@@ -15,12 +15,19 @@ interface CatalogClientProps {
   categories: CategoryWithCount[];
   /** Página de um grupo (/locacao/[categoria]): o grupo fica fixo e vem do endereço */
   fixedCategory?: CategoryWithCount;
+  /** Linhas de produto (na ordem do painel) */
+  lines?: { id: string; name: string; kind: ProductLineKind }[];
 }
 
 type GroupFilter = 'todos' | CategoryGroup;
-const parseGroup = (v: string | null): GroupFilter => (v === 'maquinas' || v === 'ferramentas' ? v : 'todos');
+const parseGroupIn = (ids: string[], v: string | null): GroupFilter => (v && ids.includes(v) ? v : 'todos');
 
-export function CatalogClient({ initialEquipments, categories: categoryList, fixedCategory }: CatalogClientProps) {
+export function CatalogClient({ initialEquipments, categories: categoryList, fixedCategory, lines = [] }: CatalogClientProps) {
+  const lineIds = lines.map((l) => l.id);
+  const parseGroup = (v: string | null) => parseGroupIn(lineIds, v);
+  const lineLabel = (id: string) => lines.find((l) => l.id === id)?.name || id;
+  // Página de uma categoria de serviço: textos sem "Locação de"
+  const isServicePage = !!fixedCategory && lines.find((l) => l.id === fixedCategory.group)?.kind === 'servico';
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -74,7 +81,7 @@ export function CatalogClient({ initialEquipments, categories: categoryList, fix
         const url = next ? `${pathname}?${next}` : pathname;
         // Troca de linha (máquinas/ferramentas) cria um passo no histórico;
         // digitação na busca apenas atualiza o endereço atual.
-        if (parseGroup(current.get('tipo')) !== selectedGroup) router.push(url, { scroll: false });
+        if ((current.get('tipo') || 'todos') !== selectedGroup) router.push(url, { scroll: false });
         else router.replace(url, { scroll: false });
       }
     }, 300);
@@ -93,11 +100,11 @@ export function CatalogClient({ initialEquipments, categories: categoryList, fix
     categoryList.forEach((c) => (map[c.name] = c.group));
     return map;
   }, [categoryList]);
-  const availableGroups = (['maquinas', 'ferramentas'] as CategoryGroup[]).filter((g) =>
+  const availableGroups = lineIds.filter((g) =>
     categoryList.some((c) => c.group === g)
   );
   // Principais seguidas das subcategorias, como no menu do WordPress
-  const categoryRows = categoryTree(categoryList, selectedGroup === 'todos' ? undefined : selectedGroup);
+  const categoryRows = categoryTree(categoryList, selectedGroup === 'todos' ? undefined : selectedGroup, lineIds);
   const categories = ['Todas', ...categoryRows.map((r) => r.cat.name)];
   const rowOf = (name: string) => categoryRows.find((r) => r.cat.name === name);
   // Uma categoria principal mostra também os itens das subcategorias
@@ -201,7 +208,9 @@ export function CatalogClient({ initialEquipments, categories: categoryList, fix
           <div>
             {fixedCategory && (
               <nav aria-label="Caminho" className="mb-3 text-xs text-aco-medio">
-                <Link href="/locacao" className="hover:text-aco underline underline-offset-2">Locação</Link>
+                <Link href={isServicePage ? '/servicos' : '/locacao'} className="hover:text-aco underline underline-offset-2">
+                  {isServicePage ? 'Serviços' : 'Locação'}
+                </Link>
                 <span aria-hidden="true"> / </span>
                 {parentCategory && (
                   <>
@@ -216,12 +225,12 @@ export function CatalogClient({ initialEquipments, categories: categoryList, fix
             )}
             <h1 className="text-4xl sm:text-5xl font-extrabold text-aco leading-[0.95]">
               {fixedCategory
-                ? `Locação de ${fixedCategory.name}`
-                : selectedGroup === 'ferramentas'
-                  ? 'Locação de Ferramentas'
-                  : selectedGroup === 'maquinas'
-                    ? 'Locação de Máquinas'
-                    : 'Locação de Máquinas e Ferramentas'}
+                ? isServicePage
+                  ? fixedCategory.name
+                  : `Locação de ${fixedCategory.name}`
+                : selectedGroup !== 'todos'
+                  ? `Locação de ${lineLabel(selectedGroup)}`
+                  : 'Locação de Máquinas e Ferramentas'}
             </h1>
             <p className="text-base text-aco-medio mt-3 max-w-2xl">
               {fixedCategory?.description || 'Veja a ficha técnica de cada item e peça o orçamento direto daqui.'}
@@ -239,7 +248,7 @@ export function CatalogClient({ initialEquipments, categories: categoryList, fix
                       selectedGroup === g ? 'bg-white text-aco shadow-xs' : 'text-aco-medio hover:text-aco'
                     }`}
                   >
-                    {g === 'todos' ? 'Tudo' : CATEGORY_GROUP_LABELS[g]}
+                    {g === 'todos' ? 'Tudo' : lineLabel(g)}
                   </button>
                 ))}
               </div>

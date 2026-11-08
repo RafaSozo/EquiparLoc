@@ -5,10 +5,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { MapPin, Phone, Mail, Clock, Lock } from 'lucide-react';
 import { categoryPath } from '@/lib/site';
-import { SERVICOS } from '@/lib/servicos';
-import type { MenuCategory } from './Header';
+import type { SiteMenu } from '@/lib/types';
 
-export function Footer({ categories = [] }: { categories?: MenuCategory[] }) {
+export function Footer({ menu }: { menu?: SiteMenu }) {
+  const categories = menu?.categories || [];
+  const services = menu?.services || [];
   return (
     <footer className="bg-aco text-[#C6CDD3] text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
@@ -38,9 +39,9 @@ export function Footer({ categories = [] }: { categories?: MenuCategory[] }) {
             <ul className="space-y-2">
               <li><Link href="/" className="hover:text-white transition-colors">Início</Link></li>
               <li><Link href="/empresa" className="hover:text-white transition-colors">Empresa</Link></li>
-              {SERVICOS.map((sv) => (
-                <li key={sv.id}>
-                  <Link href={`/servicos#${sv.id}`} className="hover:text-white transition-colors">{sv.nome}</Link>
+              {services.map((sv) => (
+                <li key={sv.slug}>
+                  <Link href={`/servicos#${sv.slug}`} className="hover:text-white transition-colors">{sv.name}</Link>
                 </li>
               ))}
               <li><Link href="/localizacao" className="hover:text-white transition-colors">Localização</Link></li>

@@ -2,13 +2,15 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Hammer } from 'lucide-react';
-import { CategoryWithCount, CategoryGroup, CATEGORY_GROUP_LABELS } from '@/lib/types';
+import type { CategoryWithCount } from '@/lib/types';
 import { categoryPath } from '@/lib/site';
 import { gridColsFor } from '@/lib/grid';
 
 interface CategoryGridProps {
   /** Categorias com itens ativos, cadastradas no CRM */
   categories: CategoryWithCount[];
+  /** Linhas de locação na ordem do painel */
+  lines: { id: string; name: string }[];
 }
 
 function CategoryCard({ cat }: { cat: CategoryWithCount }) {
@@ -51,9 +53,9 @@ function CategoryCard({ cat }: { cat: CategoryWithCount }) {
   );
 }
 
-export function CategoryGrid({ categories }: CategoryGridProps) {
-  const groups = (['maquinas', 'ferramentas'] as CategoryGroup[])
-    .map((group) => ({ group, items: categories.filter((c) => c.group === group) }))
+export function CategoryGrid({ categories, lines }: CategoryGridProps) {
+  const groups = lines
+    .map((line) => ({ group: line.id, name: line.name, items: categories.filter((c) => c.group === line.id) }))
     .filter((g) => g.items.length > 0);
 
   if (groups.length === 0) return null;
@@ -78,16 +80,16 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         </div>
 
         <div className="space-y-12">
-          {groups.map(({ group, items }) => (
+          {groups.map(({ group, name, items }) => (
             <div key={group}>
               {showGroupTitles && (
                 <div className="flex items-center justify-between mb-5">
-                  <h3 className="text-xl font-bold text-aco">{CATEGORY_GROUP_LABELS[group]}</h3>
+                  <h3 className="text-xl font-bold text-aco">{name}</h3>
                   <Link
                     href={`/locacao?tipo=${group}`}
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-aco underline underline-offset-4 decoration-laranja decoration-2 hover:decoration-aco whitespace-nowrap"
                   >
-                    Ver todas as {CATEGORY_GROUP_LABELS[group].toLowerCase()}
+                    Ver tudo em {name}
                   </Link>
                 </div>
               )}

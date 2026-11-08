@@ -5,6 +5,7 @@ import { Hero } from '@/components/Hero';
 import { SearchFilterBar } from '@/components/SearchFilterBar';
 import { CategoryGrid } from '@/components/CategoryGrid';
 import { isTopLevel, parentOf } from '@/lib/category-tree';
+import { getSiteMenu, getRentalLineIds } from '@/lib/site-menu';
 import { FeaturedEquipments } from '@/components/FeaturedEquipments';
 import { WhyChooseUs } from '@/components/WhyChooseUs';
 import { HowItWorks } from '@/components/HowItWorks';
@@ -25,8 +26,10 @@ export default async function HomePage() {
   const active = allEquipments.filter((eq) => eq.status === 'active');
   const featured = active.filter((eq) => eq.isFeatured);
   const allCategories = getCategoriesWithCount(true);
-  // Na página inicial aparecem só as categorias principais
-  const categories = allCategories.filter((c) => isTopLevel(c, allCategories));
+  // Na página inicial aparecem só as categorias principais das linhas de locação
+  const rental = getRentalLineIds();
+  const categories = allCategories.filter((c) => isTopLevel(c, allCategories) && rental.has(c.group));
+  const menu = getSiteMenu();
   const categoryNames = categories.map((c) => c.name);
   const topCategoryOf = Object.fromEntries(allCategories.map((c) => [c.name, parentOf(c, allCategories)?.name || c.name]));
   // Versão pública: sem e-mails de comentaristas nem comentários pendentes
@@ -42,13 +45,13 @@ export default async function HomePage() {
       <SearchFilterBar groups={categories.map((c) => ({ name: c.name, count: c.count }))} total={active.length} />
 
       {/* Categorias de Equipamentos */}
-      <CategoryGrid categories={categories} />
+      <CategoryGrid categories={categories} lines={menu.lines} />
 
       {/* Equipamentos em Destaque */}
       <FeaturedEquipments equipments={featured} categoryNames={categoryNames} topCategoryOf={topCategoryOf} />
 
       {/* Serviços (mesma ordem do menu: Locação, Serviços, Empresa, Localização) */}
-      <ServicesPreview />
+      <ServicesPreview services={menu.services} />
 
       {/* Empresa: por que escolher a EquiparLoc */}
       <WhyChooseUs />

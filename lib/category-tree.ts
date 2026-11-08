@@ -1,4 +1,4 @@
-import type { Category, CategoryGroup } from './types';
+import type { Category, CategoryGroup, ProductLine } from './types';
 
 /**
  * Categorias em dois níveis, como no WordPress: categoria principal e subcategoria.
@@ -6,7 +6,24 @@ import type { Category, CategoryGroup } from './types';
  * Funções puras: servem tanto para o painel quanto para o site.
  */
 
-export const CATEGORY_GROUPS: CategoryGroup[] = ['maquinas', 'ferramentas'];
+/** Linhas na ordem escolhida no painel. */
+export function sortLines<L extends Pick<ProductLine, 'order' | 'name'>>(lines: L[]): L[] {
+  return [...lines].sort((a, b) => a.order - b.order || a.name.localeCompare(b.name));
+}
+
+/** Nome da linha para exibir (cai no próprio id se a linha não existir mais). */
+export function lineName(lines: Pick<ProductLine, 'id' | 'name'>[], id: string): string {
+  return lines.find((l) => l.id === id)?.name || id;
+}
+
+/** Ids das linhas: as cadastradas, na ordem, e depois qualquer outra usada por alguma categoria. */
+function groupOrder(all: Cat[], lineIds?: string[]): string[] {
+  const ids = [...(lineIds || [])];
+  all.forEach((c) => {
+    if (!ids.includes(c.group)) ids.push(c.group);
+  });
+  return ids;
+}
 
 type Cat = Pick<Category, 'id' | 'name' | 'group' | 'order'> & { parentId?: string };
 
@@ -33,10 +50,13 @@ export interface TreeRow<T> {
   depth: 0 | 1;
 }
 
-/** Lista em árvore: cada principal seguida das suas subcategorias. Opcionalmente de uma linha só. */
-export function categoryTree<T extends Cat>(all: T[], group?: CategoryGroup): TreeRow<T>[] {
+/**
+ * Lista em árvore: cada principal seguida das suas subcategorias.
+ * Com `group`, só daquela linha; sem, todas, na ordem de `lineIds`.
+ */
+export function categoryTree<T extends Cat>(all: T[], group?: CategoryGroup, lineIds?: string[]): TreeRow<T>[] {
   const rows: TreeRow<T>[] = [];
-  const groups = group ? [group] : CATEGORY_GROUPS;
+  const groups = group ? [group] : groupOrder(all, lineIds);
   for (const g of groups) {
     all
       .filter((c) => c.group === g && isTopLevel(c, all))

@@ -1,12 +1,22 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { AlertTriangle, CheckCircle2, ExternalLink, ImageOff, Loader2, Plus, Save, Search, Star, Trash2, X } from 'lucide-react';
-import type { CategoryWithCount, Equipment, TechnicalSpecs } from '@/lib/types';
-import { CATEGORY_GROUP_LABELS } from '@/lib/types';
+import type { CategoryGroup, CategoryWithCount, Equipment, ProductLine, TechnicalSpecs } from '@/lib/types';
 import { equipmentPath, slugify } from '@/lib/site';
-import { CATEGORY_GROUPS, categoryLabel, categoryTree, namesInBranch } from '@/lib/category-tree';
+import { categoryLabel, categoryTree, namesInBranch, sortLines } from '@/lib/category-tree';
+
+/** Linhas de produto disponíveis para os componentes desta tela. */
+const LinesContext = createContext<ProductLine[]>([]);
+
+function useLineMeta() {
+  const lines = useContext(LinesContext);
+  return {
+    CATEGORY_GROUPS: sortLines(lines).map((l) => l.id),
+    CATEGORY_GROUP_LABELS: Object.fromEntries(lines.map((l) => [l.id, l.name])) as Record<string, string>,
+  };
+}
 import { PhotoManager, isPlaceholderImage } from './PhotoManager';
 
 const FALLBACK_IMAGE = '/images/cat_escavadeira_1793461101073.jpg';
@@ -44,6 +54,8 @@ interface CatalogManagerProps {
   categories: CategoryWithCount[];
   /** Avisa o painel quando uma categoria é criada de dentro do editor */
   onCategoriesChange: (list: CategoryWithCount[]) => void;
+  /** Linhas de produto (Máquinas pesadas, Ferramentas, Serviços...) */
+  lines: ProductLine[];
   /** Administrador pode criar, duplicar e excluir; o operador só edita */
   isAdmin: boolean;
   showToast: (msg: string) => void;
@@ -63,6 +75,7 @@ async function putEquipment(id: string, data: Partial<Equipment>): Promise<Equip
 
 /** Opções de categoria em árvore, para <select>: subcategorias recuadas embaixo da principal. */
 function CategoryOptions({ categories }: { categories: CategoryWithCount[] }) {
+  const { CATEGORY_GROUPS, CATEGORY_GROUP_LABELS } = useLineMeta();
   return (
     <>
       {CATEGORY_GROUPS.map((g) => {
@@ -91,6 +104,7 @@ export function CatalogManager({
   onChange,
   categories,
   onCategoriesChange,
+  lines,
   isAdmin,
   showToast,
   onManageCategories,
@@ -213,6 +227,7 @@ export function CatalogManager({
   };
 
   return (
+    <LinesContext.Provider value={lines}>
     <div className="space-y-4 max-w-7xl">
       {/* Cabeçalho, como "Posts  [Adicionar novo]" no WordPress */}
       <div className="flex flex-wrap items-center gap-3">
@@ -531,6 +546,7 @@ export function CatalogManager({
         </div>
       )}
     </div>
+    </LinesContext.Provider>
   );
 }
 
@@ -990,9 +1006,11 @@ function CategoryPicker({
   onCategoriesChange: (list: CategoryWithCount[]) => void;
   canCreate: boolean;
 }) {
+  const { CATEGORY_GROUPS, CATEGORY_GROUP_LABELS } = useLineMeta();
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState('');
   const [newParent, setNewParent] = useState('');
+  const [newGroup, setNewGroup] = useState<CategoryGroup>(() => CATEGORY_GROUPS[0] || 'maquinas');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const unknown = value && !categories.some((c) => c.name === value);
@@ -1005,7 +1023,7 @@ function CategoryPicker({
       const res = await fetch('/api/categorias', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newName.trim(), parentId: newParent, group: 'maquinas', description: '', image: '' }),
+        body: JSON.stringify({ name: newName.trim(), parentId: newParent, group: newGroup, description: '', image: '' }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Não foi possível criar a categoria.');
@@ -1100,6 +1118,25 @@ function CategoryPicker({
                 );
               })}
             </select>
+            {!newParent && (
+              <>
+                <label htmlFor="nova-cat-linha" className="block text-xs font-semibold text-slate-700">
+                  Linha de produto
+                </label>
+                <select
+                  id="nova-cat-linha"
+                  value={newGroup}
+                  onChange={(e) => setNewGroup(e.target.value as CategoryGroup)}
+                  className={`${inputCls} bg-white`}
+                >
+                  {CATEGORY_GROUPS.map((g) => (
+                    <option key={g} value={g}>
+                      {CATEGORY_GROUP_LABELS[g]}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
             {error && (
               <p role="alert" className="text-xs text-rose-700">
                 {error}

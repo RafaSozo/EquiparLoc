@@ -2,8 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Archivo } from 'next/font/google';
 import './globals.css';
 import { ClientLayoutWrapper } from '@/components/ClientLayoutWrapper';
-import { getCategoriesWithCount } from '@/lib/db';
-import { isTopLevel } from '@/lib/category-tree';
+import { getSiteMenu } from '@/lib/site-menu';
 import { SITE_URL, SITE_NAME, SITE_LEGAL_NAME, DEFAULT_OG_IMAGE, absoluteUrl, jsonLdHtml } from '@/lib/site';
 
 // Archivo com eixo de largura: estreita nos títulos, normal no texto
@@ -59,11 +58,8 @@ export const viewport: Viewport = {
 export const dynamic = 'force-dynamic';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // O menu mostra só as categorias principais (a contagem já inclui as subcategorias)
-  const allMenuCategories = getCategoriesWithCount(true);
-  const menuCategories = allMenuCategories
-    .filter((c) => isTopLevel(c, allMenuCategories))
-    .map((c) => ({ name: c.name, count: c.count, group: c.group }));
+  // Menu e rodapé: linhas, categorias principais e serviços cadastrados no painel
+  const menu = getSiteMenu();
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -125,7 +121,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="font-sans antialiased bg-white text-aco" suppressHydrationWarning>
-        <ClientLayoutWrapper menuCategories={menuCategories}>{children}</ClientLayoutWrapper>
+        <ClientLayoutWrapper menu={menu}>{children}</ClientLayoutWrapper>
       </body>
     </html>
   );

@@ -26,6 +26,8 @@ interface EquipmentDetailClientProps {
   relatedEquipments: Equipment[];
   /** Categoria principal, quando o item está numa subcategoria */
   parentCategoryName?: string;
+  /** Início do caminho: Locação ou Serviços */
+  root?: { name: string; href: string };
 }
 
 /** Fotos de catálogo com fundo branco: mostrar inteiras, sem cortar */
@@ -35,6 +37,7 @@ export function EquipmentDetailClient({
   equipment,
   relatedEquipments,
   parentCategoryName,
+  root = { name: 'Locação', href: '/locacao' },
 }: EquipmentDetailClientProps) {
   const [selectedImage, setSelectedImage] = useState(equipment.image);
   const { openQuoteModal } = useQuoteModal();
@@ -55,7 +58,7 @@ export function EquipmentDetailClient({
       <nav className="flex items-center gap-1.5 text-xs text-aco-medio mb-6" aria-label="Navegação estrutural">
         <Link href="/" className="hover:text-aco transition-colors">Início</Link>
         <ChevronRight className="w-3.5 h-3.5 text-aco-medio" />
-        <Link href="/locacao" className="hover:text-aco transition-colors">Locação</Link>
+        <Link href={root.href} className="hover:text-aco transition-colors">{root.name}</Link>
         <ChevronRight className="w-3.5 h-3.5 text-aco-medio" />
         {parentCategoryName && (
           <>

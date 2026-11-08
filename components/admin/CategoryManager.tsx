@@ -2,11 +2,12 @@
 
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
-import { Category, CategoryGroup, CategoryWithCount, CATEGORY_GROUP_LABELS } from '@/lib/types';
+import type { Category, CategoryGroup, CategoryWithCount, ProductLine } from '@/lib/types';
+import { ProductLineManager } from './ProductLineManager';
 import { Loader2, ImageOff, ArrowUp, ArrowDown, CornerDownRight } from 'lucide-react';
 import { PhotoManager } from './PhotoManager';
 import { categoryPath } from '@/lib/site';
-import { CATEGORY_GROUPS, categoryTree, childrenOf, parentOf } from '@/lib/category-tree';
+import { categoryTree, childrenOf, parentOf, sortLines } from '@/lib/category-tree';
 
 interface CategoryManagerProps {
   categories: CategoryWithCount[];
@@ -14,9 +15,14 @@ interface CategoryManagerProps {
   /** Quantos itens (ativos ou não) usam cada categoria, para avisos de exclusão */
   usage: Record<string, number>;
   showToast: (msg: string) => void;
+  /** Linhas de produto (Máquinas pesadas, Ferramentas, Serviços...) */
+  lines: ProductLine[];
+  onLinesChange: (lines: ProductLine[]) => void;
+  /** Avisa o painel que os itens de uma categoria excluída foram para outra */
+  onItemsMoved?: (from: string, to: string) => void;
 }
 
-type Draft = Partial<Category> & { group: CategoryGroup; parentId: string };
+type Draft = Partial<Category> & { group: CategoryGroup; parentId: string; highlightsText?: string };
 
 const EMPTY_DRAFT = (group: CategoryGroup = 'maquinas', parentId = ''): Draft => ({
   name: '',
@@ -33,11 +39,18 @@ const inputCls =
  * Tela de categorias no jeito do WordPress: formulário à esquerda ("Adicionar nova categoria")
  * e a lista à direita, com as subcategorias recuadas embaixo da principal.
  */
-export function CategoryManager({ categories, onChange, usage, showToast }: CategoryManagerProps) {
-  const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT());
+export function CategoryManager({ categories, onChange, usage, showToast, onItemsMoved, lines, onLinesChange }: CategoryManagerProps) {
+  const sortedLines = sortLines(lines);
+  const CATEGORY_GROUPS = sortedLines.map((l) => l.id);
+  const CATEGORY_GROUP_LABELS: Record<string, string> = Object.fromEntries(lines.map((l) => [l.id, l.name]));
+  const firstLine = CATEGORY_GROUPS[0] || 'maquinas';
+  const [draft, setDraft] = useState<Draft>(() => EMPTY_DRAFT(firstLine));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [confirmDelete, setConfirmDelete] = useState<CategoryWithCount | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<CategoryWithCount[] | null>(null);
+  const [moveTo, setMoveTo] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
   const [moving, setMoving] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -45,6 +58,8 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
   const editing = draft.id ? categories.find((c) => c.id === draft.id) : undefined;
   const editingHasChildren = editing ? childrenOf(editing, categories).length > 0 : false;
   const chosenParent = draft.parentId ? categories.find((c) => c.id === draft.parentId) : undefined;
+  // Categorias de linhas do tipo Serviço ganham texto completo para a página /servicos
+  const draftIsService = lines.find((l) => l.id === (chosenParent?.group || draft.group))?.kind === 'servico';
   // Só categorias principais podem receber subcategorias
   const parentOptions = (g: CategoryGroup) =>
     categoryTree(categories, g)
@@ -56,7 +71,7 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
     setTimeout(() => nameRef.current?.focus(), 250);
   };
 
-  const startNew = (group?: CategoryGroup, parentId = '') => {
+  const startNew = (group: CategoryGroup = firstLine, parentId = '') => {
     setError(null);
     setDraft(EMPTY_DRAFT(group, parentId));
     focusForm();
@@ -65,7 +80,7 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
   const startEdit = (cat: CategoryWithCount) => {
     setError(null);
     const { count: _count, ...rest } = cat;
-    setDraft({ ...rest, parentId: parentOf(cat, categories)?.id || '' });
+    setDraft({ ...rest, parentId: parentOf(cat, categories)?.id || '', highlightsText: (cat.highlights || []).join('\n') });
     focusForm();
   };
 
@@ -88,7 +103,14 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
       const res = await fetch(isNew ? '/api/categorias' : `/api/categorias/${draft.id}`, {
         method: isNew ? 'POST' : 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(draft),
+        body: JSON.stringify({
+          ...draft,
+          highlightsText: undefined,
+          highlights: (draft.highlightsText || '')
+            .split('\n')
+            .map((h) => h.trim())
+            .filter(Boolean),
+        }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -97,7 +119,7 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
       }
       await reload();
       // Depois de criar, deixa o formulário pronto para a próxima, na mesma principal
-      setDraft(isNew ? EMPTY_DRAFT(data.group, draft.parentId) : EMPTY_DRAFT());
+      setDraft(isNew ? EMPTY_DRAFT(data.group, draft.parentId) : EMPTY_DRAFT(firstLine));
       showToast(isNew ? `Categoria "${data.name}" criada.` : `Categoria "${data.name}" salva.`);
     } catch {
       setError('Sem conexão com o servidor. Tente novamente.');
@@ -106,22 +128,45 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
     }
   };
 
-  const handleDelete = async (cat: CategoryWithCount) => {
-    try {
-      const res = await fetch(`/api/categorias/${cat.id}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (!res.ok) {
-        showToast(data.error || 'Não foi possível excluir a categoria.');
-      } else {
-        await reload();
-        if (draft.id === cat.id) setDraft(EMPTY_DRAFT());
-        showToast(`Categoria "${cat.name}" excluída.`);
+  const askDelete = (list: CategoryWithCount[]) => {
+    setMoveTo('');
+    setConfirmDelete(list);
+  };
+
+  /** Exclui uma ou várias categorias; os itens delas vão para a categoria escolhida. */
+  const handleDelete = async (list: CategoryWithCount[]) => {
+    setDeleting(true);
+    let done = 0;
+    let failMsg = '';
+    // Subcategorias primeiro, para não promover à toa as que também serão excluídas
+    const ordered = [...list].sort((a, b) => Number(!parentOf(a, categories)) - Number(!parentOf(b, categories)));
+    for (const cat of ordered) {
+      const hasItems = (usage[cat.name] || 0) > 0;
+      try {
+        const qs = hasItems ? `?moverPara=${encodeURIComponent(moveTo)}` : '';
+        const res = await fetch(`/api/categorias/${cat.id}${qs}`, { method: 'DELETE' });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          failMsg = data.error || `Não foi possível excluir "${cat.name}".`;
+          continue;
+        }
+        if (hasItems) onItemsMoved?.(cat.name, moveTo);
+        if (draft.id === cat.id) setDraft(EMPTY_DRAFT(firstLine));
+        done++;
+      } catch {
+        failMsg = 'Sem conexão com o servidor. Tente novamente.';
       }
-    } catch {
-      showToast('Sem conexão com o servidor. Tente novamente.');
-    } finally {
-      setConfirmDelete(null);
     }
+    try {
+      await reload();
+    } catch {
+      /* a lista recarrega na próxima ação */
+    }
+    setDeleting(false);
+    setConfirmDelete(null);
+    setSelected(new Set());
+    if (failMsg) showToast(done ? `${done} excluída(s). ${failMsg}` : failMsg);
+    else showToast(done === 1 ? `Categoria "${list[0].name}" excluída.` : `${done} categorias excluídas.`);
   };
 
   /** Troca a posição com a vizinha (entre principais, ou entre subcategorias da mesma principal). */
@@ -163,8 +208,16 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
           .map((r) => r.cat);
   };
 
-  const deleteChildren = confirmDelete ? childrenOf(confirmDelete, categories) : [];
-  const deleteUsage = confirmDelete ? usage[confirmDelete.name] || 0 : 0;
+  const deleteIds = new Set((confirmDelete || []).map((c) => c.id));
+  const deleteUsage = (confirmDelete || []).reduce((n, c) => n + (usage[c.name] || 0), 0);
+  // Subcategorias que sobram e viram principais
+  const deleteChildren = (confirmDelete || []).flatMap((c) => childrenOf(c, categories)).filter((c) => !deleteIds.has(c.id));
+  const toggleSelected = (id: string) => {
+    const next = new Set(selected);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelected(next);
+  };
 
   return (
     <div className="space-y-5 max-w-7xl">
@@ -176,6 +229,14 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
           escondidas.
         </p>
       </div>
+
+      <ProductLineManager
+        lines={lines}
+        onChange={onLinesChange}
+        categories={categories}
+        onCategoriesReload={reload}
+        showToast={showToast}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-[22rem_1fr] gap-5 items-start">
         {/* Formulário: adicionar ou editar */}
@@ -254,7 +315,7 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
             {!chosenParent && (
               <fieldset>
                 <legend className="block text-xs font-semibold text-slate-700 mb-1.5">Linha de produto</legend>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-1.5">
                   {CATEGORY_GROUPS.map((g) => (
                     <label
                       key={g}
@@ -292,6 +353,38 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
               <p className="text-[11px] text-slate-400 mt-0.5 text-right">{(draft.description || '').length}/160</p>
             </div>
 
+            {draftIsService && (
+              <>
+                <div>
+                  <label htmlFor="categoria-conteudo" className="block text-xs font-semibold text-slate-700 mb-1">
+                    Texto do serviço
+                  </label>
+                  <textarea
+                    id="categoria-conteudo"
+                    rows={6}
+                    value={draft.content || ''}
+                    onChange={(e) => setDraft({ ...draft, content: e.target.value })}
+                    placeholder="Explique o serviço. Deixe uma linha em branco entre os parágrafos."
+                    className={inputCls}
+                  />
+                  <p className="text-[11px] text-slate-500 mt-0.5">Aparece na página Serviços.</p>
+                </div>
+                <div>
+                  <label htmlFor="categoria-inclui" className="block text-xs font-semibold text-slate-700 mb-1">
+                    O que está incluído
+                  </label>
+                  <textarea
+                    id="categoria-inclui"
+                    rows={4}
+                    value={draft.highlightsText || ''}
+                    onChange={(e) => setDraft({ ...draft, highlightsText: e.target.value })}
+                    placeholder={'Um item por linha. Ex.:\nEscavação para fundações\nAbertura de valas'}
+                    className={inputCls}
+                  />
+                </div>
+              </>
+            )}
+
             <div>
               <p className="block text-xs font-semibold text-slate-700 mb-1">Foto</p>
               <PhotoManager
@@ -326,11 +419,20 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
                   type="button"
                   onClick={() => {
                     setError(null);
-                    setDraft(EMPTY_DRAFT());
+                    setDraft(EMPTY_DRAFT(firstLine));
                   }}
                   className="px-3 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900"
                 >
                   Cancelar
+                </button>
+              )}
+              {editing && (
+                <button
+                  type="button"
+                  onClick={() => askDelete([editing])}
+                  className="ml-auto px-2 py-2 text-sm font-semibold text-rose-600 hover:text-rose-800 hover:underline"
+                >
+                  Excluir
                 </button>
               )}
             </div>
@@ -339,6 +441,21 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
 
         {/* Lista em árvore */}
         <div className="space-y-5 min-w-0">
+          {selected.size > 0 && (
+            <div className="sticky top-2 z-10 flex flex-wrap items-center gap-3 p-3 bg-slate-900 text-white rounded-xl shadow-lg">
+              <span className="text-xs font-semibold">{selected.size} selecionada(s)</span>
+              <button
+                type="button"
+                onClick={() => askDelete(categories.filter((c) => selected.has(c.id)))}
+                className="px-3 py-1.5 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg"
+              >
+                Excluir selecionadas
+              </button>
+              <button type="button" onClick={() => setSelected(new Set())} className="ml-auto text-xs text-slate-300 hover:text-white">
+                Limpar seleção
+              </button>
+            </div>
+          )}
           {CATEGORY_GROUPS.map((group) => {
             const rows = categoryTree(categories, group);
             return (
@@ -361,7 +478,20 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
                   <table className="w-full text-sm">
                     <thead className="sr-only sm:not-sr-only">
                       <tr className="text-left text-[11px] font-semibold text-slate-500 border-b border-slate-100">
-                        <th className="w-10 px-2 py-2">
+                        <th className="w-8 pl-3 py-2">
+                          <input
+                            type="checkbox"
+                            aria-label={`Selecionar todas de ${CATEGORY_GROUP_LABELS[group]}`}
+                            checked={rows.every((r) => selected.has(r.cat.id))}
+                            onChange={(e) => {
+                              const next = new Set(selected);
+                              rows.forEach((r) => (e.target.checked ? next.add(r.cat.id) : next.delete(r.cat.id)));
+                              setSelected(next);
+                            }}
+                            className="w-4 h-4 rounded text-[#FF6500] focus:ring-[#FF6500]"
+                          />
+                        </th>
+                        <th className="w-8 px-1 py-2">
                           <span className="sr-only">Ordem</span>
                         </th>
                         <th className="px-2 py-2">Nome</th>
@@ -377,8 +507,17 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
                         const total = depth === 0 ? childrenOf(cat, categories).reduce((n, c) => n + (usage[c.name] || 0), own) : own;
                         const isEditing = draft.id === cat.id;
                         return (
-                          <tr key={cat.id} className={`group align-top ${isEditing ? 'bg-orange-50' : depth ? 'bg-slate-50/50' : ''}`}>
-                            <td className="px-2 py-3">
+                          <tr key={cat.id} className={`group align-top ${isEditing || selected.has(cat.id) ? 'bg-orange-50' : depth ? 'bg-slate-50/50' : ''}`}>
+                            <td className="pl-3 py-3.5">
+                              <input
+                                type="checkbox"
+                                aria-label={`Selecionar ${cat.name}`}
+                                checked={selected.has(cat.id)}
+                                onChange={() => toggleSelected(cat.id)}
+                                className="w-4 h-4 rounded text-[#FF6500] focus:ring-[#FF6500]"
+                              />
+                            </td>
+                            <td className="px-1 py-3">
                               <div className="flex flex-col">
                                 <button
                                   type="button"
@@ -442,7 +581,7 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
                                         </a>
                                       </>
                                     )}
-                                    |<RowAction danger onClick={() => setConfirmDelete(cat)}>Excluir</RowAction>
+                                    |<RowAction danger onClick={() => askDelete([cat])}>Excluir</RowAction>
                                   </div>
                                 </div>
                               </div>
@@ -475,39 +614,62 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
           aria-modal="true"
           aria-labelledby="categoria-excluir-titulo"
           className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
-          onClick={() => setConfirmDelete(null)}
+          onClick={() => !deleting && setConfirmDelete(null)}
         >
-          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-sm bg-white rounded-xl shadow-xl p-5 space-y-4">
-            <h3 id="categoria-excluir-titulo" className="text-sm font-bold text-slate-900">
-              Excluir &quot;{confirmDelete.name}&quot;?
+          <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md bg-white rounded-xl shadow-xl p-5 space-y-4">
+            <h3 id="categoria-excluir-titulo" className="text-base font-bold text-slate-900">
+              {confirmDelete.length === 1 ? `Excluir "${confirmDelete[0].name}"?` : `Excluir ${confirmDelete.length} categorias?`}
             </h3>
+            {confirmDelete.length > 1 && <p className="text-xs text-slate-600">{confirmDelete.map((c) => c.name).join(', ')}</p>}
             {deleteUsage > 0 ? (
-              <p className="text-xs text-slate-600">
-                Esta categoria tem {deleteUsage} {deleteUsage === 1 ? 'item' : 'itens'}. Mova-os para outra categoria no
-                Catálogo antes de excluir.
-              </p>
+              <div className="space-y-1.5">
+                <label htmlFor="mover-para" className="block text-sm text-slate-700">
+                  {deleteUsage === 1 ? 'Há 1 produto' : `Há ${deleteUsage} produtos`} {confirmDelete.length > 1 ? 'nessas categorias' : 'nesta categoria'}.
+                  Para qual categoria {deleteUsage > 1 ? 'eles vão' : 'ele vai'}?
+                </label>
+                <select id="mover-para" value={moveTo} onChange={(e) => setMoveTo(e.target.value)} className={`${inputCls} bg-white`}>
+                  <option value="">Escolha a categoria...</option>
+                  {CATEGORY_GROUPS.map((g) => {
+                    const rows = categoryTree(categories, g).filter((r) => !deleteIds.has(r.cat.id));
+                    if (!rows.length) return null;
+                    return (
+                      <optgroup key={g} label={CATEGORY_GROUP_LABELS[g]}>
+                        {rows.map(({ cat, depth }) => (
+                          <option key={cat.id} value={cat.name}>
+                            {depth ? `\u00A0\u00A0\u00A0— ${cat.name}` : cat.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    );
+                  })}
+                </select>
+              </div>
             ) : (
-              <p className="text-xs text-slate-600">
-                A categoria não tem itens e será removida.
-                {deleteChildren.length > 0 &&
-                  ` As subcategorias (${deleteChildren.map((c) => c.name).join(', ')}) viram categorias principais.`}
+              <p className="text-sm text-slate-600">{confirmDelete.length > 1 ? 'Essas categorias não têm' : 'Esta categoria não tem'} produtos.</p>
+            )}
+            {deleteChildren.length > 0 && (
+              <p className="text-xs text-slate-500">
+                As subcategorias {deleteChildren.map((c) => c.name).join(', ')} continuam e viram categorias principais.
               </p>
             )}
+            <p className="text-xs text-slate-500">A página da categoria sai do site. Isso não pode ser desfeito.</p>
             <div className="flex justify-end gap-2">
               <button
                 type="button"
+                disabled={deleting}
                 onClick={() => setConfirmDelete(null)}
-                className="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200"
+                className="px-4 py-2 text-sm font-semibold text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200"
               >
                 Cancelar
               </button>
               <button
                 type="button"
-                disabled={deleteUsage > 0}
+                disabled={deleting || (deleteUsage > 0 && !moveTo)}
                 onClick={() => handleDelete(confirmDelete)}
-                className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Excluir categoria
+                {deleting && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
+                {deleteUsage > 0 ? 'Mover produtos e excluir' : 'Excluir'}
               </button>
             </div>
           </div>
