@@ -467,7 +467,7 @@ export function AdminDashboard({
           >
             <span className="flex items-center gap-3">
               <Truck className="w-4 h-4 text-[#FF6500]" />
-              <span>Catálogo</span>
+              <span>Produtos</span>
             </span>
             <span className="text-[11px] font-mono opacity-70">{equipments.length}</span>
           </button>
@@ -475,7 +475,7 @@ export function AdminDashboard({
           <button
             type="button"
             onClick={() => setActiveTab('categorias')}
-            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors ${
+            className={`w-full flex items-center justify-between pl-7 pr-3 py-2 rounded-lg text-xs font-semibold transition-colors ${
               activeTab === 'categorias'
                 ? 'bg-[#101820] text-white'
                 : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
@@ -483,7 +483,7 @@ export function AdminDashboard({
           >
             <span className="flex items-center gap-3">
               <Tags className="w-4 h-4 text-[#FF6500]" />
-              <span>Categorias</span>
+              <span>Categorias e subcategorias</span>
             </span>
             <span className="text-[11px] font-mono opacity-70">{categories.length}</span>
           </button>
@@ -696,6 +696,7 @@ export function AdminDashboard({
               equipments={equipments}
               onChange={setEquipments}
               categories={categories}
+              onCategoriesChange={setCategories}
               isAdmin={currentUser.role === 'admin'}
               showToast={showToast}
               onManageCategories={() => setActiveTab('categorias')}

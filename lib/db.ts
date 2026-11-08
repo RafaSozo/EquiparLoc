@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { DatabaseSchema, Equipment, QuoteRequest, BlogPost, CompanySettings, BlogComment, Category, CategoryWithCount, HeroSettings } from './types';
+import { DatabaseSchema, Equipment, QuoteRequest, BlogPost, CompanySettings, BlogComment, Category, CategoryGroup, CategoryWithCount, HeroSettings } from './types';
+import { namesInBranch } from './category-tree';
 import { DEFAULT_HERO } from './hero';
 import { analyzePostSeo } from './seo-optimizer';
 import catalogoInicial from './catalogo-inicial.json';
@@ -459,17 +460,24 @@ export function getAllCategories(): Category[] {
 /** Categorias com a contagem de itens ativos. `onlyWithItems` esconde as vazias (uso no site). */
 export function getCategoriesWithCount(onlyWithItems = false): CategoryWithCount[] {
   const db = getDatabase();
-  const list = getAllCategories().map((c) => ({
-    ...c,
-    count: db.equipments.filter((eq) => eq.category === c.name && eq.status === 'active').length,
-  }));
+  const all = getAllCategories();
+  const list = all.map((c) => {
+    // A categoria principal conta também os itens das subcategorias
+    const names = namesInBranch(c.name, all);
+    return {
+      ...c,
+      count: db.equipments.filter((eq) => names.has(eq.category) && eq.status === 'active').length,
+    };
+  });
   return onlyWithItems ? list.filter((c) => c.count > 0) : list;
 }
 
 export class CategoryError extends Error {}
 
-export function saveCategory(input: Partial<Category> & { name: string }): Category {
+export function saveCategory(raw: Partial<Category> & { name: string }): Category {
   const db = getDatabase();
+  // A contagem de itens é calculada na leitura: nunca grava no banco
+  const { count: _count, ...input } = raw as Partial<CategoryWithCount> & { name: string };
   const name = input.name.trim();
   if (!name) throw new CategoryError('Informe o nome da categoria.');
 
@@ -480,16 +488,39 @@ export function saveCategory(input: Partial<Category> & { name: string }): Categ
 
   const index = input.id ? db.categories.findIndex((c) => c.id === input.id) : -1;
 
+  // Categoria principal (só um nível de subcategoria, como no WordPress simples)
+  let parentId: string | undefined;
+  let group: CategoryGroup = input.group === 'ferramentas' ? 'ferramentas' : 'maquinas';
+  if (input.parentId) {
+    const parent = db.categories.find((c) => c.id === input.parentId);
+    if (!parent) throw new CategoryError('A categoria principal escolhida não existe mais.');
+    if (parent.id === input.id) throw new CategoryError('Uma categoria não pode ficar dentro dela mesma.');
+    if (parent.parentId) {
+      throw new CategoryError(`"${parent.name}" já é uma subcategoria. Escolha uma categoria principal.`);
+    }
+    if (input.id && db.categories.some((c) => c.parentId === input.id)) {
+      throw new CategoryError('Esta categoria tem subcategorias, por isso não pode virar subcategoria.');
+    }
+    parentId = parent.id;
+    group = parent.group; // a subcategoria fica na mesma linha da principal
+  }
+
   if (index >= 0) {
     const previous = db.categories[index];
     const updated: Category = {
       ...previous,
       ...input,
       name,
-      group: input.group === 'ferramentas' ? 'ferramentas' : 'maquinas',
+      group,
+      parentId,
       order: Number.isFinite(Number(input.order)) ? Number(input.order) : previous.order,
     };
+    if (!parentId) delete updated.parentId;
     db.categories[index] = updated;
+    // Subcategorias acompanham a linha (máquinas/ferramentas) da principal
+    db.categories.forEach((c) => {
+      if (c.parentId === updated.id) c.group = updated.group;
+    });
     // Renomear a categoria atualiza os equipamentos que usam o nome antigo
     if (previous.name !== name) {
       db.equipments.forEach((eq) => {
@@ -506,7 +537,8 @@ export function saveCategory(input: Partial<Category> & { name: string }): Categ
   const created: Category = {
     id,
     name,
-    group: input.group === 'ferramentas' ? 'ferramentas' : 'maquinas',
+    group,
+    ...(parentId ? { parentId } : {}),
     description: input.description?.trim() || '',
     image: input.image || '',
     order: Number.isFinite(Number(input.order)) && input.order !== undefined ? Number(input.order) : maxOrder + 1,
@@ -527,6 +559,10 @@ export function deleteCategory(id: string): void {
     );
   }
   db.categories = db.categories.filter((c) => c.id !== id);
+  // Como no WordPress: as subcategorias da excluída viram categorias principais
+  db.categories.forEach((c) => {
+    if (c.parentId === id) delete c.parentId;
+  });
   saveDatabase(db);
 }
 

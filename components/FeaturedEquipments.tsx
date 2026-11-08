@@ -11,17 +11,20 @@ interface FeaturedEquipmentsProps {
   equipments: Equipment[];
   /** Categorias com itens (ordem do CRM) */
   categoryNames?: string[];
+  /** Subcategoria → categoria principal (as abas mostram só as principais) */
+  topCategoryOf?: Record<string, string>;
 }
 
-export function FeaturedEquipments({ equipments, categoryNames = [] }: FeaturedEquipmentsProps) {
+export function FeaturedEquipments({ equipments, categoryNames = [], topCategoryOf = {} }: FeaturedEquipmentsProps) {
   const [selectedFilter, setSelectedFilter] = useState('Todos');
+  const topOf = (eq: Equipment) => topCategoryOf[eq.category] || eq.category;
 
   // Só mostra abas de categorias que têm itens em destaque
-  const filterOptions = ['Todos', ...categoryNames.filter((name) => equipments.some((eq) => eq.category === name))];
+  const filterOptions = ['Todos', ...categoryNames.filter((name) => equipments.some((eq) => topOf(eq) === name))];
 
   const filtered = equipments.filter((eq) => {
     if (selectedFilter === 'Todos') return true;
-    return eq.category === selectedFilter;
+    return topOf(eq) === selectedFilter;
   });
 
   return (

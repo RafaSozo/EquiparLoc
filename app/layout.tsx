@@ -3,6 +3,7 @@ import { Archivo } from 'next/font/google';
 import './globals.css';
 import { ClientLayoutWrapper } from '@/components/ClientLayoutWrapper';
 import { getCategoriesWithCount } from '@/lib/db';
+import { isTopLevel } from '@/lib/category-tree';
 import { SITE_URL, SITE_NAME, SITE_LEGAL_NAME, DEFAULT_OG_IMAGE, absoluteUrl, jsonLdHtml } from '@/lib/site';
 
 // Archivo com eixo de largura: estreita nos títulos, normal no texto
@@ -58,7 +59,11 @@ export const viewport: Viewport = {
 export const dynamic = 'force-dynamic';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const menuCategories = getCategoriesWithCount(true).map((c) => ({ name: c.name, count: c.count, group: c.group }));
+  // O menu mostra só as categorias principais (a contagem já inclui as subcategorias)
+  const allMenuCategories = getCategoriesWithCount(true);
+  const menuCategories = allMenuCategories
+    .filter((c) => isTopLevel(c, allMenuCategories))
+    .map((c) => ({ name: c.name, count: c.count, group: c.group }));
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [

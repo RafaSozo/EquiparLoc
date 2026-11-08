@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import { Category, CategoryGroup, CategoryWithCount, CATEGORY_GROUP_LABELS } from '@/lib/types';
-import { Plus, Edit, Trash2, X, Save, Loader2, ImageOff, Hammer, Truck, ExternalLink, ArrowUp, ArrowDown } from 'lucide-react';
+import { Loader2, ImageOff, ArrowUp, ArrowDown, CornerDownRight } from 'lucide-react';
 import { PhotoManager } from './PhotoManager';
 import { categoryPath } from '@/lib/site';
-
+import { CATEGORY_GROUPS, categoryTree, childrenOf, parentOf } from '@/lib/category-tree';
 
 interface CategoryManagerProps {
   categories: CategoryWithCount[];
@@ -16,30 +16,67 @@ interface CategoryManagerProps {
   showToast: (msg: string) => void;
 }
 
-type Draft = Partial<Category> & { group: CategoryGroup };
+type Draft = Partial<Category> & { group: CategoryGroup; parentId: string };
 
-const EMPTY_DRAFT = (group: CategoryGroup): Draft => ({ name: '', group, description: '', image: '' });
+const EMPTY_DRAFT = (group: CategoryGroup = 'maquinas', parentId = ''): Draft => ({
+  name: '',
+  group,
+  parentId,
+  description: '',
+  image: '',
+});
 
+const inputCls =
+  'w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6500] focus:border-transparent';
+
+/**
+ * Tela de categorias no jeito do WordPress: formulário à esquerda ("Adicionar nova categoria")
+ * e a lista à direita, com as subcategorias recuadas embaixo da principal.
+ */
 export function CategoryManager({ categories, onChange, usage, showToast }: CategoryManagerProps) {
-  const [draft, setDraft] = useState<Draft | null>(null);
+  const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT());
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<CategoryWithCount | null>(null);
   const [moving, setMoving] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
 
-  const openNew = (group: CategoryGroup) => {
-    setError(null);
-    setDraft(EMPTY_DRAFT(group));
+  const editing = draft.id ? categories.find((c) => c.id === draft.id) : undefined;
+  const editingHasChildren = editing ? childrenOf(editing, categories).length > 0 : false;
+  const chosenParent = draft.parentId ? categories.find((c) => c.id === draft.parentId) : undefined;
+  // Só categorias principais podem receber subcategorias
+  const parentOptions = (g: CategoryGroup) =>
+    categoryTree(categories, g)
+      .filter((r) => r.depth === 0 && r.cat.id !== draft.id)
+      .map((r) => r.cat);
+
+  const focusForm = () => {
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => nameRef.current?.focus(), 250);
   };
 
-  const openEdit = (cat: CategoryWithCount) => {
+  const startNew = (group?: CategoryGroup, parentId = '') => {
     setError(null);
-    setDraft({ ...cat });
+    setDraft(EMPTY_DRAFT(group, parentId));
+    focusForm();
+  };
+
+  const startEdit = (cat: CategoryWithCount) => {
+    setError(null);
+    const { count: _count, ...rest } = cat;
+    setDraft({ ...rest, parentId: parentOf(cat, categories)?.id || '' });
+    focusForm();
+  };
+
+  const reload = async () => {
+    const listRes = await fetch('/api/categorias');
+    const list = await listRes.json();
+    onChange(list.categories);
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!draft) return;
     if (!draft.name?.trim()) {
       setError('Informe o nome da categoria.');
       return;
@@ -58,11 +95,9 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
         setError(data.error || 'Não foi possível salvar a categoria.');
         return;
       }
-      // Recarrega a lista (o servidor recalcula contagens e renomeações)
-      const listRes = await fetch('/api/categorias');
-      const list = await listRes.json();
-      onChange(list.categories);
-      setDraft(null);
+      await reload();
+      // Depois de criar, deixa o formulário pronto para a próxima, na mesma principal
+      setDraft(isNew ? EMPTY_DRAFT(data.group, draft.parentId) : EMPTY_DRAFT());
       showToast(isNew ? `Categoria "${data.name}" criada.` : `Categoria "${data.name}" salva.`);
     } catch {
       setError('Sem conexão com o servidor. Tente novamente.');
@@ -78,7 +113,8 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
       if (!res.ok) {
         showToast(data.error || 'Não foi possível excluir a categoria.');
       } else {
-        onChange(categories.filter((c) => c.id !== cat.id));
+        await reload();
+        if (draft.id === cat.id) setDraft(EMPTY_DRAFT());
         showToast(`Categoria "${cat.name}" excluída.`);
       }
     } catch {
@@ -88,30 +124,29 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
     }
   };
 
-  /** Troca a posição de duas categorias do mesmo grupo (a ordem vale para o site todo). */
-  const move = async (list: CategoryWithCount[], index: number, dir: -1 | 1) => {
-    const a = list[index];
-    const b = list[index + dir];
+  /** Troca a posição com a vizinha (entre principais, ou entre subcategorias da mesma principal). */
+  const move = async (siblings: CategoryWithCount[], index: number, dir: -1 | 1) => {
+    const a = siblings[index];
+    const b = siblings[index + dir];
     if (!a || !b || moving) return;
     setMoving(true);
     try {
-      // Renumera o grupo inteiro para não haver empate de ordem
-      const reordered = [...list];
+      const reordered = [...siblings];
       [reordered[index], reordered[index + dir]] = [b, a];
-      const base = Math.min(...list.map((c) => c.order));
+      const base = Math.min(...siblings.map((c) => c.order));
       const changed = reordered
         .map((c, i) => ({ ...c, order: base + i }))
-        .filter((c) => c.order !== list.find((o) => o.id === c.id)?.order);
+        .filter((c) => c.order !== siblings.find((o) => o.id === c.id)?.order);
       for (const c of changed) {
+        const { count: _count, ...rest } = c;
         const res = await fetch(`/api/categorias/${c.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...c, order: c.order }),
+          body: JSON.stringify({ ...rest, parentId: parentOf(c, categories)?.id || '' }),
         });
         if (!res.ok) throw new Error();
       }
-      const listRes = await fetch('/api/categorias');
-      onChange((await listRes.json()).categories);
+      await reload();
     } catch {
       showToast('Não foi possível mudar a ordem. Tente novamente.');
     } finally {
@@ -119,175 +154,108 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
     }
   };
 
-  const groups: CategoryGroup[] = ['maquinas', 'ferramentas'];
+  const siblingsOf = (cat: CategoryWithCount) => {
+    const parent = parentOf(cat, categories);
+    return parent
+      ? childrenOf(parent, categories)
+      : categoryTree(categories, cat.group)
+          .filter((r) => r.depth === 0)
+          .map((r) => r.cat);
+  };
+
+  const deleteChildren = confirmDelete ? childrenOf(confirmDelete, categories) : [];
+  const deleteUsage = confirmDelete ? usage[confirmDelete.name] || 0 : 0;
 
   return (
-    <div className="space-y-6 max-w-6xl">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">Categorias</h2>
-          <p className="text-xs text-slate-500">
-            Organize o catálogo em máquinas pesadas e ferramentas. Categorias sem itens ativos ficam ocultas no site.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => openNew('maquinas')}
-          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#FF6500] hover:bg-[#E55B00] rounded-lg transition-colors shadow-xs"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Nova categoria</span>
-        </button>
+    <div className="space-y-5 max-w-7xl">
+      <div>
+        <h2 className="text-xl font-bold text-slate-900">Categorias</h2>
+        <p className="text-sm text-slate-500 mt-0.5 max-w-3xl">
+          Crie as categorias principais (ex.: Concretagem) e, dentro delas, as subcategorias (ex.: Betoneiras,
+          Vibradores). No site, a principal mostra todos os itens das subcategorias. Categorias sem itens no site ficam
+          escondidas.
+        </p>
       </div>
 
-      {groups.map((group) => {
-        const list = categories.filter((c) => c.group === group).sort((x, y) => x.order - y.order);
-        const Icon = group === 'maquinas' ? Truck : Hammer;
-        return (
-          <section key={group} className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
-            <div className="p-4 border-b border-slate-200 flex items-center justify-between gap-3">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Icon className="w-4 h-4 text-[#FF6500]" />
-                {CATEGORY_GROUP_LABELS[group]}
-                <span className="text-xs font-normal text-slate-500">({list.length})</span>
-              </h3>
-              <button
-                type="button"
-                onClick={() => openNew(group)}
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Adicionar em {CATEGORY_GROUP_LABELS[group].toLowerCase()}</span>
-              </button>
+      <div className="grid grid-cols-1 lg:grid-cols-[22rem_1fr] gap-5 items-start">
+        {/* Formulário: adicionar ou editar */}
+        <form
+          ref={formRef}
+          onSubmit={handleSave}
+          className={`bg-white border rounded-xl shadow-xs lg:sticky lg:top-4 scroll-mt-4 ${
+            draft.id ? 'border-[#FF6500] ring-1 ring-[#FF6500]' : 'border-slate-200'
+          }`}
+        >
+          <div className="px-4 py-3 border-b border-slate-200">
+            <h3 className="text-sm font-bold text-slate-900">
+              {draft.id ? `Editar "${editing?.name || draft.name}"` : chosenParent ? `Nova subcategoria de "${chosenParent.name}"` : 'Adicionar nova categoria'}
+            </h3>
+          </div>
+
+          <div className="p-4 space-y-4">
+            <div>
+              <label htmlFor="categoria-nome" className="block text-xs font-semibold text-slate-700 mb-1">
+                Nome *
+              </label>
+              <input
+                ref={nameRef}
+                id="categoria-nome"
+                type="text"
+                required
+                maxLength={60}
+                value={draft.name || ''}
+                onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+                placeholder={chosenParent ? 'Ex.: Betoneiras' : 'Ex.: Concretagem'}
+                className={inputCls}
+              />
+              {editing && (usage[editing.name] || 0) > 0 && (
+                <p className="text-[11px] text-slate-500 mt-1">Ao renomear, os itens desta categoria acompanham.</p>
+              )}
             </div>
 
-            {list.length === 0 ? (
-              <p className="p-6 text-xs text-slate-500">
-                Nenhuma categoria aqui ainda. Use &quot;Adicionar&quot; para criar a primeira.
-              </p>
-            ) : (
-              <ul className="divide-y divide-slate-100">
-                {list.map((cat, index) => {
-                  const total = usage[cat.name] || 0;
+            <div>
+              <label htmlFor="categoria-pai" className="block text-xs font-semibold text-slate-700 mb-1">
+                Fica dentro de
+              </label>
+              <select
+                id="categoria-pai"
+                value={draft.parentId}
+                disabled={editingHasChildren}
+                onChange={(e) => {
+                  const parent = categories.find((c) => c.id === e.target.value);
+                  setDraft({ ...draft, parentId: e.target.value, group: parent?.group || draft.group });
+                }}
+                className={`${inputCls} bg-white disabled:bg-slate-100`}
+              >
+                <option value="">Nenhuma: é uma categoria principal</option>
+                {CATEGORY_GROUPS.map((g) => {
+                  const list = parentOptions(g);
+                  if (!list.length) return null;
                   return (
-                    <li key={cat.id} className="p-4 flex items-center gap-4">
-                      <div className="flex flex-col shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => move(list, index, -1)}
-                          disabled={index === 0 || moving}
-                          className="p-1 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded disabled:opacity-25"
-                          aria-label={`Subir ${cat.name}`}
-                          title="Subir"
-                        >
-                          <ArrowUp className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => move(list, index, 1)}
-                          disabled={index === list.length - 1 || moving}
-                          className="p-1 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded disabled:opacity-25"
-                          aria-label={`Descer ${cat.name}`}
-                          title="Descer"
-                        >
-                          <ArrowDown className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                      <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center">
-                        {cat.image ? (
-                          <Image src={cat.image} alt="" fill sizes="56px" className="object-cover" />
-                        ) : (
-                          <ImageOff className="w-5 h-5 text-slate-400" aria-hidden="true" />
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-sm font-semibold text-slate-900 truncate">{cat.name}</div>
-                        <div className="text-xs text-slate-500 line-clamp-1">{cat.description || 'Sem descrição'}</div>
-                        <div className="text-[11px] mt-1">
-                          {cat.count > 0 ? (
-                            <span className="text-emerald-700">{cat.count} ativo(s) · visível no site</span>
-                          ) : (
-                            <span className="text-amber-700">Sem itens ativos · oculta no site</span>
-                          )}
-                          {total > cat.count && (
-                            <span className="text-slate-400"> · {total - cat.count} em rascunho</span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        {cat.count > 0 && (
-                          <a
-                            href={categoryPath(cat.name)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
-                            aria-label={`Ver ${cat.name} no site`}
-                            title="Ver no site"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => openEdit(cat)}
-                          className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
-                          aria-label={`Editar ${cat.name}`}
-                          title="Editar"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setConfirmDelete(cat)}
-                          className="p-2 text-slate-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg"
-                          aria-label={`Excluir ${cat.name}`}
-                          title="Excluir"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </li>
+                    <optgroup key={g} label={CATEGORY_GROUP_LABELS[g]}>
+                      {list.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                    </optgroup>
                   );
                 })}
-              </ul>
-            )}
-          </section>
-        );
-      })}
-
-      {/* Formulário (criar / editar) */}
-      {draft && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="categoria-form-titulo"
-          className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
-          onClick={() => !saving && setDraft(null)}
-        >
-          <form
-            onSubmit={handleSave}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg max-h-[calc(100vh-2rem)] bg-white rounded-xl shadow-xl overflow-y-auto"
-          >
-            <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-              <h3 id="categoria-form-titulo" className="text-sm font-bold text-slate-900">
-                {draft.id ? `Editar categoria` : 'Nova categoria'}
-              </h3>
-              <button
-                type="button"
-                onClick={() => setDraft(null)}
-                className="p-1 text-slate-500 hover:text-slate-900 rounded"
-                aria-label="Fechar"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              </select>
+              <p className="text-[11px] text-slate-500 mt-1">
+                {editingHasChildren
+                  ? 'Esta categoria tem subcategorias, por isso continua como principal.'
+                  : chosenParent
+                    ? `Vai aparecer como subcategoria de ${chosenParent.name}.`
+                    : 'Escolha uma categoria para transformar esta em subcategoria.'}
+              </p>
             </div>
 
-            <div className="p-4 space-y-4">
+            {!chosenParent && (
               <fieldset>
                 <legend className="block text-xs font-semibold text-slate-700 mb-1.5">Linha de produto</legend>
                 <div className="grid grid-cols-2 gap-2">
-                  {(['maquinas', 'ferramentas'] as CategoryGroup[]).map((g) => (
+                  {CATEGORY_GROUPS.map((g) => (
                     <label
                       key={g}
                       className={`flex items-center gap-2 p-2.5 border rounded-lg cursor-pointer text-xs ${
@@ -306,103 +274,199 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
                   ))}
                 </div>
               </fieldset>
+            )}
 
-              <div>
-                <label htmlFor="categoria-nome" className="block text-xs font-semibold text-slate-700 mb-1">
-                  Nome *
-                </label>
-                <input
-                  id="categoria-nome"
-                  type="text"
-                  required
-                  autoFocus
-                  maxLength={60}
-                  value={draft.name || ''}
-                  onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-                  placeholder={draft.group === 'ferramentas' ? 'Ex: Ferramentas Elétricas' : 'Ex: Terraplenagem & Escavação'}
-                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
-                />
-                {draft.id && (usage[categories.find((c) => c.id === draft.id)?.name || ''] || 0) > 0 && (
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    Ao renomear, os itens desta categoria são atualizados automaticamente.
-                  </p>
-                )}
-              </div>
+            <div>
+              <label htmlFor="categoria-descricao" className="block text-xs font-semibold text-slate-700 mb-1">
+                Descrição
+              </label>
+              <textarea
+                id="categoria-descricao"
+                rows={3}
+                maxLength={160}
+                value={draft.description || ''}
+                onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+                placeholder="Uma frase que aparece no topo da página da categoria."
+                className={inputCls}
+              />
+              <p className="text-[11px] text-slate-400 mt-0.5 text-right">{(draft.description || '').length}/160</p>
+            </div>
 
-              <div>
-                <label htmlFor="categoria-descricao" className="block text-xs font-semibold text-slate-700 mb-1">
-                  Descrição curta
-                </label>
-                <textarea
-                  id="categoria-descricao"
-                  rows={2}
-                  maxLength={160}
-                  value={draft.description || ''}
-                  onChange={(e) => setDraft({ ...draft, description: e.target.value })}
-                  placeholder="Aparece no card da categoria na página inicial."
-                  className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
-                />
-                <p className="text-[11px] text-slate-400 mt-0.5 text-right">{(draft.description || '').length}/160</p>
-              </div>
-
-              <div>
-                <p className="block text-xs font-semibold text-slate-700 mb-1">Foto da categoria</p>
-                <PhotoManager
-                  single
-                  photos={draft.image ? [draft.image] : []}
-                  main={draft.image || ''}
-                  nameHint={draft.name ? `categoria-${draft.name}` : 'categoria'}
-                  onChange={(_photos, main) => setDraft({ ...draft, image: main })}
-                />
-                {draft.image?.startsWith('/images/cat_') && (
-                  <p className="text-[11px] text-amber-700 mt-1">
-                    Esta é uma foto genérica do modelo do site. Envie uma foto real da categoria.
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="categoria-ordem" className="block text-xs font-semibold text-slate-700 mb-1">
-                  Ordem de exibição
-                </label>
-                <input
-                  id="categoria-ordem"
-                  type="number"
-                  min={0}
-                  value={draft.order ?? ''}
-                  onChange={(e) => setDraft({ ...draft, order: e.target.value === '' ? undefined : Number(e.target.value) })}
-                  placeholder="Automática (vai para o fim)"
-                  className="w-40 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
-                />
-              </div>
-
-              {error && (
-                <p role="alert" className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg p-2.5">
-                  {error}
-                </p>
+            <div>
+              <p className="block text-xs font-semibold text-slate-700 mb-1">Foto</p>
+              <PhotoManager
+                single
+                photos={draft.image ? [draft.image] : []}
+                main={draft.image || ''}
+                nameHint={draft.name ? `categoria-${draft.name}` : 'categoria'}
+                onChange={(_photos, main) => setDraft({ ...draft, image: main })}
+              />
+              {draft.image?.startsWith('/images/cat_') && (
+                <p className="text-[11px] text-amber-700 mt-1">Foto genérica do modelo do site. Envie uma foto real.</p>
               )}
             </div>
 
-            <div className="p-4 border-t border-slate-200 flex justify-end gap-2 bg-slate-50">
-              <button
-                type="button"
-                onClick={() => setDraft(null)}
-                className="px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-100"
-              >
-                Cancelar
-              </button>
+            {error && (
+              <p role="alert" className="text-xs text-rose-700 bg-rose-50 border border-rose-200 rounded-lg p-2.5">
+                {error}
+              </p>
+            )}
+
+            <div className="flex items-center gap-2">
               <button
                 type="submit"
                 disabled={saving}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#FF6500] hover:bg-[#E55B00] rounded-lg disabled:opacity-60"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-[#FF6500] hover:bg-[#E55B00] rounded-lg disabled:opacity-60"
               >
-                {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                <span>{draft.id ? 'Salvar categoria' : 'Criar categoria'}</span>
+                {saving && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
+                {draft.id ? 'Salvar alterações' : chosenParent ? 'Adicionar subcategoria' : 'Adicionar categoria'}
               </button>
+              {(draft.id || draft.parentId || draft.name) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setError(null);
+                    setDraft(EMPTY_DRAFT());
+                  }}
+                  className="px-3 py-2 text-sm font-semibold text-slate-600 hover:text-slate-900"
+                >
+                  Cancelar
+                </button>
+              )}
             </div>
-          </form>
+          </div>
+        </form>
+
+        {/* Lista em árvore */}
+        <div className="space-y-5 min-w-0">
+          {CATEGORY_GROUPS.map((group) => {
+            const rows = categoryTree(categories, group);
+            return (
+              <section key={group} className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-xs">
+                <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between gap-3">
+                  <h3 className="text-sm font-bold text-slate-900">{CATEGORY_GROUP_LABELS[group]}</h3>
+                  <span className="text-xs text-slate-500">
+                    {rows.filter((r) => r.depth === 0).length} principais · {rows.filter((r) => r.depth === 1).length} subcategorias
+                  </span>
+                </div>
+
+                {rows.length === 0 ? (
+                  <p className="p-6 text-sm text-slate-500">
+                    Nenhuma categoria aqui ainda.{' '}
+                    <button type="button" onClick={() => startNew(group)} className="font-semibold text-[#FF6500] hover:underline">
+                      Criar a primeira
+                    </button>
+                  </p>
+                ) : (
+                  <table className="w-full text-sm">
+                    <thead className="sr-only sm:not-sr-only">
+                      <tr className="text-left text-[11px] font-semibold text-slate-500 border-b border-slate-100">
+                        <th className="w-10 px-2 py-2">
+                          <span className="sr-only">Ordem</span>
+                        </th>
+                        <th className="px-2 py-2">Nome</th>
+                        <th className="hidden md:table-cell px-2 py-2">Descrição</th>
+                        <th className="px-3 py-2 text-right">Itens</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {rows.map(({ cat, depth }) => {
+                        const siblings = siblingsOf(cat);
+                        const index = siblings.findIndex((s) => s.id === cat.id);
+                        const own = usage[cat.name] || 0;
+                        const total = depth === 0 ? childrenOf(cat, categories).reduce((n, c) => n + (usage[c.name] || 0), own) : own;
+                        const isEditing = draft.id === cat.id;
+                        return (
+                          <tr key={cat.id} className={`group align-top ${isEditing ? 'bg-orange-50' : depth ? 'bg-slate-50/50' : ''}`}>
+                            <td className="px-2 py-3">
+                              <div className="flex flex-col">
+                                <button
+                                  type="button"
+                                  onClick={() => move(siblings, index, -1)}
+                                  disabled={index <= 0 || moving}
+                                  className="p-0.5 text-slate-400 hover:text-slate-900 rounded disabled:opacity-20"
+                                  aria-label={`Subir ${cat.name}`}
+                                  title="Subir"
+                                >
+                                  <ArrowUp className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => move(siblings, index, 1)}
+                                  disabled={index === siblings.length - 1 || moving}
+                                  className="p-0.5 text-slate-400 hover:text-slate-900 rounded disabled:opacity-20"
+                                  aria-label={`Descer ${cat.name}`}
+                                  title="Descer"
+                                >
+                                  <ArrowDown className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </td>
+                            <td className="px-2 py-3">
+                              <div className={`flex items-start gap-3 ${depth ? 'pl-5 sm:pl-8' : ''}`}>
+                                {depth === 1 && <CornerDownRight className="w-4 h-4 mt-3 -ml-5 text-slate-300 shrink-0" aria-hidden="true" />}
+                                <div className="relative w-12 h-12 rounded-md overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center">
+                                  {cat.image ? (
+                                    <Image src={cat.image} alt="" fill unoptimized sizes="48px" className="object-cover" />
+                                  ) : (
+                                    <ImageOff className="w-4 h-4 text-slate-400" aria-hidden="true" />
+                                  )}
+                                </div>
+                                <div className="min-w-0">
+                                  <button
+                                    type="button"
+                                    onClick={() => startEdit(cat)}
+                                    className={`text-left hover:text-[#FF6500] ${depth ? 'font-medium text-slate-800' : 'font-bold text-slate-900'}`}
+                                  >
+                                    {cat.name}
+                                  </button>
+                                  {depth === 0 && <span className="ml-1.5 text-[10px] font-semibold text-slate-400">Principal</span>}
+                                  {/* Ações da linha, como no WordPress */}
+                                  <div className="mt-1 flex flex-wrap gap-x-1 text-xs text-slate-300">
+                                    <RowAction onClick={() => startEdit(cat)}>Editar</RowAction>
+                                    {depth === 0 && (
+                                      <>
+                                        |<RowAction onClick={() => startNew(cat.group, cat.id)}>Adicionar subcategoria</RowAction>
+                                      </>
+                                    )}
+                                    {cat.count > 0 && (
+                                      <>
+                                        |
+                                        <a
+                                          href={categoryPath(cat.name)}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="px-0.5 font-semibold text-slate-600 hover:text-[#FF6500] hover:underline"
+                                        >
+                                          Ver no site
+                                        </a>
+                                      </>
+                                    )}
+                                    |<RowAction danger onClick={() => setConfirmDelete(cat)}>Excluir</RowAction>
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="hidden md:table-cell px-2 py-3 text-xs text-slate-500 max-w-xs">
+                              <span className="line-clamp-2">{cat.description || '—'}</span>
+                            </td>
+                            <td className="px-3 py-3 text-right whitespace-nowrap">
+                              <span className="font-semibold tabular-nums text-slate-900">{total}</span>
+                              <span className={`block text-[11px] ${cat.count > 0 ? 'text-emerald-700' : 'text-amber-700'}`}>
+                                {cat.count > 0 ? `${cat.count} no site` : 'oculta no site'}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </section>
+            );
+          })}
         </div>
-      )}
+      </div>
 
       {/* Confirmação de exclusão */}
       {confirmDelete && (
@@ -417,13 +481,17 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
             <h3 id="categoria-excluir-titulo" className="text-sm font-bold text-slate-900">
               Excluir &quot;{confirmDelete.name}&quot;?
             </h3>
-            {(usage[confirmDelete.name] || 0) > 0 ? (
+            {deleteUsage > 0 ? (
               <p className="text-xs text-slate-600">
-                Esta categoria tem {usage[confirmDelete.name]} item(ns). Mova-os para outra categoria em
-                Equipamentos antes de excluir.
+                Esta categoria tem {deleteUsage} {deleteUsage === 1 ? 'item' : 'itens'}. Mova-os para outra categoria no
+                Catálogo antes de excluir.
               </p>
             ) : (
-              <p className="text-xs text-slate-600">A categoria não tem itens e será removida do catálogo.</p>
+              <p className="text-xs text-slate-600">
+                A categoria não tem itens e será removida.
+                {deleteChildren.length > 0 &&
+                  ` As subcategorias (${deleteChildren.map((c) => c.name).join(', ')}) viram categorias principais.`}
+              </p>
             )}
             <div className="flex justify-end gap-2">
               <button
@@ -435,7 +503,7 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
               </button>
               <button
                 type="button"
-                disabled={(usage[confirmDelete.name] || 0) > 0}
+                disabled={deleteUsage > 0}
                 onClick={() => handleDelete(confirmDelete)}
                 className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed"
               >
@@ -446,5 +514,17 @@ export function CategoryManager({ categories, onChange, usage, showToast }: Cate
         </div>
       )}
     </div>
+  );
+}
+
+function RowAction({ onClick, danger, children }: { onClick: () => void; danger?: boolean; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`px-0.5 font-semibold hover:underline ${danger ? 'text-rose-600 hover:text-rose-800' : 'text-slate-600 hover:text-[#FF6500]'}`}
+    >
+      {children}
+    </button>
   );
 }

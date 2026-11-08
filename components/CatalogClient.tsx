@@ -8,6 +8,7 @@ import { SuggestInput } from './search/SuggestInput';
 import { Search, SlidersHorizontal, RotateCcw, PackageSearch, Filter } from 'lucide-react';
 import Link from 'next/link';
 import { categoryPath } from '@/lib/site';
+import { categoryTree, namesInBranch, parentOf } from '@/lib/category-tree';
 
 interface CatalogClientProps {
   initialEquipments: Equipment[];
@@ -95,8 +96,16 @@ export function CatalogClient({ initialEquipments, categories: categoryList, fix
   const availableGroups = (['maquinas', 'ferramentas'] as CategoryGroup[]).filter((g) =>
     categoryList.some((c) => c.group === g)
   );
-  const visibleCategories = categoryList.filter((c) => selectedGroup === 'todos' || c.group === selectedGroup);
-  const categories = ['Todas', ...visibleCategories.map((c) => c.name)];
+  // Principais seguidas das subcategorias, como no menu do WordPress
+  const categoryRows = categoryTree(categoryList, selectedGroup === 'todos' ? undefined : selectedGroup);
+  const categories = ['Todas', ...categoryRows.map((r) => r.cat.name)];
+  const rowOf = (name: string) => categoryRows.find((r) => r.cat.name === name);
+  // Uma categoria principal mostra também os itens das subcategorias
+  const branchNames = useMemo(
+    () => (selectedCategory === 'Todas' ? null : namesInBranch(selectedCategory, categoryList)),
+    [selectedCategory, categoryList]
+  );
+  const parentCategory = fixedCategory ? parentOf(fixedCategory, categoryList) : undefined;
   const itemsInGroup = initialEquipments.filter(
     (e) => selectedGroup === 'todos' || (groupOf[e.category] || 'maquinas') === selectedGroup
   );
@@ -118,7 +127,7 @@ export function CatalogClient({ initialEquipments, categories: categoryList, fix
       }
 
       // Category filter
-      if (selectedCategory !== 'Todas' && eq.category !== selectedCategory) {
+      if (branchNames && !branchNames.has(eq.category)) {
         return false;
       }
 
@@ -165,7 +174,7 @@ export function CatalogClient({ initialEquipments, categories: categoryList, fix
       if (!a.isFeatured && b.isFeatured) return 1;
       return 0;
     });
-  }, [initialEquipments, selectedGroup, groupOf, selectedCategory, featuredOnly, selectedFuel, selectedWeight, search, sortBy]);
+  }, [initialEquipments, selectedGroup, groupOf, branchNames, featuredOnly, selectedFuel, selectedWeight, search, sortBy]);
 
   // Pagination
   const totalPages = Math.ceil(filteredEquipments.length / itemsPerPage) || 1;
@@ -194,6 +203,14 @@ export function CatalogClient({ initialEquipments, categories: categoryList, fix
               <nav aria-label="Caminho" className="mb-3 text-xs text-aco-medio">
                 <Link href="/locacao" className="hover:text-aco underline underline-offset-2">Locação</Link>
                 <span aria-hidden="true"> / </span>
+                {parentCategory && (
+                  <>
+                    <Link href={categoryPath(parentCategory.name)} className="hover:text-aco underline underline-offset-2">
+                      {parentCategory.name}
+                    </Link>
+                    <span aria-hidden="true"> / </span>
+                  </>
+                )}
                 <span className="text-aco font-semibold">{fixedCategory.name}</span>
               </nav>
             )}
@@ -304,7 +321,9 @@ export function CatalogClient({ initialEquipments, categories: categoryList, fix
               </div>
 
               <div className="space-y-1">
-                {categories.map((cat) => (
+                {categories.map((cat) => {
+                  const row = rowOf(cat);
+                  return (
                   <button
                     key={cat}
                     type="button"
@@ -312,7 +331,9 @@ export function CatalogClient({ initialEquipments, categories: categoryList, fix
                       setSelectedCategory(cat);
                       setCurrentPage(1);
                     }}
-                    className={` w-full text-left px-2.5 py-1.5 rounded-[4px] text-xs transition-colors flex items-center justify-between ${
+                    className={` w-full text-left py-1.5 rounded-[4px] text-xs transition-colors flex items-center justify-between ${
+                      row?.depth ? 'pl-6 pr-2.5' : 'px-2.5'
+                    } ${
                       selectedCategory === cat
                         ? 'bg-aco text-white font-medium'
                         : 'text-aco-medio hover:bg-chapa hover:text-aco'
@@ -320,12 +341,11 @@ export function CatalogClient({ initialEquipments, categories: categoryList, fix
                   >
                     <span className="truncate">{cat}</span>
                     <span className="text-[10px] opacity-60 ml-2">
-                      {cat === 'Todas'
-                        ? itemsInGroup.length
-                        : initialEquipments.filter((e) => e.category === cat).length}
+                      {cat === 'Todas' ? itemsInGroup.length : row?.cat.count ?? 0}
                     </span>
                   </button>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

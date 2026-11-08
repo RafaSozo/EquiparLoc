@@ -14,6 +14,8 @@ export interface Category {
   /** Nome exibido e gravado em cada equipamento (ex.: "Terraplenagem & Escavação") */
   name: string;
   group: CategoryGroup;
+  /** Categoria principal desta (vazio = é uma categoria principal). Só um nível de subcategoria. */
+  parentId?: string;
   description: string;
   image: string;
   /** Ordem de exibição (menor aparece primeiro) */

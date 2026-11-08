@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { getAllEquipments, getCategoriesWithCount } from '@/lib/db';
 import { CatalogClient } from '@/components/CatalogClient';
 import { SITE_URL, absoluteUrl, categoryPath, equipmentPath, jsonLdHtml, slugify } from '@/lib/site';
+import { namesInBranch, parentOf } from '@/lib/category-tree';
 
 // Dados editáveis pelo CRM: renderiza a cada acesso
 export const dynamic = 'force-dynamic';
@@ -39,7 +40,10 @@ export default async function CategoryPage({ params }: Props) {
   if (!category) notFound();
 
   const active = getAllEquipments().filter((eq) => eq.status === 'active');
-  const items = active.filter((eq) => eq.category === category.name);
+  // A principal mostra também os itens das subcategorias
+  const branch = namesInBranch(category.name, categories);
+  const items = active.filter((eq) => branch.has(eq.category));
+  const parent = parentOf(category, categories);
   const pageUrl = absoluteUrl(categoryPath(category.name));
 
   const jsonLd = {
@@ -67,7 +71,10 @@ export default async function CategoryPage({ params }: Props) {
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Início', item: SITE_URL },
           { '@type': 'ListItem', position: 2, name: 'Locação', item: absoluteUrl('/locacao') },
-          { '@type': 'ListItem', position: 3, name: category.name, item: pageUrl },
+          ...(parent
+            ? [{ '@type': 'ListItem', position: 3, name: parent.name, item: absoluteUrl(categoryPath(parent.name)) }]
+            : []),
+          { '@type': 'ListItem', position: parent ? 4 : 3, name: category.name, item: pageUrl },
         ],
       },
     ],

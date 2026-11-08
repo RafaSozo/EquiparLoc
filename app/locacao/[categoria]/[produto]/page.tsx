@@ -1,7 +1,8 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { notFound, permanentRedirect } from 'next/navigation';
-import { getEquipmentBySlug, getAllEquipments } from '@/lib/db';
+import { getEquipmentBySlug, getAllEquipments, getAllCategories } from '@/lib/db';
+import { parentOf } from '@/lib/category-tree';
 import { EquipmentDetailClient } from '@/components/EquipmentDetailClient';
 import { SITE_URL, absoluteUrl, jsonLdHtml, slugify, categoryPath, equipmentPath } from '@/lib/site';
 
@@ -75,6 +76,10 @@ export default async function EquipmentDetailPage({ params }: Props) {
     permanentRedirect(equipmentPath(equipment));
   }
 
+  const allCategories = getAllCategories();
+  const ownCategory = allCategories.find((c) => c.name === equipment.category);
+  const parentCategory = ownCategory ? parentOf(ownCategory, allCategories) : undefined;
+
   const all = getAllEquipments();
   const related = all
     .filter((eq) => eq.id !== equipment.id && eq.category === equipment.category && eq.status === 'active')
@@ -113,13 +118,13 @@ export default async function EquipmentDetailPage({ params }: Props) {
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Início', item: SITE_URL },
           { '@type': 'ListItem', position: 2, name: 'Locação', item: absoluteUrl('/locacao') },
-          {
+          ...[...(parentCategory ? [parentCategory.name] : []), equipment.category].map((name, i) => ({
             '@type': 'ListItem',
-            position: 3,
-            name: equipment.category,
-            item: absoluteUrl(categoryPath(equipment.category)),
-          },
-          { '@type': 'ListItem', position: 4, name: equipment.name, item: pageUrl },
+            position: 3 + i,
+            name,
+            item: absoluteUrl(categoryPath(name)),
+          })),
+          { '@type': 'ListItem', position: parentCategory ? 5 : 4, name: equipment.name, item: pageUrl },
         ],
       },
     ],
@@ -134,6 +139,7 @@ export default async function EquipmentDetailPage({ params }: Props) {
       <EquipmentDetailClient
         equipment={equipment}
         relatedEquipments={related}
+        parentCategoryName={parentCategory?.name}
       />
     </main>
   );

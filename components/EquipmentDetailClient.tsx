@@ -24,6 +24,8 @@ import {
 interface EquipmentDetailClientProps {
   equipment: Equipment;
   relatedEquipments: Equipment[];
+  /** Categoria principal, quando o item está numa subcategoria */
+  parentCategoryName?: string;
 }
 
 /** Fotos de catálogo com fundo branco: mostrar inteiras, sem cortar */
@@ -32,6 +34,7 @@ const isCutout = (src: string) => src.startsWith('/images/produtos/');
 export function EquipmentDetailClient({
   equipment,
   relatedEquipments,
+  parentCategoryName,
 }: EquipmentDetailClientProps) {
   const [selectedImage, setSelectedImage] = useState(equipment.image);
   const { openQuoteModal } = useQuoteModal();
@@ -54,6 +57,14 @@ export function EquipmentDetailClient({
         <ChevronRight className="w-3.5 h-3.5 text-aco-medio" />
         <Link href="/locacao" className="hover:text-aco transition-colors">Locação</Link>
         <ChevronRight className="w-3.5 h-3.5 text-aco-medio" />
+        {parentCategoryName && (
+          <>
+            <Link href={categoryPath(parentCategoryName)} className="hover:text-aco transition-colors truncate">
+              {parentCategoryName}
+            </Link>
+            <ChevronRight className="w-3.5 h-3.5 text-aco-medio" />
+          </>
+        )}
         <Link href={categoryPath(equipment.category)} className="hover:text-aco transition-colors truncate">
           {equipment.category}
         </Link>

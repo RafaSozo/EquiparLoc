@@ -2,24 +2,11 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
-import {
-  AlertTriangle,
-  Copy,
-  Edit,
-  ExternalLink,
-  ImageOff,
-  Loader2,
-  Plus,
-  Save,
-  Search,
-  Star,
-  Tags,
-  Trash2,
-  X,
-} from 'lucide-react';
-import type { CategoryGroup, CategoryWithCount, Equipment, TechnicalSpecs } from '@/lib/types';
+import { AlertTriangle, CheckCircle2, ExternalLink, ImageOff, Loader2, Plus, Save, Search, Star, Trash2, X } from 'lucide-react';
+import type { CategoryWithCount, Equipment, TechnicalSpecs } from '@/lib/types';
 import { CATEGORY_GROUP_LABELS } from '@/lib/types';
-import { equipmentPath } from '@/lib/site';
+import { equipmentPath, slugify } from '@/lib/site';
+import { CATEGORY_GROUPS, categoryLabel, categoryTree, namesInBranch } from '@/lib/category-tree';
 import { PhotoManager, isPlaceholderImage } from './PhotoManager';
 
 const FALLBACK_IMAGE = '/images/cat_escavadeira_1793461101073.jpg';
@@ -31,7 +18,7 @@ const VIEW_LABELS: Record<ViewFilter, string> = {
   publicados: 'No site',
   rascunhos: 'Rascunhos',
   destaques: 'Destaques',
-  incompletos: 'Incompletos',
+  incompletos: 'Para completar',
 };
 
 /** O que falta para o item ficar bom no site (e no Google). */
@@ -43,10 +30,20 @@ export function equipmentIssues(eq: Partial<Equipment>): string[] {
   return out;
 }
 
+const matchesView = (eq: Equipment, view: ViewFilter) => {
+  if (view === 'publicados') return eq.status === 'active';
+  if (view === 'rascunhos') return eq.status !== 'active';
+  if (view === 'destaques') return eq.isFeatured;
+  if (view === 'incompletos') return equipmentIssues(eq).length > 0;
+  return true;
+};
+
 interface CatalogManagerProps {
   equipments: Equipment[];
   onChange: (list: Equipment[]) => void;
   categories: CategoryWithCount[];
+  /** Avisa o painel quando uma categoria é criada de dentro do editor */
+  onCategoriesChange: (list: CategoryWithCount[]) => void;
   /** Administrador pode criar, duplicar e excluir; o operador só edita */
   isAdmin: boolean;
   showToast: (msg: string) => void;
@@ -64,10 +61,36 @@ async function putEquipment(id: string, data: Partial<Equipment>): Promise<Equip
   return body as Equipment;
 }
 
+/** Opções de categoria em árvore, para <select>: subcategorias recuadas embaixo da principal. */
+function CategoryOptions({ categories }: { categories: CategoryWithCount[] }) {
+  return (
+    <>
+      {CATEGORY_GROUPS.map((g) => {
+        const rows = categoryTree(categories, g);
+        if (!rows.length) return null;
+        return (
+          <optgroup key={g} label={CATEGORY_GROUP_LABELS[g]}>
+            {rows.map(({ cat, depth }) => (
+              <option key={cat.id} value={cat.name}>
+                {depth ? `   — ${cat.name}` : cat.name}
+              </option>
+            ))}
+          </optgroup>
+        );
+      })}
+    </>
+  );
+}
+
+/**
+ * Lista de produtos no jeito do WordPress ("Todos os posts"): filtros por situação em cima,
+ * filtro por categoria, e ações embaixo do nome de cada item.
+ */
 export function CatalogManager({
   equipments,
   onChange,
   categories,
+  onCategoriesChange,
   isAdmin,
   showToast,
   onManageCategories,
@@ -80,20 +103,16 @@ export function CatalogManager({
   const [editing, setEditing] = useState<Partial<Equipment> | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<Equipment | null>(null);
 
-  const countByCategory = useMemo(() => {
-    const acc: Record<string, number> = {};
-    equipments.forEach((eq) => (acc[eq.category] = (acc[eq.category] || 0) + 1));
-    return acc;
-  }, [equipments]);
+  const orphanCategories = useMemo(
+    () => Array.from(new Set(equipments.map((eq) => eq.category))).filter((name) => name && !categories.some((c) => c.name === name)),
+    [equipments, categories]
+  );
 
-  const orphanCategories = Object.keys(countByCategory).filter((name) => !categories.some((c) => c.name === name));
+  const branch = useMemo(() => (category ? namesInBranch(category, categories) : null), [category, categories]);
 
   const filtered = equipments.filter((eq) => {
-    if (category && eq.category !== category) return false;
-    if (view === 'publicados' && eq.status !== 'active') return false;
-    if (view === 'rascunhos' && eq.status === 'active') return false;
-    if (view === 'destaques' && !eq.isFeatured) return false;
-    if (view === 'incompletos' && equipmentIssues(eq).length === 0) return false;
+    if (branch && !branch.has(eq.category)) return false;
+    if (!matchesView(eq, view)) return false;
     const term = search.trim().toLowerCase();
     if (term) {
       const hay = `${eq.name} ${eq.code} ${eq.category} ${eq.summary}`.toLowerCase();
@@ -102,7 +121,6 @@ export function CatalogManager({
     return true;
   });
 
-  const incompleteCount = equipments.filter((eq) => equipmentIssues(eq).length > 0).length;
   const allVisibleSelected = filtered.length > 0 && filtered.every((eq) => selected.has(eq.id));
 
   const replace = (saved: Equipment[]) => {
@@ -150,7 +168,7 @@ export function CatalogManager({
 
   const openNew = () =>
     setEditing({
-      category: category || categories[0]?.name || '',
+      category: category || '',
       status: 'active',
       isFeatured: false,
       image: '',
@@ -188,337 +206,293 @@ export function CatalogManager({
     }
   };
 
-  const groups: CategoryGroup[] = ['maquinas', 'ferramentas'];
+  const clearFilters = () => {
+    setSearch('');
+    setView('todos');
+    setCategory('');
+  };
 
   return (
-    <div className="space-y-5 max-w-7xl">
-      {/* Cabeçalho */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">Catálogo</h2>
-          <p className="text-xs text-slate-500">
-            {equipments.length} itens · {equipments.filter((e) => e.status === 'active').length} no site
-            {incompleteCount > 0 && (
-              <>
-                {' · '}
-                <button type="button" onClick={() => setView('incompletos')} className="text-amber-700 font-semibold hover:underline">
-                  {incompleteCount} para completar
-                </button>
-              </>
-            )}
-          </p>
-        </div>
+    <div className="space-y-4 max-w-7xl">
+      {/* Cabeçalho, como "Posts  [Adicionar novo]" no WordPress */}
+      <div className="flex flex-wrap items-center gap-3">
+        <h2 className="text-xl font-bold text-slate-900">Produtos</h2>
         {isAdmin && (
           <button
             type="button"
             onClick={openNew}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-[#FF6500] hover:bg-[#E55B00] rounded-lg shadow-xs"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-[#C24E00] border border-[#FF6500] hover:bg-[#FF6500] hover:text-white rounded-lg transition-colors"
           >
             <Plus className="w-4 h-4" aria-hidden="true" />
-            Novo equipamento
+            Adicionar novo
           </button>
         )}
+        <button type="button" onClick={onManageCategories} className="ml-auto text-sm font-semibold text-slate-600 hover:text-[#FF6500] hover:underline">
+          Categorias e subcategorias
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[15rem_1fr] gap-5 items-start">
-        {/* Categorias */}
-        <aside className="bg-white border border-slate-200 rounded-xl shadow-xs lg:sticky lg:top-4">
-          <div className="lg:hidden p-3">
-            <label htmlFor="catalogo-categoria" className="block text-xs font-semibold text-slate-700 mb-1">
-              Categoria
-            </label>
-            <select
-              id="catalogo-categoria"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white"
-            >
-              <option value="">Todas ({equipments.length})</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.name}>
-                  {c.name} ({countByCategory[c.name] || 0})
-                </option>
-              ))}
-            </select>
-          </div>
-          <nav aria-label="Filtrar por categoria" className="hidden lg:block p-2 max-h-[70vh] overflow-y-auto">
-            <CategoryButton label="Todas" count={equipments.length} active={!category} onClick={() => setCategory('')} />
-            {groups.map((g) => {
-              const list = categories.filter((c) => c.group === g);
-              if (!list.length) return null;
-              return (
-                <div key={g} className="mt-3">
-                  <p className="px-2 pb-1 text-[11px] font-semibold text-slate-400">{CATEGORY_GROUP_LABELS[g]}</p>
-                  {list.map((c) => (
-                    <CategoryButton
-                      key={c.id}
-                      label={c.name}
-                      count={countByCategory[c.name] || 0}
-                      active={category === c.name}
-                      onClick={() => setCategory(c.name)}
-                    />
-                  ))}
-                </div>
-              );
-            })}
-            {orphanCategories.length > 0 && (
-              <div className="mt-3">
-                <p className="px-2 pb-1 text-[11px] font-semibold text-amber-600">Sem cadastro</p>
-                {orphanCategories.map((name) => (
-                  <CategoryButton
-                    key={name}
-                    label={name}
-                    count={countByCategory[name]}
-                    active={category === name}
-                    onClick={() => setCategory(name)}
-                  />
-                ))}
-              </div>
-            )}
-          </nav>
-          <div className="border-t border-slate-200 p-2">
-            <button
-              type="button"
-              onClick={onManageCategories}
-              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-lg"
-            >
-              <Tags className="w-3.5 h-3.5" aria-hidden="true" />
-              Editar categorias
-            </button>
-          </div>
-        </aside>
-
-        <div className="space-y-3 min-w-0">
-          {/* Busca e filtros */}
-          <div className="bg-white p-3 border border-slate-200 rounded-xl shadow-xs space-y-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" aria-hidden="true" />
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar por nome, código ou categoria"
-                aria-label="Buscar no catálogo"
-                className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
-              />
-            </div>
-            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Mostrar">
-              {(Object.keys(VIEW_LABELS) as ViewFilter[]).map((v) => (
-                <button
-                  key={v}
-                  type="button"
-                  aria-pressed={view === v}
-                  onClick={() => setView(v)}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-full border transition-colors ${
-                    view === v ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                  }`}
-                >
-                  {VIEW_LABELS[v]}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Ações em lote */}
-          {selected.size > 0 && (
-            <div className="sticky top-2 z-10 flex flex-wrap items-center gap-2 p-3 bg-slate-900 text-white rounded-xl shadow-lg">
-              <span className="text-xs font-semibold mr-1">{selected.size} selecionado(s)</span>
-              <select
-                aria-label="Mover selecionados para a categoria"
-                value=""
-                disabled={busy === 'bulk'}
-                onChange={(e) => e.target.value && bulkUpdate({ category: e.target.value }, 'movido(s) de categoria.')}
-                className="px-2 py-1.5 text-xs text-slate-900 bg-white rounded-lg"
-              >
-                <option value="">Mover para categoria...</option>
-                {categories.map((c) => (
-                  <option key={c.id} value={c.name}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-              <BulkButton disabled={busy === 'bulk'} onClick={() => bulkUpdate({ status: 'active' }, 'publicado(s) no site.')}>
-                Publicar
-              </BulkButton>
-              <BulkButton disabled={busy === 'bulk'} onClick={() => bulkUpdate({ status: 'draft' }, 'tirado(s) do site.')}>
-                Tirar do site
-              </BulkButton>
-              <BulkButton disabled={busy === 'bulk'} onClick={() => bulkUpdate({ isFeatured: true }, 'marcado(s) como destaque.')}>
-                Destacar
-              </BulkButton>
-              <BulkButton disabled={busy === 'bulk'} onClick={() => bulkUpdate({ isFeatured: false }, 'sem destaque.')}>
-                Tirar destaque
-              </BulkButton>
-              {busy === 'bulk' && <Loader2 className="w-4 h-4 animate-spin" aria-label="Salvando" />}
+      {/* Situação: Todos (n) | No site (n) | ... */}
+      <nav aria-label="Filtrar por situação" className="flex flex-wrap items-center gap-x-1 text-sm text-slate-300">
+        {(Object.keys(VIEW_LABELS) as ViewFilter[]).map((v, i) => {
+          const n = equipments.filter((eq) => matchesView(eq, v)).length;
+          if (v !== 'todos' && n === 0) return null;
+          return (
+            <React.Fragment key={v}>
+              {i > 0 && <span aria-hidden="true">|</span>}
               <button
                 type="button"
-                onClick={() => setSelected(new Set())}
-                className="ml-auto px-2 py-1.5 text-xs text-slate-300 hover:text-white"
+                aria-current={view === v ? 'true' : undefined}
+                onClick={() => setView(v)}
+                className={`px-1 ${view === v ? 'font-bold text-slate-900' : 'text-[#C24E00] hover:underline'} ${
+                  v === 'incompletos' && view !== v ? 'text-amber-700' : ''
+                }`}
               >
-                Limpar seleção
+                {VIEW_LABELS[v]} <span className="font-normal text-slate-500">({n})</span>
               </button>
-            </div>
+            </React.Fragment>
+          );
+        })}
+      </nav>
+
+      {/* Barra de filtros */}
+      <div className="flex flex-col sm:flex-row gap-2">
+        <label htmlFor="catalogo-categoria" className="sr-only">
+          Filtrar por categoria
+        </label>
+        <select
+          id="catalogo-categoria"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="sm:w-72 px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
+        >
+          <option value="">Todas as categorias</option>
+          <CategoryOptions categories={categories} />
+          {orphanCategories.length > 0 && (
+            <optgroup label="Sem cadastro">
+              {orphanCategories.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </optgroup>
           )}
+        </select>
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" aria-hidden="true" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar produto pelo nome ou código"
+            aria-label="Buscar produto"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
+          />
+        </div>
+      </div>
 
-          {/* Lista */}
-          <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
-            <div className="flex items-center gap-3 px-3 py-2 border-b border-slate-200 bg-slate-50 text-xs text-slate-600">
-              <input
-                type="checkbox"
-                aria-label="Selecionar todos da lista"
-                checked={allVisibleSelected}
-                onChange={() => {
-                  const next = new Set(selected);
-                  filtered.forEach((eq) => (allVisibleSelected ? next.delete(eq.id) : next.add(eq.id)));
-                  setSelected(next);
-                }}
-                className="w-4 h-4 rounded text-[#FF6500] focus:ring-[#FF6500]"
-              />
-              <span>
-                {filtered.length} {filtered.length === 1 ? 'item' : 'itens'}
-                {category && <> em <strong className="text-slate-800">{category}</strong></>}
-              </span>
-            </div>
+      {/* Ações em lote */}
+      {selected.size > 0 && (
+        <div className="sticky top-2 z-10 flex flex-wrap items-center gap-2 p-3 bg-slate-900 text-white rounded-xl shadow-lg">
+          <span className="text-xs font-semibold mr-1">{selected.size} selecionado(s)</span>
+          <select
+            aria-label="Mover selecionados para a categoria"
+            value=""
+            disabled={busy === 'bulk'}
+            onChange={(e) => e.target.value && bulkUpdate({ category: e.target.value }, 'movido(s) de categoria.')}
+            className="px-2 py-1.5 text-xs text-slate-900 bg-white rounded-lg"
+          >
+            <option value="">Mover para a categoria...</option>
+            <CategoryOptions categories={categories} />
+          </select>
+          <BulkButton disabled={busy === 'bulk'} onClick={() => bulkUpdate({ status: 'active' }, 'publicado(s) no site.')}>
+            Mostrar no site
+          </BulkButton>
+          <BulkButton disabled={busy === 'bulk'} onClick={() => bulkUpdate({ status: 'draft' }, 'tirado(s) do site.')}>
+            Tirar do site
+          </BulkButton>
+          <BulkButton disabled={busy === 'bulk'} onClick={() => bulkUpdate({ isFeatured: true }, 'marcado(s) como destaque.')}>
+            Destacar
+          </BulkButton>
+          <BulkButton disabled={busy === 'bulk'} onClick={() => bulkUpdate({ isFeatured: false }, 'sem destaque.')}>
+            Tirar destaque
+          </BulkButton>
+          {busy === 'bulk' && <Loader2 className="w-4 h-4 animate-spin" aria-label="Salvando" />}
+          <button type="button" onClick={() => setSelected(new Set())} className="ml-auto px-2 py-1.5 text-xs text-slate-300 hover:text-white">
+            Limpar seleção
+          </button>
+        </div>
+      )}
 
-            {filtered.length === 0 ? (
-              <div className="p-10 text-center space-y-3">
-                <p className="text-sm text-slate-600">Nenhum item com esses filtros.</p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearch('');
-                    setView('todos');
-                    setCategory('');
-                  }}
-                  className="text-xs font-semibold text-[#FF6500] hover:underline"
-                >
-                  Limpar filtros
-                </button>
-              </div>
-            ) : (
-              <ul className="divide-y divide-slate-100">
-                {filtered.map((eq) => {
-                  const issues = equipmentIssues(eq);
-                  const active = eq.status === 'active';
-                  return (
-                    <li key={eq.id} className={`flex items-center gap-3 px-3 py-2.5 ${selected.has(eq.id) ? 'bg-orange-50/60' : 'hover:bg-slate-50'}`}>
+      {/* Tabela */}
+      <div className="bg-white border border-slate-200 rounded-xl shadow-xs overflow-hidden">
+        {filtered.length === 0 ? (
+          <div className="p-10 text-center space-y-3">
+            <p className="text-sm text-slate-600">Nenhum produto com esses filtros.</p>
+            <button type="button" onClick={clearFilters} className="text-sm font-semibold text-[#C24E00] hover:underline">
+              Mostrar todos
+            </button>
+          </div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs font-semibold text-slate-600 bg-slate-50 border-b border-slate-200">
+                <th className="w-10 px-3 py-2.5">
+                  <input
+                    type="checkbox"
+                    aria-label="Selecionar todos da lista"
+                    checked={allVisibleSelected}
+                    onChange={() => {
+                      const next = new Set(selected);
+                      filtered.forEach((eq) => (allVisibleSelected ? next.delete(eq.id) : next.add(eq.id)));
+                      setSelected(next);
+                    }}
+                    className="w-4 h-4 rounded text-[#FF6500] focus:ring-[#FF6500]"
+                  />
+                </th>
+                <th className="px-2 py-2.5">
+                  Produto <span className="font-normal text-slate-400">({filtered.length})</span>
+                </th>
+                <th className="hidden md:table-cell px-2 py-2.5">Categoria</th>
+                <th className="hidden sm:table-cell px-2 py-2.5">No site</th>
+                <th className="hidden sm:table-cell w-14 px-2 py-2.5 text-center">
+                  <Star className="inline w-4 h-4" aria-label="Destaque" />
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filtered.map((eq) => {
+                const issues = equipmentIssues(eq);
+                const active = eq.status === 'active';
+                return (
+                  <tr key={eq.id} className={`align-top ${selected.has(eq.id) ? 'bg-orange-50/60' : 'hover:bg-slate-50'}`}>
+                    <td className="px-3 py-3">
                       <input
                         type="checkbox"
                         aria-label={`Selecionar ${eq.name}`}
                         checked={selected.has(eq.id)}
                         onChange={() => toggleSelect(eq.id)}
-                        className="w-4 h-4 rounded text-[#FF6500] focus:ring-[#FF6500] shrink-0"
+                        className="w-4 h-4 rounded text-[#FF6500] focus:ring-[#FF6500]"
                       />
+                    </td>
+                    <td className="px-2 py-3">
+                      <div className="flex items-start gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setEditing(eq)}
+                          className="relative w-16 h-12 rounded-md overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center"
+                          aria-label={`Editar ${eq.name}`}
+                        >
+                          {isPlaceholderImage(eq.image) ? (
+                            <ImageOff className="w-5 h-5 text-slate-400" aria-hidden="true" />
+                          ) : (
+                            <Image src={eq.image} alt="" fill unoptimized sizes="64px" className="object-cover" />
+                          )}
+                        </button>
+                        <div className="min-w-0">
+                          <button
+                            type="button"
+                            onClick={() => setEditing(eq)}
+                            className="text-left font-semibold text-slate-900 hover:text-[#C24E00]"
+                          >
+                            {eq.name}
+                          </button>
+                          {!active && <span className="ml-1.5 text-xs font-semibold text-slate-500">— Rascunho</span>}
+                          <p className="md:hidden text-xs text-slate-500">{categoryLabel(eq.category, categories)}</p>
+                          {issues.length > 0 && (
+                            <p className="mt-1 flex flex-wrap gap-1">
+                              {issues.map((i) => (
+                                <span
+                                  key={i}
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded"
+                                >
+                                  <AlertTriangle className="w-3 h-3" aria-hidden="true" />
+                                  {i}
+                                </span>
+                              ))}
+                            </p>
+                          )}
+                          {/* Ações embaixo do nome, como no WordPress */}
+                          <div className="mt-1 flex flex-wrap gap-x-1 text-xs text-slate-300">
+                            <RowAction onClick={() => setEditing(eq)}>Editar</RowAction>
+                            {isAdmin && (
+                              <>
+                                |<RowAction onClick={() => openDuplicate(eq)}>Duplicar</RowAction>
+                              </>
+                            )}
+                            {active && (
+                              <>
+                                |
+                                <a
+                                  href={equipmentPath(eq)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="px-0.5 font-semibold text-slate-600 hover:text-[#C24E00] hover:underline"
+                                >
+                                  Ver no site
+                                </a>
+                              </>
+                            )}
+                            {isAdmin && (
+                              <>
+                                |<RowAction danger onClick={() => setConfirmDelete(eq)}>Excluir</RowAction>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="hidden md:table-cell px-2 py-3">
                       <button
                         type="button"
-                        onClick={() => setEditing(eq)}
-                        className="relative w-20 h-14 rounded-md overflow-hidden bg-slate-100 shrink-0 flex items-center justify-center"
-                        aria-label={`Editar ${eq.name}`}
+                        onClick={() => setCategory(eq.category)}
+                        title="Mostrar só esta categoria"
+                        className="text-left text-xs text-[#C24E00] hover:underline"
                       >
-                        {isPlaceholderImage(eq.image) ? (
-                          <ImageOff className="w-5 h-5 text-slate-400" aria-hidden="true" />
-                        ) : (
-                          <Image src={eq.image} alt="" fill unoptimized sizes="80px" className="object-cover" />
-                        )}
+                        {categoryLabel(eq.category, categories)}
                       </button>
-                      <div className="min-w-0 flex-1">
-                        <button
-                          type="button"
-                          onClick={() => setEditing(eq)}
-                          className="block text-left text-sm font-semibold text-slate-900 hover:text-[#FF6500] truncate max-w-full"
-                        >
-                          {eq.name}
-                        </button>
-                        <p className="text-xs text-slate-500 truncate">
-                          <span className="font-mono">{eq.code}</span> · {eq.category}
-                        </p>
-                        {issues.length > 0 && (
-                          <p className="mt-0.5 flex flex-wrap gap-1">
-                            {issues.map((i) => (
-                              <span key={i} className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 rounded">
-                                <AlertTriangle className="w-3 h-3" aria-hidden="true" />
-                                {i}
-                              </span>
-                            ))}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="hidden sm:flex items-center gap-1 shrink-0">
-                        <Switch
-                          checked={active}
-                          disabled={busy === eq.id}
-                          label={active ? 'No site' : 'Rascunho'}
-                          onChange={() =>
-                            quickUpdate(eq, { status: active ? 'draft' : 'active' }, active ? `"${eq.name}" saiu do site.` : `"${eq.name}" está no site.`)
-                          }
-                        />
-                        <button
-                          type="button"
-                          disabled={busy === eq.id}
-                          onClick={() =>
-                            quickUpdate(eq, { isFeatured: !eq.isFeatured }, eq.isFeatured ? 'Destaque removido.' : 'Marcado como destaque na página inicial.')
-                          }
-                          aria-pressed={eq.isFeatured}
-                          title={eq.isFeatured ? 'Destaque na página inicial (clique para tirar)' : 'Destacar na página inicial'}
-                          aria-label={`Destaque: ${eq.name}`}
-                          className={`p-2 rounded-lg ${eq.isFeatured ? 'text-amber-500 hover:bg-amber-50' : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'}`}
-                        >
-                          <Star className={`w-4 h-4 ${eq.isFeatured ? 'fill-current' : ''}`} />
-                        </button>
-                      </div>
-
-                      <div className="flex items-center gap-0.5 shrink-0">
-                        <button
-                          type="button"
-                          onClick={() => setEditing(eq)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 border border-slate-200 hover:border-slate-400 rounded-lg"
-                        >
-                          <Edit className="w-3.5 h-3.5" aria-hidden="true" />
-                          <span className="hidden md:inline">Editar</span>
-                        </button>
-                        {isAdmin && (
-                          <IconButton label="Duplicar" onClick={() => openDuplicate(eq)}>
-                            <Copy className="w-4 h-4" />
-                          </IconButton>
-                        )}
-                        {active && (
-                          <a
-                            href={equipmentPath(eq)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            title="Ver no site"
-                            aria-label={`Ver ${eq.name} no site`}
-                            className="p-2 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
-                        {isAdmin && (
-                          <IconButton label="Excluir" danger onClick={() => setConfirmDelete(eq)}>
-                            <Trash2 className="w-4 h-4" />
-                          </IconButton>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-        </div>
+                    </td>
+                    <td className="hidden sm:table-cell px-2 py-3">
+                      <Switch
+                        checked={active}
+                        disabled={busy === eq.id}
+                        label={active ? 'Sim' : 'Não'}
+                        onChange={() =>
+                          quickUpdate(eq, { status: active ? 'draft' : 'active' }, active ? `"${eq.name}" saiu do site.` : `"${eq.name}" está no site.`)
+                        }
+                      />
+                    </td>
+                    <td className="hidden sm:table-cell px-2 py-3 text-center">
+                      <button
+                        type="button"
+                        disabled={busy === eq.id}
+                        onClick={() =>
+                          quickUpdate(eq, { isFeatured: !eq.isFeatured }, eq.isFeatured ? 'Destaque removido.' : 'Marcado como destaque na página inicial.')
+                        }
+                        aria-pressed={eq.isFeatured}
+                        title={eq.isFeatured ? 'Destaque na página inicial (clique para tirar)' : 'Destacar na página inicial'}
+                        aria-label={`Destaque: ${eq.name}`}
+                        className={`p-1.5 rounded-lg ${eq.isFeatured ? 'text-amber-500 hover:bg-amber-50' : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'}`}
+                      >
+                        <Star className={`w-4 h-4 ${eq.isFeatured ? 'fill-current' : ''}`} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
 
       {editing && (
         <EquipmentEditor
           initial={editing}
           categories={categories}
+          onCategoriesChange={onCategoriesChange}
+          canCreateCategory={isAdmin}
           onClose={() => setEditing(null)}
           onSaved={handleSaved}
-          onManageCategories={() => {
-            setEditing(null);
-            onManageCategories();
-          }}
         />
       )}
 
@@ -560,19 +534,20 @@ export function CatalogManager({
   );
 }
 
-/* ---------- Editor completo ---------- */
+/* ---------- Editor completo (como a tela de editar post do WordPress) ---------- */
 
 type ExtraRow = { key: string; value: string };
 
 interface EquipmentEditorProps {
   initial: Partial<Equipment>;
   categories: CategoryWithCount[];
+  onCategoriesChange: (list: CategoryWithCount[]) => void;
+  canCreateCategory: boolean;
   onClose: () => void;
   onSaved: (saved: Equipment, isNew: boolean) => void;
-  onManageCategories: () => void;
 }
 
-function EquipmentEditor({ initial, categories, onClose, onSaved, onManageCategories }: EquipmentEditorProps) {
+function EquipmentEditor({ initial, categories, onCategoriesChange, canCreateCategory, onClose, onSaved }: EquipmentEditorProps) {
   const isNew = !initial.id;
   const [draft, setDraft] = useState<Partial<Equipment>>(initial);
   const [photos, setPhotos] = useState<string[]>(() =>
@@ -584,6 +559,7 @@ function EquipmentEditor({ initial, categories, onClose, onSaved, onManageCatego
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editSlug, setEditSlug] = useState(false);
   const [initialSnapshot] = useState(() => JSON.stringify({ draft: initial, photos, main, extras }));
 
   const dirty = JSON.stringify({ draft, photos, main, extras }) !== initialSnapshot;
@@ -613,8 +589,8 @@ function EquipmentEditor({ initial, categories, onClose, onSaved, onManageCatego
 
   const handleSave = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!draft.name?.trim()) return setError('Informe o nome do equipamento.');
-    if (!draft.category) return setError('Escolha a categoria.');
+    if (!draft.name?.trim()) return setError('Escreva o nome do produto.');
+    if (!draft.category) return setError('Marque uma categoria na caixa "Categoria".');
     setSaving(true);
     setError(null);
 
@@ -660,6 +636,8 @@ function EquipmentEditor({ initial, categories, onClose, onSaved, onManageCatego
 
   const issues = equipmentIssues({ ...draft, image: main || photos[0] || '' });
   const summaryLen = (draft.summary || '').length;
+  const previewSlug = draft.slug || (draft.name ? slugify(draft.name) : '');
+  const saveLabel = isNew ? (draft.status === 'active' ? 'Publicar' : 'Salvar rascunho') : 'Atualizar';
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="editor-titulo" className="fixed inset-0 z-50 bg-slate-100 flex flex-col">
@@ -668,28 +646,17 @@ function EquipmentEditor({ initial, categories, onClose, onSaved, onManageCatego
         <button
           type="button"
           onClick={requestClose}
-          className="p-2 -ml-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
-          aria-label="Fechar editor"
+          className="inline-flex items-center gap-1 p-2 -ml-2 text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg"
         >
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5" aria-hidden="true" />
+          <span className="hidden sm:inline">Voltar à lista</span>
         </button>
         <div className="min-w-0 flex-1">
           <h2 id="editor-titulo" className="text-base font-bold text-slate-900 truncate">
-            {isNew ? 'Novo equipamento' : draft.name || 'Editar equipamento'}
+            {isNew ? 'Adicionar novo produto' : 'Editar produto'}
           </h2>
-          <p className="text-xs text-slate-500">{dirty ? 'Alterações não salvas' : isNew ? 'Preencha e salve' : 'Tudo salvo'}</p>
+          <p className="text-xs text-slate-500">{dirty ? 'Alterações não salvas' : isNew ? 'Preencha e publique' : 'Tudo salvo'}</p>
         </div>
-        {!isNew && initial.status === 'active' && initial.slug && (
-          <a
-            href={equipmentPath(initial as Equipment)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-lg"
-          >
-            <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
-            Ver no site
-          </a>
-        )}
         <button
           type="button"
           onClick={() => handleSave()}
@@ -697,21 +664,67 @@ function EquipmentEditor({ initial, categories, onClose, onSaved, onManageCatego
           className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-[#FF6500] hover:bg-[#E55B00] rounded-lg disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Save className="w-4 h-4" aria-hidden="true" />}
-          {isNew ? 'Cadastrar' : 'Salvar'}
+          {saveLabel}
         </button>
       </header>
 
       <form onSubmit={handleSave} className="flex-1 overflow-y-auto">
-        <div className="max-w-6xl mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="max-w-7xl mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-[1fr_20rem] gap-5 items-start">
           {error && (
-            <p role="alert" className="lg:col-span-12 text-sm text-rose-700 bg-rose-50 border border-rose-200 rounded-lg p-3">
+            <p role="alert" className="lg:col-span-2 text-sm text-rose-700 bg-rose-50 border border-rose-200 rounded-lg p-3">
               {error}
             </p>
           )}
 
-          {/* Coluna das fotos e situação */}
-          <div className="lg:col-span-5 space-y-5">
-            <Panel title="Fotos" hint="A foto com a estrela é a principal: aparece nos cards e no topo da página.">
+          {/* Coluna principal: conteúdo */}
+          <div className="space-y-5 min-w-0">
+            <div>
+              <label htmlFor="eq-nome" className="sr-only">
+                Nome do produto
+              </label>
+              <input
+                id="eq-nome"
+                required
+                autoFocus={isNew}
+                value={draft.name || ''}
+                onChange={(e) => set('name', e.target.value)}
+                placeholder="Nome do produto (ex.: Betoneira 400 litros)"
+                className="w-full px-4 py-3 text-xl font-semibold bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FF6500] focus:border-transparent"
+              />
+              {/* Link permanente, como embaixo do título no WordPress */}
+              <div className="mt-1.5 flex flex-wrap items-center gap-1 text-xs text-slate-500">
+                <span>Link:</span>
+                {editSlug ? (
+                  <>
+                    <span className="font-mono">/locacao/.../</span>
+                    <input
+                      aria-label="Endereço da página"
+                      value={draft.slug || ''}
+                      onChange={(e) => set('slug', e.target.value)}
+                      placeholder={previewSlug || 'aluguel-betoneira-400-litros'}
+                      className="w-72 max-w-full px-2 py-1 text-xs font-mono border border-slate-300 rounded"
+                    />
+                    <button type="button" onClick={() => setEditSlug(false)} className="font-semibold text-[#C24E00] hover:underline">
+                      OK
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <span className="font-mono text-slate-600 break-all">
+                      /locacao/{draft.category ? slugify(draft.category) : '...'}/{previewSlug || '...'}
+                    </span>
+                    <button type="button" onClick={() => setEditSlug(true)} className="font-semibold text-[#C24E00] hover:underline">
+                      Editar
+                    </button>
+                  </>
+                )}
+              </div>
+              {!isNew && draft.slug !== initial.slug && (
+                <p className="mt-1 text-[11px] text-amber-700">Mudar o link quebra os endereços já compartilhados.</p>
+              )}
+            </div>
+
+            <Panel title="Fotos" hint="Arraste várias de uma vez. A foto com a estrela é a principal: aparece nos cards e no topo da página.">
               <PhotoManager
                 photos={photos}
                 main={main}
@@ -723,130 +736,28 @@ function EquipmentEditor({ initial, categories, onClose, onSaved, onManageCatego
               />
             </Panel>
 
-            <Panel title="Situação">
-              <div className="space-y-3">
-                <ToggleRow
-                  label="Mostrar no site"
-                  hint={draft.status === 'active' ? 'Visível para os clientes.' : 'Rascunho: só aparece aqui no painel.'}
-                  checked={draft.status === 'active'}
-                  onChange={(v) => set('status', v ? 'active' : 'draft')}
-                />
-                <ToggleRow
-                  label="Destaque na página inicial"
-                  hint="Aparece na vitrine e no quadro do pátio."
-                  checked={Boolean(draft.isFeatured)}
-                  onChange={(v) => set('isFeatured', v)}
-                />
-                <Field label="Disponibilidade" htmlFor="eq-prazo">
-                  <input
-                    id="eq-prazo"
-                    list="prazos-sugeridos"
-                    value={draft.deliveryTime || ''}
-                    onChange={(e) => set('deliveryTime', e.target.value)}
-                    placeholder="Ex.: Pronta entrega"
-                    className={inputCls}
-                  />
-                  <datalist id="prazos-sugeridos">
-                    <option value="Pronta entrega" />
-                    <option value="Entrega em 24 horas" />
-                    <option value="Entrega em 48 horas" />
-                    <option value="Sob consulta" />
-                  </datalist>
-                </Field>
-              </div>
+            <Panel title="Descrição" hint="Explique o que o produto faz, onde é usado e o que vem junto na locação.">
+              <textarea
+                aria-label="Descrição"
+                rows={8}
+                value={draft.description || ''}
+                onChange={(e) => set('description', e.target.value)}
+                placeholder="Ex.: Betoneira de 400 litros, ideal para concretagem de lajes e pisos..."
+                className={inputCls}
+              />
             </Panel>
 
-            {issues.length > 0 && (
-              <div className="p-3 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl">
-                <p className="font-semibold mb-1">Para ficar completo:</p>
-                <ul className="list-disc pl-4 space-y-0.5">
-                  {issues.map((i) => (
-                    <li key={i}>{i === 'Descrição curta' ? 'Escreva uma descrição com pelo menos 80 letras' : i}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-
-          {/* Coluna dos textos */}
-          <div className="lg:col-span-7 space-y-5">
-            <Panel title="Informações">
-              <div className="space-y-4">
-                <Field label="Nome do equipamento *" htmlFor="eq-nome">
-                  <input
-                    id="eq-nome"
-                    required
-                    value={draft.name || ''}
-                    onChange={(e) => set('name', e.target.value)}
-                    placeholder="Ex.: Betoneira 400 litros Menegotti"
-                    className={inputCls}
-                  />
-                </Field>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Field label="Categoria *" htmlFor="eq-categoria">
-                    <select
-                      id="eq-categoria"
-                      value={draft.category || ''}
-                      onChange={(e) => set('category', e.target.value)}
-                      className={`${inputCls} bg-white`}
-                    >
-                      <option value="" disabled>
-                        Escolha...
-                      </option>
-                      {(['maquinas', 'ferramentas'] as CategoryGroup[]).map((g) => {
-                        const list = categories.filter((c) => c.group === g);
-                        if (!list.length) return null;
-                        return (
-                          <optgroup key={g} label={CATEGORY_GROUP_LABELS[g]}>
-                            {list.map((c) => (
-                              <option key={c.id} value={c.name}>
-                                {c.name}
-                              </option>
-                            ))}
-                          </optgroup>
-                        );
-                      })}
-                      {draft.category && !categories.some((c) => c.name === draft.category) && (
-                        <option value={draft.category}>{draft.category} (sem cadastro)</option>
-                      )}
-                    </select>
-                    <button type="button" onClick={onManageCategories} className="mt-1 text-[11px] font-semibold text-[#FF6500] hover:underline">
-                      Criar ou editar categorias
-                    </button>
-                  </Field>
-                  <Field label="Código interno" htmlFor="eq-codigo" hint={isNew ? 'Em branco: o sistema cria.' : undefined}>
-                    <input
-                      id="eq-codigo"
-                      value={draft.code || ''}
-                      onChange={(e) => set('code', e.target.value)}
-                      placeholder="Ex.: EQ-BET-400"
-                      className={`${inputCls} font-mono`}
-                    />
-                  </Field>
-                </div>
-                <Field label="Resumo (aparece no card)" htmlFor="eq-resumo">
-                  <textarea
-                    id="eq-resumo"
-                    rows={2}
-                    maxLength={200}
-                    value={draft.summary || ''}
-                    onChange={(e) => set('summary', e.target.value)}
-                    placeholder="Uma frase com o principal: capacidade, motor, para que serve."
-                    className={inputCls}
-                  />
-                  <p className={`text-[11px] text-right ${summaryLen > 160 ? 'text-amber-700' : 'text-slate-400'}`}>{summaryLen}/160</p>
-                </Field>
-                <Field label="Descrição completa" htmlFor="eq-descricao">
-                  <textarea
-                    id="eq-descricao"
-                    rows={6}
-                    value={draft.description || ''}
-                    onChange={(e) => set('description', e.target.value)}
-                    placeholder="Explique o que o equipamento faz, onde é usado e o que vem junto na locação."
-                    className={inputCls}
-                  />
-                </Field>
-              </div>
+            <Panel title="Resumo" hint="Uma frase curta que aparece no card do produto e no Google.">
+              <textarea
+                aria-label="Resumo"
+                rows={2}
+                maxLength={200}
+                value={draft.summary || ''}
+                onChange={(e) => set('summary', e.target.value)}
+                placeholder="Ex.: Betoneira 400 L com motor elétrico 2 CV, para obras de médio porte."
+                className={inputCls}
+              />
+              <p className={`text-[11px] text-right ${summaryLen > 160 ? 'text-amber-700' : 'text-slate-400'}`}>{summaryLen}/160</p>
             </Panel>
 
             <Panel title="Ficha técnica" hint="Deixe em branco o que não se aplica.">
@@ -916,7 +827,7 @@ function EquipmentEditor({ initial, categories, onClose, onSaved, onManageCatego
               </div>
             </Panel>
 
-            <Panel title="Diferenciais" hint="Um por linha. Aparecem como lista na página do equipamento.">
+            <Panel title="Diferenciais" hint="Um por linha. Aparecem como lista na página do produto.">
               <ListEditor
                 items={draft.features || []}
                 onChange={(v) => set('features', v)}
@@ -925,7 +836,7 @@ function EquipmentEditor({ initial, categories, onClose, onSaved, onManageCatego
               />
             </Panel>
 
-            <Panel title="Onde usar" hint="Tipos de obra ou serviço em que o equipamento é usado.">
+            <Panel title="Onde usar" hint="Tipos de obra ou serviço em que o produto é usado.">
               <ListEditor
                 items={draft.applications || []}
                 onChange={(v) => set('applications', v)}
@@ -944,44 +855,315 @@ function EquipmentEditor({ initial, categories, onClose, onSaved, onManageCatego
                 className={inputCls}
               />
             </Panel>
-
-            <Panel title="Endereço da página" hint="Em branco, o sistema cria a partir do nome.">
-              <div className="flex items-stretch">
-                <span className="hidden sm:flex items-center px-3 text-xs text-slate-500 bg-slate-100 border border-r-0 border-slate-300 rounded-l-lg whitespace-nowrap">
-                  /locacao/.../
-                </span>
-                <input
-                  aria-label="Endereço da página"
-                  value={draft.slug || ''}
-                  onChange={(e) => set('slug', e.target.value)}
-                  placeholder="aluguel-betoneira-400-litros"
-                  className={`${inputCls} sm:rounded-l-none font-mono`}
-                />
-              </div>
-              {!isNew && draft.slug !== initial.slug && (
-                <p className="mt-1 text-[11px] text-amber-700">
-                  Mudar o endereço quebra links já compartilhados e o Google demora para atualizar.
-                </p>
-              )}
-            </Panel>
-
-            <div className="flex justify-end gap-2 pb-6">
-              <button type="button" onClick={requestClose} className="px-4 py-2.5 text-sm font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50">
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                disabled={saving}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-[#FF6500] hover:bg-[#E55B00] rounded-lg disabled:opacity-50"
-              >
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" /> : <Save className="w-4 h-4" aria-hidden="true" />}
-                {isNew ? 'Cadastrar equipamento' : 'Salvar alterações'}
-              </button>
-            </div>
           </div>
+
+          {/* Coluna lateral: Publicar, Categoria, Checklist */}
+          <aside className="space-y-5 lg:sticky lg:top-0">
+            <SideBox title="Publicar">
+              <fieldset className="space-y-1.5">
+                <legend className="text-xs font-semibold text-slate-700 mb-1">Situação</legend>
+                <RadioRow
+                  name="eq-status"
+                  checked={draft.status === 'active'}
+                  onChange={() => set('status', 'active')}
+                  label="Publicado no site"
+                  hint="Os clientes veem"
+                />
+                <RadioRow
+                  name="eq-status"
+                  checked={draft.status !== 'active'}
+                  onChange={() => set('status', 'draft')}
+                  label="Rascunho"
+                  hint="Só aparece aqui no painel"
+                />
+              </fieldset>
+              <label className="mt-3 flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={Boolean(draft.isFeatured)}
+                  onChange={(e) => set('isFeatured', e.target.checked)}
+                  className="mt-0.5 w-4 h-4 rounded text-[#FF6500] focus:ring-[#FF6500]"
+                />
+                <span className="text-sm text-slate-800">
+                  Destaque na página inicial
+                  <span className="block text-xs text-slate-500">Aparece na vitrine de destaques.</span>
+                </span>
+              </label>
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <Field label="Disponibilidade" htmlFor="eq-prazo">
+                  <input
+                    id="eq-prazo"
+                    list="prazos-sugeridos"
+                    value={draft.deliveryTime || ''}
+                    onChange={(e) => set('deliveryTime', e.target.value)}
+                    placeholder="Pronta entrega"
+                    className={inputCls}
+                  />
+                  <datalist id="prazos-sugeridos">
+                    <option value="Pronta entrega" />
+                    <option value="Entrega em 24 horas" />
+                    <option value="Entrega em 48 horas" />
+                    <option value="Sob consulta" />
+                  </datalist>
+                </Field>
+                <Field label="Código" htmlFor="eq-codigo" hint={isNew ? 'Vazio: automático' : undefined}>
+                  <input
+                    id="eq-codigo"
+                    value={draft.code || ''}
+                    onChange={(e) => set('code', e.target.value)}
+                    placeholder="EQ-BET-400"
+                    className={`${inputCls} font-mono`}
+                  />
+                </Field>
+              </div>
+              <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between gap-2">
+                {!isNew && initial.status === 'active' && initial.slug ? (
+                  <a
+                    href={equipmentPath(initial as Equipment)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-[#C24E00] hover:underline"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+                    Ver no site
+                  </a>
+                ) : (
+                  <span />
+                )}
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-[#FF6500] hover:bg-[#E55B00] rounded-lg disabled:opacity-50"
+                >
+                  {saving && <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />}
+                  {saveLabel}
+                </button>
+              </div>
+            </SideBox>
+
+            <SideBox title="Categoria">
+              <CategoryPicker
+                value={draft.category || ''}
+                onChange={(name) => set('category', name)}
+                categories={categories}
+                onCategoriesChange={onCategoriesChange}
+                canCreate={canCreateCategory}
+              />
+            </SideBox>
+
+            <SideBox title="Para ficar completo">
+              <ul className="space-y-1.5 text-xs">
+                {[
+                  ['Sem foto própria', 'Foto do produto'],
+                  ['Sem resumo', 'Resumo'],
+                  ['Descrição curta', 'Descrição com 80 letras ou mais'],
+                ].map(([key, label]) => {
+                  const ok = !issues.includes(key);
+                  return (
+                    <li key={key} className={`flex items-center gap-2 ${ok ? 'text-emerald-700' : 'text-amber-800'}`}>
+                      {ok ? <CheckCircle2 className="w-4 h-4" aria-hidden="true" /> : <AlertTriangle className="w-4 h-4" aria-hidden="true" />}
+                      {label}
+                      <span className="sr-only">{ok ? '(feito)' : '(falta)'}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </SideBox>
+          </aside>
         </div>
       </form>
     </div>
+  );
+}
+
+/** Caixa "Categoria" do editor: lista em árvore com uma opção marcada e "+ Adicionar nova categoria". */
+function CategoryPicker({
+  value,
+  onChange,
+  categories,
+  onCategoriesChange,
+  canCreate,
+}: {
+  value: string;
+  onChange: (name: string) => void;
+  categories: CategoryWithCount[];
+  onCategoriesChange: (list: CategoryWithCount[]) => void;
+  canCreate: boolean;
+}) {
+  const [adding, setAdding] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newParent, setNewParent] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const unknown = value && !categories.some((c) => c.name === value);
+
+  const create = async () => {
+    if (!newName.trim()) return setError('Escreva o nome da categoria.');
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/categorias', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newName.trim(), parentId: newParent, group: 'maquinas', description: '', image: '' }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Não foi possível criar a categoria.');
+      const list = await fetch('/api/categorias').then((r) => r.json());
+      onCategoriesChange(list.categories);
+      onChange(data.name);
+      setNewName('');
+      setNewParent('');
+      setAdding(false);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Não foi possível criar a categoria.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div>
+      <div role="radiogroup" aria-label="Categoria do produto" className="max-h-72 overflow-y-auto -mx-1 px-1 space-y-3">
+        {CATEGORY_GROUPS.map((g) => {
+          const rows = categoryTree(categories, g);
+          if (!rows.length) return null;
+          return (
+            <div key={g}>
+              <p className="text-[11px] font-semibold text-slate-400 mb-1">{CATEGORY_GROUP_LABELS[g]}</p>
+              <ul className="space-y-0.5">
+                {rows.map(({ cat, depth }) => (
+                  <li key={cat.id}>
+                    <label
+                      className={`flex items-center gap-2 py-1 pr-1 rounded cursor-pointer hover:bg-slate-50 text-sm ${depth ? 'pl-6' : 'pl-1'} ${
+                        value === cat.name ? 'font-semibold text-slate-900' : 'text-slate-700'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="eq-categoria"
+                        checked={value === cat.name}
+                        onChange={() => onChange(cat.name)}
+                        className="text-[#FF6500] focus:ring-[#FF6500]"
+                      />
+                      {cat.name}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+        {unknown && (
+          <label className="flex items-center gap-2 py-1 pl-1 text-sm text-amber-800">
+            <input type="radio" name="eq-categoria" checked readOnly />
+            {value} (sem cadastro)
+          </label>
+        )}
+      </div>
+
+      {canCreate &&
+        (adding ? (
+          <div className="mt-3 pt-3 border-t border-slate-200 space-y-2">
+            <label htmlFor="nova-cat-nome" className="block text-xs font-semibold text-slate-700">
+              Nome da nova categoria
+            </label>
+            <input
+              id="nova-cat-nome"
+              value={newName}
+              autoFocus
+              onChange={(e) => setNewName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  create();
+                }
+              }}
+              className={inputCls}
+            />
+            <label htmlFor="nova-cat-pai" className="block text-xs font-semibold text-slate-700">
+              Fica dentro de
+            </label>
+            <select id="nova-cat-pai" value={newParent} onChange={(e) => setNewParent(e.target.value)} className={`${inputCls} bg-white`}>
+              <option value="">Nenhuma: é uma categoria principal</option>
+              {CATEGORY_GROUPS.map((g) => {
+                const tops = categoryTree(categories, g).filter((r) => r.depth === 0);
+                if (!tops.length) return null;
+                return (
+                  <optgroup key={g} label={CATEGORY_GROUP_LABELS[g]}>
+                    {tops.map(({ cat }) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                );
+              })}
+            </select>
+            {error && (
+              <p role="alert" className="text-xs text-rose-700">
+                {error}
+              </p>
+            )}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={create}
+                disabled={saving}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-800 bg-white border border-slate-300 hover:border-slate-500 rounded-lg disabled:opacity-50"
+              >
+                {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden="true" />}
+                Adicionar categoria
+              </button>
+              <button type="button" onClick={() => setAdding(false)} className="px-2 text-xs text-slate-500 hover:text-slate-900">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setAdding(true)}
+            className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[#C24E00] hover:underline"
+          >
+            <Plus className="w-3.5 h-3.5" aria-hidden="true" />
+            Adicionar nova categoria
+          </button>
+        ))}
+    </div>
+  );
+}
+
+function SideBox({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="bg-white border border-slate-200 rounded-xl shadow-xs">
+      <h3 className="px-4 py-2.5 text-sm font-bold text-slate-900 border-b border-slate-200">{title}</h3>
+      <div className="p-4">{children}</div>
+    </section>
+  );
+}
+
+function RadioRow({ name, checked, onChange, label, hint }: { name: string; checked: boolean; onChange: () => void; label: string; hint: string }) {
+  return (
+    <label className="flex items-start gap-2 cursor-pointer">
+      <input type="radio" name={name} checked={checked} onChange={onChange} className="mt-1 text-[#FF6500] focus:ring-[#FF6500]" />
+      <span className="text-sm text-slate-800">
+        {label}
+        <span className="block text-xs text-slate-500">{hint}</span>
+      </span>
+    </label>
+  );
+}
+
+function RowAction({ onClick, danger, children }: { onClick: () => void; danger?: boolean; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`px-0.5 font-semibold hover:underline ${danger ? 'text-rose-600 hover:text-rose-800' : 'text-slate-600 hover:text-[#C24E00]'}`}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -1012,21 +1194,6 @@ function Field({ label, htmlFor, hint, children }: { label: string; htmlFor: str
   );
 }
 
-function ToggleRow({ label, hint, checked, onChange }: { label: string; hint: string; checked: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <label className="flex items-start justify-between gap-3 cursor-pointer">
-      <span>
-        <span className="block text-sm font-semibold text-slate-800">{label}</span>
-        <span className="block text-xs text-slate-500">{hint}</span>
-      </span>
-      <input type="checkbox" role="switch" checked={checked} onChange={(e) => onChange(e.target.checked)} className="peer sr-only" />
-      <span
-        aria-hidden="true"
-        className="relative mt-0.5 w-10 h-6 shrink-0 rounded-full bg-slate-300 peer-checked:bg-emerald-600 peer-focus-visible:ring-2 peer-focus-visible:ring-[#FF6500] transition-colors after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:rounded-full after:bg-white after:shadow after:transition-transform peer-checked:after:translate-x-4"
-      />
-    </label>
-  );
-}
 
 function Switch({ checked, disabled, label, onChange }: { checked: boolean; disabled?: boolean; label: string; onChange: () => void }) {
   return (
@@ -1110,18 +1277,3 @@ function BulkButton({ disabled, onClick, children }: { disabled?: boolean; onCli
   );
 }
 
-function CategoryButton({ label, count, active, onClick }: { label: string; count: number; active: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-current={active ? 'true' : undefined}
-      className={`w-full flex items-center justify-between gap-2 px-2 py-1.5 text-left text-xs rounded-md ${
-        active ? 'bg-[#FF6500] text-white font-semibold' : 'text-slate-700 hover:bg-slate-100'
-      }`}
-    >
-      <span className="truncate">{label}</span>
-      <span className={`shrink-0 tabular-nums ${active ? 'text-white/80' : 'text-slate-400'}`}>{count}</span>
-    </button>
-  );
-}

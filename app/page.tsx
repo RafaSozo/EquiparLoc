@@ -4,6 +4,7 @@ import { toPublicPost, isPublished } from '@/lib/public-data';
 import { Hero } from '@/components/Hero';
 import { SearchFilterBar } from '@/components/SearchFilterBar';
 import { CategoryGrid } from '@/components/CategoryGrid';
+import { isTopLevel, parentOf } from '@/lib/category-tree';
 import { FeaturedEquipments } from '@/components/FeaturedEquipments';
 import { WhyChooseUs } from '@/components/WhyChooseUs';
 import { HowItWorks } from '@/components/HowItWorks';
@@ -23,8 +24,11 @@ export default async function HomePage() {
   const allEquipments = getAllEquipments();
   const active = allEquipments.filter((eq) => eq.status === 'active');
   const featured = active.filter((eq) => eq.isFeatured);
-  const categories = getCategoriesWithCount(true);
+  const allCategories = getCategoriesWithCount(true);
+  // Na página inicial aparecem só as categorias principais
+  const categories = allCategories.filter((c) => isTopLevel(c, allCategories));
   const categoryNames = categories.map((c) => c.name);
+  const topCategoryOf = Object.fromEntries(allCategories.map((c) => [c.name, parentOf(c, allCategories)?.name || c.name]));
   // Versão pública: sem e-mails de comentaristas nem comentários pendentes
   const settings = getCompanySettings();
   const blogPosts = getAllBlogPosts().filter(isPublished).map(toPublicPost);
@@ -41,7 +45,7 @@ export default async function HomePage() {
       <CategoryGrid categories={categories} />
 
       {/* Equipamentos em Destaque */}
-      <FeaturedEquipments equipments={featured} categoryNames={categoryNames} />
+      <FeaturedEquipments equipments={featured} categoryNames={categoryNames} topCategoryOf={topCategoryOf} />
 
       {/* Serviços (mesma ordem do menu: Locação, Serviços, Empresa, Localização) */}
       <ServicesPreview />
