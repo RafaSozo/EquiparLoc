@@ -1,0 +1,17 @@
+node_modules/
+.next/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Banco local (contém dados de clientes) e cópias de segurança
+data/
+
+# Saída do graphify
+graphify-out/
+
+# Arquivos do editor e de compilação
+*.tsbuildinfo
+.claude/

@@ -1,0 +1,5 @@
+# O servidor (Linux) usa fim de linha LF
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary

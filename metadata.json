@@ -1,0 +1,6 @@
+{
+  "name": "EQUIPAR 360° | Locações de Equipamentos Pesados",
+  "description": "Plataforma premium para locação de equipamentos pesados e industriais, catálogo técnico interativo, busca avançada e CRM de orçamentos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

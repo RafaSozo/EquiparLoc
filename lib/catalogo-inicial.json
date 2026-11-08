@@ -1,0 +1,2249 @@
+{
+  "categories": [
+    {
+      "id": "cat-equipamentos-compactos",
+      "name": "Equipamentos Compactos",
+      "group": "maquinas",
+      "description": "Miniescavadeira, minicarregadeira e retroescavadeira, com rompedor, vassoura e garfo pallet, para obras em espaços apertados.",
+      "image": "/images/produtos/aluguel-miniescavadeira-new-holland-e50.jpg",
+      "order": 1
+    },
+    {
+      "id": "cat-compactacao-de-solos",
+      "name": "Compactação de Solos",
+      "group": "maquinas",
+      "description": "Compactadores de percussão (sapo), placas vibratórias e rolo compactador para valas, aterros, calçadas e bases de piso.",
+      "image": "/images/produtos/aluguel-compactador-de-solo-sapo-wacker-bs50.jpg",
+      "order": 2
+    },
+    {
+      "id": "cat-betoneiras-e-afins",
+      "name": "Betoneiras e Afins",
+      "group": "maquinas",
+      "description": "Betoneira de 400 litros, guinchos de coluna, mini grua, balde e serra de bancada para concretagem e elevação de material.",
+      "image": "/images/produtos/aluguel-betoneira-400-litros-menegotti.jpg",
+      "order": 3
+    },
+    {
+      "id": "cat-alisadoras-e-cortadoras-de-piso",
+      "name": "Alisadoras e Cortadoras de Piso",
+      "group": "maquinas",
+      "description": "Alisadora de concreto e cortadoras de piso e asfalto para acabamento de lajes e juntas de dilatação.",
+      "image": "/images/produtos/aluguel-alisadora-de-concreto-wacker-ct36.jpg",
+      "order": 4
+    },
+    {
+      "id": "cat-bombas-e-vibradores",
+      "name": "Bombas e Vibradores",
+      "group": "maquinas",
+      "description": "Motobombas autoescorvantes, bomba submersível e vibradores de concreto para drenagem e adensamento.",
+      "image": "/images/produtos/aluguel-motobomba-autoescorvante-agua-limpa-csm-mb3al.jpg",
+      "order": 5
+    },
+    {
+      "id": "cat-geradores",
+      "name": "Geradores",
+      "group": "maquinas",
+      "description": "Geradores a gasolina e a diesel de 2,5 e 5,5 kVA para energia no canteiro e onde não há rede elétrica.",
+      "image": "/images/produtos/aluguel-gerador-2-5-kva-toyama-tg2800mx.jpg",
+      "order": 6
+    },
+    {
+      "id": "cat-maquinas-eletricas",
+      "name": "Máquinas Elétricas",
+      "group": "ferramentas",
+      "description": "Cortadoras, furadeiras, serras, lixadeiras, politriz e parafusadeira das marcas Makita, Bosch, DeWalt e Metabo.",
+      "image": "/images/produtos/aluguel-cortadora-de-parede-makita-sg1250.jpg",
+      "order": 7
+    },
+    {
+      "id": "cat-martelos-e-marteletes",
+      "name": "Martelos e Marteletes",
+      "group": "ferramentas",
+      "description": "Martelos demolidores de 5 a 30 kg e martelete perfurador para quebrar concreto, piso, revestimento e alvenaria.",
+      "image": "/images/produtos/aluguel-martelo-demolidor-5kg-makita-hm0830.jpg",
+      "order": 8
+    },
+    {
+      "id": "cat-motores-de-acionamento",
+      "name": "Motores de Acionamento",
+      "group": "ferramentas",
+      "description": "Motores a gasolina e elétrico para acionar vibradores de imersão com mangote.",
+      "image": "/images/produtos/aluguel-motor-de-acionamento-weber-cr-5-5.jpg",
+      "order": 9
+    },
+    {
+      "id": "cat-rocadeiras",
+      "name": "Roçadeiras",
+      "group": "ferramentas",
+      "description": "Roçadeira lateral a gasolina para limpeza de terrenos, lotes e áreas verdes.",
+      "image": "/images/produtos/aluguel-rocadeira-lateral-nakashi-l26.jpg",
+      "order": 10
+    }
+  ],
+  "equipments": [
+    {
+      "id": "eq-mq-27",
+      "code": "EQ-ALI-027",
+      "name": "Alisadora de Concreto CT36-5A Wacker Neuson",
+      "slug": "aluguel-alisadora-de-concreto-wacker-ct36",
+      "category": "Alisadoras e Cortadoras de Piso",
+      "image": "/images/produtos/aluguel-alisadora-de-concreto-wacker-ct36.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-alisadora-de-concreto-wacker-ct36.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Alisadora de concreto (bambolê) com pás de 915 mm e motor a gasolina 5,5 HP para pisos industriais e contrapisos.",
+      "description": "Alugue a alisadora de concreto Wacker Neuson CT36-5A para dar acabamento liso e nivelado a pisos de concreto. O rotor de 915 mm e a rotação ajustável entre 60 e 125 rpm permitem trabalhar desde a flotação até o polimento final, com rendimento muito superior ao acabamento manual. Indicada para pisos industriais, galpões, garagens e contrapisos de grandes áreas.",
+      "specs": {
+        "operatingWeight": "Sob consulta",
+        "power": "5,5 HP",
+        "fuelType": "Gasolina 4 tempos",
+        "additional": {
+          "Diâmetro do rotor": "915 mm",
+          "Rotação das pás": "60 a 125 rpm"
+        }
+      },
+      "features": [
+        "Rotor de 915 mm para grandes áreas",
+        "Rotação ajustável para flotação e polimento",
+        "Motor a gasolina, sem necessidade de energia no local"
+      ],
+      "applications": [
+        "Pisos industriais e de galpões",
+        "Garagens e estacionamentos",
+        "Contrapisos e lajes de concreto"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-21",
+      "code": "EQ-BET-021",
+      "name": "Betoneira 400 Litros Profissional Menegotti",
+      "slug": "aluguel-betoneira-400-litros-menegotti",
+      "category": "Betoneiras e Afins",
+      "image": "/images/produtos/aluguel-betoneira-400-litros-menegotti.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-betoneira-400-litros-menegotti.jpg"
+      ],
+      "status": "active",
+      "isFeatured": true,
+      "summary": "Betoneira de 400 litros que produz até 4,05 m³ de concreto por hora, com tambor em chapa de 2 mm.",
+      "description": "O aluguel da betoneira Menegotti de 400 litros garante concreto e argamassa homogêneos em obras de pequeno e médio porte. Com mistura útil de 310 litros e até 15 ciclos por hora, entrega cerca de 4 m³ de concreto por hora. Estrutura reforçada, tambor em chapa de 2 mm e rodas de borracha facilitam o deslocamento no canteiro. Também disponível para venda.",
+      "specs": {
+        "operatingWeight": "Sob consulta",
+        "power": "Motor elétrico 2,0 CV ou a combustão 5,5 CV",
+        "fuelType": "Elétrico ou gasolina",
+        "bucketCapacity": "400 L (mistura útil de 310 L)",
+        "additional": {
+          "Rendimento por mistura": "270 L",
+          "Ciclos por hora": "15",
+          "Produção horária": "4,05 m³",
+          "Rotação do tambor": "30 rpm",
+          "Tambor": "Chapa de 2 mm",
+          "Rodas": "Borracha, 65 mm"
+        }
+      },
+      "features": [
+        "Produção de até 4,05 m³ de concreto por hora",
+        "Tambor em chapa de 2 mm e chassi reforçado",
+        "Opção de motor elétrico ou a combustão"
+      ],
+      "applications": [
+        "Concreto para lajes, vigas e pilares",
+        "Argamassa de assentamento e reboco",
+        "Obras residenciais e reformas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-51",
+      "code": "EQ-VIB-051",
+      "name": "Vibrador de Concreto GVC 20EX Bosch",
+      "slug": "aluguel-vibrador-de-concreto-bosch-gvc-20ex",
+      "category": "Bombas e Vibradores",
+      "image": "/images/produtos/aluguel-vibrador-de-concreto-bosch-gvc-20ex.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-vibrador-de-concreto-bosch-gvc-20ex.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Vibrador de concreto elétrico de 1.400 W e 20.000 vibrações por minuto, leve e fácil de transportar.",
+      "description": "Alugue o vibrador de concreto Bosch GVC 20EX para eliminar bolhas de ar e garantir o adensamento correto do concreto em formas. Com motor de 1.400 W e 20.000 vibrações por minuto, pesa apenas 5,5 kg e pode ser levado facilmente entre pavimentos. Ideal para pilares, vigas, lajes e pequenas concretagens.",
+      "specs": {
+        "operatingWeight": "5,5 kg",
+        "power": "1.400 W",
+        "fuelType": "Elétrico 220 V",
+        "additional": {
+          "Vibração nominal": "20.000 por minuto",
+          "Amplitude": "4,3 mm",
+          "Corrente": "7,3 A"
+        }
+      },
+      "features": [
+        "Leve: 5,5 kg",
+        "Alta frequência de vibração (20.000/min)",
+        "Motor elétrico de 1.400 W"
+      ],
+      "applications": [
+        "Adensamento de pilares e vigas",
+        "Concretagem de lajes",
+        "Peças pré-moldadas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-18",
+      "code": "EQ-VIB-018",
+      "name": "Vibrador Portátil de Alta Frequência CR AF 35 Weber",
+      "slug": "aluguel-vibrador-alta-frequencia-weber-cr-af-35",
+      "category": "Bombas e Vibradores",
+      "image": "/images/produtos/aluguel-vibrador-alta-frequencia-weber-cr-af-35.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-vibrador-alta-frequencia-weber-cr-af-35.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Vibrador de imersão de alta frequência com 18.000 rpm, mangote de 35 mm e até 3,5 m de alcance.",
+      "description": "O vibrador portátil de alta frequência Weber CR AF 35 trabalha a 18.000 rpm e adensa o concreto com rapidez e uniformidade. O mangote de 35 mm alcança até 3,5 m, e o motor elétrico de 2,3 CV pesa só 5 kg. É a escolha certa para concretagens de estruturas com armadura densa.",
+      "specs": {
+        "operatingWeight": "8 kg",
+        "power": "2,3 CV",
+        "fuelType": "Elétrico 220 V",
+        "additional": {
+          "Rotação": "18.000 rpm",
+          "Diâmetro do tubo": "35 mm",
+          "Comprimento": "Até 3,5 m",
+          "Peso do motor": "5 kg"
+        }
+      },
+      "features": [
+        "Alta frequência: 18.000 rpm",
+        "Mangote de 35 mm com até 3,5 m",
+        "Conjunto leve e portátil"
+      ],
+      "applications": [
+        "Estruturas com armadura densa",
+        "Pilares, vigas e lajes",
+        "Paredes de concreto"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-24",
+      "code": "EQ-VIB-024",
+      "name": "Vibrador de Imersão Pendular CRB 36 / 48 Weber",
+      "slug": "aluguel-vibrador-de-imersao-weber-crb-36-48",
+      "category": "Bombas e Vibradores",
+      "image": "/images/produtos/aluguel-vibrador-de-imersao-weber-crb-36-48.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-vibrador-de-imersao-weber-crb-36-48.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Mangotes vibradores pendulares de 36 ou 48 mm, com 4 m de comprimento e 12.500 rpm.",
+      "description": "Alugue os vibradores de imersão pendulares Weber CRB 36 e CRB 48 para adensar concreto em diferentes tipos de peça. Com 12.500 rpm e mangote de 4 m, o modelo de 36 mm atende estruturas convencionais, e o de 48 mm, volumes maiores de concreto. Funcionam acoplados aos motores de acionamento Weber.",
+      "specs": {
+        "operatingWeight": "15 kg (36 mm) / 17 kg (48 mm)",
+        "power": "Usa motor de acionamento",
+        "fuelType": "Conforme o motor de acionamento",
+        "additional": {
+          "Rotação": "12.500 rpm",
+          "Diâmetro do tubo": "36 ou 48 mm",
+          "Comprimento": "4 m"
+        }
+      },
+      "features": [
+        "Duas bitolas: 36 e 48 mm",
+        "Mangote de 4 m",
+        "Compatível com motores Weber elétrico e a gasolina"
+      ],
+      "applications": [
+        "Fundações e blocos",
+        "Vigas, pilares e lajes",
+        "Muros e paredes de concreto"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-23",
+      "code": "EQ-MOT-023",
+      "name": "Motor de Acionamento a Gasolina CR 5,5 Weber",
+      "slug": "aluguel-motor-de-acionamento-weber-cr-5-5",
+      "category": "Motores de Acionamento",
+      "image": "/images/produtos/aluguel-motor-de-acionamento-weber-cr-5-5.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-motor-de-acionamento-weber-cr-5-5.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Motor a gasolina de 5,5 HP para acionar mangotes vibradores onde não há energia elétrica.",
+      "description": "O motor de acionamento Weber CR 5,5 movimenta vibradores de imersão em locais sem energia elétrica. Com 5,5 HP e motor a gasolina 4 tempos, garante vibração constante durante toda a concretagem. Alugue junto com os mangotes CRB 36 ou CRB 48.",
+      "specs": {
+        "operatingWeight": "30 kg",
+        "power": "5,5 HP",
+        "fuelType": "Gasolina 4 tempos"
+      },
+      "features": [
+        "Funciona sem energia elétrica",
+        "Motor a gasolina de 5,5 HP",
+        "Compatível com mangotes Weber"
+      ],
+      "applications": [
+        "Concretagem em obras sem rede elétrica",
+        "Obras rurais e de infraestrutura",
+        "Fundações e pontes"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-22",
+      "code": "EQ-MOT-022",
+      "name": "Motor de Acionamento Elétrico CR EDIM Weber",
+      "slug": "aluguel-motor-de-acionamento-eletrico-weber-cr-edim",
+      "category": "Motores de Acionamento",
+      "image": "/images/produtos/aluguel-motor-de-acionamento-eletrico-weber-cr-edim.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-motor-de-acionamento-eletrico-weber-cr-edim.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Motor elétrico monofásico de 1,5 CV, bivolt, para acionar mangotes vibradores de concreto.",
+      "description": "Alugue o motor de acionamento elétrico Weber CR EDIM para trabalhar com vibradores de imersão de forma silenciosa e sem combustível. É monofásico, funciona em 110 ou 220 V e tem 1,5 CV de potência, o que o torna ideal para concretagens em áreas urbanas e internas.",
+      "specs": {
+        "operatingWeight": "22 kg",
+        "power": "1,5 CV",
+        "fuelType": "Elétrico monofásico 110/220 V"
+      },
+      "features": [
+        "Bivolt: 110 ou 220 V",
+        "Sem emissão de gases",
+        "Leve: 22 kg"
+      ],
+      "applications": [
+        "Concretagem em áreas internas",
+        "Obras urbanas",
+        "Estruturas de pequeno e médio porte"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-30",
+      "code": "EQ-CPI-030",
+      "name": "Cortadora de Piso e Asfalto HM16 Menegotti",
+      "slug": "aluguel-cortadora-de-piso-asfalto-menegotti-hm16",
+      "category": "Alisadoras e Cortadoras de Piso",
+      "image": "/images/produtos/aluguel-cortadora-de-piso-asfalto-menegotti-hm16.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-cortadora-de-piso-asfalto-menegotti-hm16.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Cortadora de piso com motor de 13 HP, disco de até 450 mm e corte de até 160 mm de profundidade.",
+      "description": "Alugue a cortadora de piso e asfalto Menegotti HM16 para cortes retos e precisos em concreto e pavimento asfáltico. O motor a gasolina de 13 HP aciona discos de 300 a 450 mm, com profundidade de até 160 mm. O tanque de água de 37 litros resfria o disco e reduz a poeira durante o corte.",
+      "specs": {
+        "operatingWeight": "128 kg",
+        "power": "13 HP",
+        "fuelType": "Gasolina 4 tempos",
+        "dimensions": "1.630 x 550 x 970 mm",
+        "additional": {
+          "Profundidade de corte": "Até 160 mm",
+          "Disco": "300 a 450 mm",
+          "Tanque de água": "37 L"
+        }
+      },
+      "features": [
+        "Corte de até 160 mm de profundidade",
+        "Resfriamento a água, com menos poeira",
+        "Motor a gasolina de 13 HP"
+      ],
+      "applications": [
+        "Juntas de dilatação em pisos",
+        "Recortes em asfalto para redes e reparos",
+        "Demolição controlada de pisos"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-17",
+      "code": "EQ-CPI-017",
+      "name": "Cortadora de Piso e Asfalto SM62 Weber",
+      "slug": "aluguel-cortadora-de-piso-asfalto-weber-sm62",
+      "category": "Alisadoras e Cortadoras de Piso",
+      "image": "/images/produtos/aluguel-cortadora-de-piso-asfalto-weber-sm62.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-cortadora-de-piso-asfalto-weber-sm62.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Cortadora de piso Weber com motor de 13 HP, disco de até 450 mm e 4.100 rpm.",
+      "description": "A cortadora de piso Weber SM62 faz cortes em concreto e asfalto com até 160 mm de profundidade. Equipada com motor de 13 HP, disco de até 450 mm a 4.100 rpm e tanque de água de 25 litros, combina produtividade e acabamento limpo. As quatro rodas facilitam guiar o corte em linha reta.",
+      "specs": {
+        "operatingWeight": "116 kg",
+        "power": "13 HP",
+        "fuelType": "Gasolina 4 tempos",
+        "additional": {
+          "Disco": "Até 450 mm",
+          "Rotação do disco": "4.100 rpm",
+          "Profundidade de corte": "Até 160 mm",
+          "Tanque de água": "25 L",
+          "Rodas": "4"
+        }
+      },
+      "features": [
+        "Disco de até 450 mm a 4.100 rpm",
+        "Quatro rodas para cortes retos",
+        "Tanque de água de 25 L"
+      ],
+      "applications": [
+        "Juntas de pisos industriais",
+        "Cortes em pavimento asfáltico",
+        "Abertura de valas em calçadas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-48",
+      "code": "EQ-CPA-048",
+      "name": "Cortadora de Parede SG1250 Makita",
+      "slug": "aluguel-cortadora-de-parede-makita-sg1250",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-cortadora-de-parede-makita-sg1250.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-cortadora-de-parede-makita-sg1250.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Cortadora de parede (rasgo para conduítes) de 1.400 W, com profundidade e largura de corte de até 30 mm.",
+      "description": "Alugue a cortadora de parede Makita SG1250 para abrir rasgos em alvenaria e concreto com rapidez e acabamento regular. Os dois discos de 125 mm cortam de uma vez, com largura de 6 a 30 mm e profundidade de até 30 mm. É a ferramenta certa para embutir conduítes elétricos e tubulações hidráulicas.",
+      "specs": {
+        "operatingWeight": "4,1 kg",
+        "power": "1.400 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Profundidade de corte": "0 a 30 mm",
+          "Largura do rasgo": "6 a 30 mm",
+          "Diâmetro da lâmina": "125 mm"
+        }
+      },
+      "features": [
+        "Rasgo regular em uma única passada",
+        "Largura ajustável de 6 a 30 mm",
+        "Leve: 4,1 kg"
+      ],
+      "applications": [
+        "Instalação de conduítes elétricos",
+        "Tubulações hidráulicas embutidas",
+        "Reformas residenciais e comerciais"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-36",
+      "code": "EQ-CVE-036",
+      "name": "Cortadora de Vergalhão MCD Menegotti",
+      "slug": "aluguel-cortadora-de-vergalhao-menegotti-mcd",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-cortadora-de-vergalhao-menegotti-mcd.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-cortadora-de-vergalhao-menegotti-mcd.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Cortadora de vergalhão elétrica que corta barras de 8 a 25 mm com segurança e precisão.",
+      "description": "O aluguel da cortadora de vergalhão Menegotti MCD agiliza o preparo de armaduras no canteiro. Corta barras de aço de 8 a 25 mm de diâmetro, sem faíscas, com motor elétrico de 2,7 CV. Compacta e com 21,5 kg, pode ser levada até o ponto de montagem das ferragens.",
+      "specs": {
+        "operatingWeight": "21,5 kg",
+        "power": "2,7 CV",
+        "fuelType": "Elétrico monofásico 220 V",
+        "dimensions": "500 x 160 x 240 mm",
+        "additional": {
+          "Diâmetro de corte": "8 a 25 mm",
+          "Velocidade de corte": "6,5 mm/s"
+        }
+      },
+      "features": [
+        "Corta vergalhões de 8 a 25 mm",
+        "Corte sem faíscas",
+        "Compacta e transportável"
+      ],
+      "applications": [
+        "Preparo de armaduras",
+        "Corte de ferragens para fundações",
+        "Serralherias e pré-moldados"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-49",
+      "code": "EQ-FUR-049",
+      "name": "Furadeira de Impacto 16 mm HP1630 Makita",
+      "slug": "aluguel-furadeira-de-impacto-makita-hp1630",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-furadeira-de-impacto-makita-hp1630.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-furadeira-de-impacto-makita-hp1630.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Furadeira de impacto de 710 W que fura concreto até 16 mm, metal até 13 mm e madeira até 30 mm.",
+      "description": "Alugue a furadeira de impacto Makita HP1630 para furos em concreto, alvenaria, metal e madeira. Com 710 W, até 3.200 rpm e 48.000 impactos por minuto, fura concreto em até 16 mm. O mandril de 13 mm e o peso de 1,9 kg tornam o trabalho prático em instalações e reformas.",
+      "specs": {
+        "operatingWeight": "1,9 kg",
+        "power": "710 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Rotação": "0 a 3.200 rpm",
+          "Impactos": "0 a 48.000 por minuto",
+          "Capacidade": "Concreto 16 mm, metal 13 mm, madeira 30 mm",
+          "Mandril": "13 mm (1/2\")"
+        }
+      },
+      "features": [
+        "Furação com e sem impacto",
+        "Mandril de 13 mm",
+        "Leve: 1,9 kg"
+      ],
+      "applications": [
+        "Fixação de suportes e buchas",
+        "Instalações elétricas e hidráulicas",
+        "Montagem de esquadrias"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-32",
+      "code": "EQ-FUR-032",
+      "name": "Furadeira de Impacto 1/2\" DW502 DeWalt",
+      "slug": "aluguel-furadeira-de-impacto-dewalt-dw502",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-furadeira-de-impacto-dewalt-dw502.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-furadeira-de-impacto-dewalt-dw502.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Furadeira de impacto de 650 W com mandril de 13 mm, até 3.000 rpm e empunhadura lateral de 360°.",
+      "description": "A furadeira de impacto DeWalt DW502 é resistente e precisa para furar alvenaria, madeira e metal. Tem 650 W, até 50.000 impactos por minuto e mandril de 13 mm. O gatilho para dois dedos e a empunhadura lateral de 360° dão firmeza em furos acima da cabeça.",
+      "specs": {
+        "operatingWeight": "1,7 kg",
+        "power": "650 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Rotação": "0 a 3.000 rpm",
+          "Impactos": "0 a 50.000 por minuto",
+          "Mandril": "13 mm (1/2\")"
+        }
+      },
+      "features": [
+        "Empunhadura lateral de 360°",
+        "Velocidade variável",
+        "Leve: 1,7 kg"
+      ],
+      "applications": [
+        "Fixações em alvenaria",
+        "Montagens e instalações",
+        "Pequenas reformas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-54",
+      "code": "EQ-MTE-054",
+      "name": "Martelete Perfurador GBH 2 Bosch",
+      "slug": "aluguel-martelete-perfurador-bosch-gbh-2",
+      "category": "Martelos e Marteletes",
+      "image": "/images/produtos/aluguel-martelete-perfurador-bosch-gbh-2.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-martelete-perfurador-bosch-gbh-2.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Martelete perfurador de 680 W com 2,4 J de impacto, para furos de até 24 mm em concreto.",
+      "description": "Alugue o martelete perfurador Bosch GBH 2 para furar concreto com muito menos esforço que uma furadeira comum. Com 680 W e 2,4 joules de impacto, faz furos de até 24 mm em concreto, 13 mm em metal e 30 mm em madeira. Pesa 2,4 kg, ideal para chumbadores, instalações e pequenas demolições.",
+      "specs": {
+        "operatingWeight": "2,4 kg",
+        "power": "680 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Energia de impacto": "2,4 J",
+          "Impactos": "4.850 por minuto",
+          "Furação em concreto": "Até 24 mm (16 mm recomendado)",
+          "Furação em metal": "13 mm",
+          "Furação em madeira": "30 mm"
+        }
+      },
+      "features": [
+        "Furação em concreto de até 24 mm",
+        "Impacto pneumático de 2,4 J",
+        "Leve: 2,4 kg"
+      ],
+      "applications": [
+        "Instalação de chumbadores e parabolts",
+        "Furos para tubulações",
+        "Remoção de revestimentos"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-56",
+      "code": "EQ-SMA-056",
+      "name": "Serra Mármore 4100NS Makita",
+      "slug": "aluguel-serra-marmore-makita-4100ns",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-serra-marmore-makita-4100ns.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-serra-marmore-makita-4100ns.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Serra mármore de 1.400 W e 12.000 rpm para cortes em pisos, porcelanatos, pedras e alvenaria.",
+      "description": "Alugue a serra mármore Makita 4100NS para cortes rápidos em cerâmica, porcelanato, granito, mármore e blocos. O motor de 1.400 W gira o disco de 110 mm a 12.000 rpm, com cortes limpos e precisos. Compacta e com 3 kg, é a ferramenta mais usada em assentamento de pisos e revestimentos.",
+      "specs": {
+        "operatingWeight": "3 kg",
+        "power": "1.400 W",
+        "fuelType": "Elétrico",
+        "dimensions": "238 x 211 x 169 mm",
+        "additional": {
+          "Diâmetro do disco": "110 mm",
+          "Rotação": "12.000 rpm"
+        }
+      },
+      "features": [
+        "12.000 rpm para cortes limpos",
+        "Compacta e leve: 3 kg",
+        "Aceita discos para pedra, cerâmica e concreto"
+      ],
+      "applications": [
+        "Corte de pisos e porcelanatos",
+        "Recortes em granito e mármore",
+        "Rasgos em alvenaria"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-52",
+      "code": "EQ-SMA-052",
+      "name": "Serra Mármore GDC 14-40 Bosch",
+      "slug": "aluguel-serra-marmore-bosch-gdc-14-40",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-serra-marmore-bosch-gdc-14-40.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-serra-marmore-bosch-gdc-14-40.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Serra mármore de 1.450 W com disco de 125 mm e corte de até 40 mm, com base inclinável até 45°.",
+      "description": "A serra mármore Bosch GDC 14-40 corta até 40 mm de profundidade com disco de 125 mm e 12.000 rpm. A base ajustável até 45° e a entrada para guia paralela permitem cortes chanfrados e retos com precisão. Alugue para obras de revestimento, acabamento e reformas.",
+      "specs": {
+        "operatingWeight": "2,7 kg",
+        "power": "1.450 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Diâmetro do disco": "125 mm",
+          "Rotação": "12.000 rpm",
+          "Profundidade de corte": "Até 40 mm",
+          "Base": "Ajuste de ângulo até 45° e entrada para guia paralela"
+        }
+      },
+      "features": [
+        "Corte de até 40 mm",
+        "Base inclinável até 45°",
+        "Entrada para guia paralela"
+      ],
+      "applications": [
+        "Cortes chanfrados em revestimentos",
+        "Porcelanatos e pedras",
+        "Acabamentos de obra"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-57",
+      "code": "EQ-SCI-057",
+      "name": "Serra Circular 7 1/4\" 4107R Makita (Makitão)",
+      "slug": "aluguel-serra-circular-makita-4107r-makitao",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-serra-circular-makita-4107r-makitao.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-serra-circular-makita-4107r-makitao.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Serra de 1.400 W com disco de 180 mm e corte de até 60 mm em pedras, concreto e alvenaria.",
+      "description": "Alugue a serra Makita 4107R, conhecida como \"Makitão\", para cortes profundos em pedra, concreto, blocos e alvenaria. Com 1.400 W e disco de 180 mm, corta até 60 mm de profundidade. Robusta, é indicada para trabalhos pesados em que a serra mármore comum não alcança.",
+      "specs": {
+        "operatingWeight": "6,9 kg",
+        "power": "1.400 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Diâmetro do disco": "180 mm (7 1/8\")",
+          "Profundidade de corte": "Até 60 mm",
+          "Rotação": "5.000 rpm",
+          "Comprimento": "345 mm"
+        }
+      },
+      "features": [
+        "Corte de até 60 mm",
+        "Disco de 180 mm",
+        "Construção robusta para uso pesado"
+      ],
+      "applications": [
+        "Corte de blocos e pedras",
+        "Recortes em concreto",
+        "Abertura de vãos em alvenaria"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-46",
+      "code": "EQ-STT-046",
+      "name": "Serra Tico-Tico DW313 DeWalt",
+      "slug": "aluguel-serra-tico-tico-dewalt-dw313",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-serra-tico-tico-dewalt-dw313.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-serra-tico-tico-dewalt-dw313.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Serra tico-tico de 480 W com até 3.100 golpes por minuto para cortes retos e curvos.",
+      "description": "A serra tico-tico DeWalt DW313 faz cortes retos e curvos em madeira, compensado, MDF, plásticos e chapas finas. Tem 480 W, velocidade variável de até 3.100 golpes por minuto e curso de 1\". Alugue para marcenaria de obra, forros e acabamentos.",
+      "specs": {
+        "operatingWeight": "2,8 kg",
+        "power": "480 W",
+        "fuelType": "Elétrico 220 V",
+        "additional": {
+          "Golpes": "0 a 3.100 por minuto",
+          "Curso": "1\""
+        }
+      },
+      "features": [
+        "Velocidade variável",
+        "Cortes retos e curvos",
+        "Leve: 2,8 kg"
+      ],
+      "applications": [
+        "Recortes em madeira e MDF",
+        "Forros e divisórias",
+        "Formas de madeira"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-58",
+      "code": "EQ-SBA-058",
+      "name": "Serra Circular de Bancada Mecan",
+      "slug": "aluguel-serra-circular-de-bancada-mecan",
+      "category": "Betoneiras e Afins",
+      "image": "/images/produtos/aluguel-serra-circular-de-bancada-mecan.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-serra-circular-de-bancada-mecan.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Serra circular de bancada com motor trifásico de 5 CV, coifa de proteção e guia paralela.",
+      "description": "Alugue a serra circular de bancada Mecan para cortar madeira de forma no próprio canteiro. O motor trifásico de 5 CV dá força para cortes contínuos em tábuas, pontaletes e chapas. Vem com coifa de proteção, guia paralela e chave elétrica.",
+      "specs": {
+        "operatingWeight": "Sob consulta",
+        "power": "5 CV",
+        "fuelType": "Elétrico trifásico",
+        "additional": {
+          "Tipo": "Serra circular de bancada",
+          "Itens de segurança": "Coifa de proteção, guia paralela e chave elétrica"
+        }
+      },
+      "features": [
+        "Motor trifásico de 5 CV",
+        "Coifa de proteção do disco",
+        "Guia paralela para cortes repetidos"
+      ],
+      "applications": [
+        "Corte de madeira para formas",
+        "Escoramentos e pontaletes",
+        "Carpintaria de obra"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-68",
+      "code": "EQ-MAR-068",
+      "name": "Martelo Demolidor 5 kg HM0830 Makita",
+      "slug": "aluguel-martelo-demolidor-5kg-makita-hm0830",
+      "category": "Martelos e Marteletes",
+      "image": "/images/produtos/aluguel-martelo-demolidor-5kg-makita-hm0830.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-martelo-demolidor-5kg-makita-hm0830.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Martelo demolidor compacto de 5 kg para remover revestimentos, cerâmicas e pequenas demolições.",
+      "description": "Alugue o martelo demolidor Makita HM0830 para trabalhos leves de demolição. Compacto, ele remove cerâmicas, azulejos e revestimentos, abre rasgos e quebra pequenas estruturas com pouco esforço. É uma boa opção para reformas em ambientes internos.",
+      "specs": {
+        "operatingWeight": "5 kg",
+        "power": "Sob consulta",
+        "fuelType": "Elétrico"
+      },
+      "features": [
+        "Compacto, para uso em ambientes internos",
+        "Encaixe para ponteiro e talhadeira",
+        "Fácil de manusear"
+      ],
+      "applications": [
+        "Remoção de pisos e azulejos",
+        "Rasgos em alvenaria",
+        "Pequenas demolições em reformas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-53",
+      "code": "EQ-MAR-053",
+      "name": "Martelo Demolidor 5 kg GSH 5E Bosch",
+      "slug": "aluguel-martelo-demolidor-5kg-bosch-gsh-5e",
+      "category": "Martelos e Marteletes",
+      "image": "/images/produtos/aluguel-martelo-demolidor-5kg-bosch-gsh-5e.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-martelo-demolidor-5kg-bosch-gsh-5e.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Martelo demolidor de 1.150 W com até 13 J de impacto e velocidade variável.",
+      "description": "O martelo demolidor Bosch GSH 5E combina leveza e força para demolições leves e médias. Com 1.150 W, até 2.900 impactos por minuto e até 13 joules de energia, remove revestimentos e quebra concreto com rapidez. Alugue para reformas e instalações.",
+      "specs": {
+        "operatingWeight": "5,8 kg",
+        "power": "1.150 W",
+        "fuelType": "Elétrico 220 V",
+        "additional": {
+          "Impactos": "1.300 a 2.900 por minuto",
+          "Energia de impacto": "2 a 13 J"
+        }
+      },
+      "features": [
+        "Energia de impacto de até 13 J",
+        "Impactos ajustáveis",
+        "Peso de 5,8 kg"
+      ],
+      "applications": [
+        "Remoção de revestimentos",
+        "Quebra de contrapisos",
+        "Abertura de passagens"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-67",
+      "code": "EQ-MAR-067",
+      "name": "Martelo Demolidor 10 kg HM1203C Makita",
+      "slug": "aluguel-martelo-demolidor-10kg-makita-hm1203c",
+      "category": "Martelos e Marteletes",
+      "image": "/images/produtos/aluguel-martelo-demolidor-10kg-makita-hm1203c.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-martelo-demolidor-10kg-makita-hm1203c.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Martelo demolidor de 1.510 W e 25,5 J de impacto para demolições médias em concreto e alvenaria.",
+      "description": "Alugue o martelo demolidor Makita HM1203C para demolir concreto, alvenaria e pisos com produtividade. São 1.510 W, de 950 a 1.900 impactos por minuto e 25,5 joules de energia de impacto, com peso de 9,2 kg. É indicado para reformas pesadas e demolições de médio porte.",
+      "specs": {
+        "operatingWeight": "9,2 kg",
+        "power": "1.510 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Impactos": "950 a 1.900 por minuto",
+          "Energia de impacto": "25,5 J"
+        }
+      },
+      "features": [
+        "Energia de impacto de 25,5 J",
+        "Controle de impactos",
+        "Boa relação entre peso e força"
+      ],
+      "applications": [
+        "Demolição de paredes e lajes",
+        "Quebra de pisos de concreto",
+        "Abertura de valas em calçadas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-33",
+      "code": "EQ-MAR-033",
+      "name": "Martelo Eletropneumático 10 kg D25762K DeWalt",
+      "slug": "aluguel-martelo-eletropneumatico-10kg-dewalt-d25762k",
+      "category": "Martelos e Marteletes",
+      "image": "/images/produtos/aluguel-martelo-eletropneumatico-10kg-dewalt-d25762k.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-martelo-eletropneumatico-10kg-dewalt-d25762k.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Martelo perfurador e rompedor de 1.500 W, que fura e demole concreto com o mesmo equipamento.",
+      "description": "O martelo eletropneumático DeWalt D25762K une duas funções: perfurar e romper concreto. Com 1.500 W e até 2.300 impactos por minuto, faz furos de grande diâmetro e demolições médias. Alugue quando a obra pede furos para tubulações e quebra de concreto ao mesmo tempo.",
+      "specs": {
+        "operatingWeight": "9,5 kg",
+        "power": "1.500 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Tipo": "Perfurador e rompedor",
+          "Rotação": "125 a 250 rpm",
+          "Impactos": "1.150 a 2.300 por minuto"
+        }
+      },
+      "features": [
+        "Função perfuração e demolição",
+        "Rotação e impactos variáveis",
+        "Indicado para furos de grande diâmetro"
+      ],
+      "applications": [
+        "Furos para tubulações e dutos",
+        "Demolições médias",
+        "Ancoragens em concreto"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-55",
+      "code": "EQ-MAR-055",
+      "name": "Martelo Demolidor 10 kg GSH 11E Bosch",
+      "slug": "aluguel-martelo-demolidor-10kg-bosch-gsh-11e",
+      "category": "Martelos e Marteletes",
+      "image": "/images/produtos/aluguel-martelo-demolidor-10kg-bosch-gsh-11e.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-martelo-demolidor-10kg-bosch-gsh-11e.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Martelo demolidor de 1.500 W com até 25 J de impacto e velocidade variável.",
+      "description": "Alugue o martelo demolidor Bosch GSH 11E para demolições de médio porte em concreto e alvenaria. O motor de 1.500 W entrega de 6 a 25 joules por impacto, com velocidade variável de 900 a 1.890 impactos por minuto. Robusto e confiável para uso contínuo na obra.",
+      "specs": {
+        "operatingWeight": "11 kg",
+        "power": "1.500 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Impactos": "900 a 1.890 por minuto",
+          "Energia de impacto": "6 a 25 J"
+        }
+      },
+      "features": [
+        "Velocidade variável",
+        "Até 25 J de impacto",
+        "Uso contínuo em obra"
+      ],
+      "applications": [
+        "Demolição de lajes e paredes",
+        "Remoção de contrapisos",
+        "Quebra de concreto em reformas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-41",
+      "code": "EQ-MAR-041",
+      "name": "Martelo Demolidor 17 kg HM1304B Makita",
+      "slug": "aluguel-martelo-demolidor-17kg-makita-hm1304b",
+      "category": "Martelos e Marteletes",
+      "image": "/images/produtos/aluguel-martelo-demolidor-17kg-makita-hm1304b.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-martelo-demolidor-17kg-makita-hm1304b.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Martelo demolidor de 17 kg para demolições pesadas em concreto armado e pisos.",
+      "description": "O martelo demolidor Makita HM1304B é indicado para demolições pesadas, como quebra de concreto armado, bases de máquinas e pisos espessos. Mais pesado e potente que os modelos de 10 kg, rende mais em grandes volumes de demolição. Alugue para obras de reforma estrutural e infraestrutura.",
+      "specs": {
+        "operatingWeight": "17 kg",
+        "power": "Sob consulta",
+        "fuelType": "Elétrico"
+      },
+      "features": [
+        "Classe de 17 kg para demolição pesada",
+        "Encaixe sextavado para ponteiros",
+        "Alto rendimento em concreto"
+      ],
+      "applications": [
+        "Quebra de concreto armado",
+        "Demolição de bases e blocos",
+        "Remoção de pisos espessos"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-60",
+      "code": "EQ-MAR-060",
+      "name": "Martelo Demolidor 30 kg GSH 27 Bosch",
+      "slug": "aluguel-martelo-demolidor-30kg-bosch-gsh-27",
+      "category": "Martelos e Marteletes",
+      "image": "/images/produtos/aluguel-martelo-demolidor-30kg-bosch-gsh-27.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-martelo-demolidor-30kg-bosch-gsh-27.jpg"
+      ],
+      "status": "active",
+      "isFeatured": true,
+      "summary": "Rompedor elétrico de 30 kg e 1.900 W para demolições pesadas de concreto e asfalto.",
+      "description": "Alugue o martelo demolidor Bosch GSH 27, um rompedor de 30 kg com motor de 1.900 W. É a escolha para quebrar pisos de concreto, pavimentos e estruturas espessas sem precisar de compressor. Trabalha na vertical, com o peso do próprio equipamento ajudando no rompimento.",
+      "specs": {
+        "operatingWeight": "30 kg",
+        "power": "1.900 W",
+        "fuelType": "Elétrico 220 V"
+      },
+      "features": [
+        "Rompedor de 30 kg, sem compressor",
+        "Motor de 1.900 W",
+        "Trabalho vertical com menos esforço"
+      ],
+      "applications": [
+        "Quebra de pisos e pavimentos",
+        "Demolição de concreto espesso",
+        "Abertura de valas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-61",
+      "code": "EQ-MAR-061",
+      "name": "Martelo Demolidor 30 kg HM1810 Makita",
+      "slug": "aluguel-martelo-demolidor-30kg-makita-hm1810",
+      "category": "Martelos e Marteletes",
+      "image": "/images/produtos/aluguel-martelo-demolidor-30kg-makita-hm1810.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-martelo-demolidor-30kg-makita-hm1810.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Rompedor de 2.000 W com 63 J de impacto, o mais forte da linha, para demolições pesadas.",
+      "description": "O martelo demolidor Makita HM1810 entrega 63 joules por impacto com motor de 2.000 W. Com 30 kg e encaixe sextavado de 28,6 mm, rompe concreto armado, asfalto e rocha branda com alta produtividade. Alugue para grandes demolições e obras de infraestrutura.",
+      "specs": {
+        "operatingWeight": "30 kg",
+        "power": "2.000 W",
+        "fuelType": "Elétrico 220 V",
+        "dimensions": "824 x 148 x 624 mm",
+        "additional": {
+          "Energia de impacto": "63 J",
+          "Impactos": "1.100 por minuto",
+          "Encaixe": "Sextavado 28,6 mm"
+        }
+      },
+      "features": [
+        "Energia de impacto de 63 J",
+        "Motor de 2.000 W",
+        "Encaixe sextavado de 28,6 mm"
+      ],
+      "applications": [
+        "Demolição de concreto armado",
+        "Quebra de asfalto",
+        "Obras de infraestrutura"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-47",
+      "code": "EQ-LIX-047",
+      "name": "Lixadeira Angular 7\" 9209B Makita",
+      "slug": "aluguel-lixadeira-angular-makita-9209b",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-lixadeira-angular-makita-9209b.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-lixadeira-angular-makita-9209b.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Lixadeira de 1.300 W e 5.000 rpm para disco e lixa de 180 mm.",
+      "description": "Alugue a lixadeira Makita 9209B para lixar, desbastar e dar acabamento em concreto, metal e madeira. Com 1.300 W e 5.000 rpm, trabalha com disco e lixa de 180 mm (7\"). É indicada para regularizar superfícies, remover tintas e preparar pisos.",
+      "specs": {
+        "operatingWeight": "4,7 kg",
+        "power": "1.300 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Rotação": "5.000 rpm",
+          "Disco e lixa": "180 mm (7\")",
+          "Eixo": "M14"
+        }
+      },
+      "features": [
+        "Disco e lixa de 7\"",
+        "Motor de 1.300 W",
+        "Eixo M14 padrão"
+      ],
+      "applications": [
+        "Desbaste de concreto",
+        "Remoção de tinta e ferrugem",
+        "Preparação de superfícies"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-45",
+      "code": "EQ-LIX-045",
+      "name": "Lixadeira Angular GWS 12-U Bosch",
+      "slug": "aluguel-lixadeira-bosch-gws-12-u",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-lixadeira-bosch-gws-12-u.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-lixadeira-bosch-gws-12-u.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Lixadeira de 1.200 W para lixa de 7\", rebolo copo e escova de aço de 5\".",
+      "description": "A lixadeira Bosch GWS 12-U é versátil para lixar, desbastar e limpar superfícies. Com 1.200 W e 5.500 rpm, aceita disco de lixa de 7\", rebolo copo e escova de aço de 5\". Alugue para preparar paredes, pisos e peças metálicas.",
+      "specs": {
+        "operatingWeight": "3,6 kg",
+        "power": "1.200 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Rotação": "5.500 rpm",
+          "Disco de lixa": "178 mm (7\")",
+          "Rebolo copo e escova": "125 mm (5\")",
+          "Eixo": "M14"
+        }
+      },
+      "features": [
+        "Aceita lixa, rebolo copo e escova de aço",
+        "Motor de 1.200 W",
+        "Leve: 3,6 kg"
+      ],
+      "applications": [
+        "Desbaste de paredes e pisos",
+        "Limpeza de peças metálicas",
+        "Acabamento de concreto"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-50",
+      "code": "EQ-LIX-050",
+      "name": "Lixadeira Vertical 9218SB Makita",
+      "slug": "aluguel-lixadeira-vertical-makita-9218sb",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-lixadeira-vertical-makita-9218sb.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-lixadeira-vertical-makita-9218sb.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Lixadeira vertical de 570 W e 4.500 rpm para lixa de 180 mm, leve e precisa.",
+      "description": "Alugue a lixadeira vertical Makita 9218SB para lixar e polir superfícies planas com controle. Com 570 W, 4.500 rpm e disco de 180 mm, pesa apenas 2,7 kg. É ótima para acabamento em madeira, pedras e massa corrida.",
+      "specs": {
+        "operatingWeight": "2,7 kg",
+        "power": "570 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Rotação": "4.500 rpm",
+          "Disco e lixa": "180 mm (7\")",
+          "Eixo": "M14"
+        }
+      },
+      "features": [
+        "Leve: 2,7 kg",
+        "Disco de 180 mm",
+        "Controle para acabamento fino"
+      ],
+      "applications": [
+        "Lixamento de madeira",
+        "Polimento de pedras",
+        "Acabamento de superfícies"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-69",
+      "code": "EQ-LIX-069",
+      "name": "Lixadeira Orbital Makita",
+      "slug": "aluguel-lixadeira-orbital-makita",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-lixadeira-orbital-makita.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-lixadeira-orbital-makita.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Lixadeira orbital de 180 W com 10.000 oscilações por minuto para acabamento fino.",
+      "description": "A lixadeira orbital Makita é ideal para acabamento fino em madeira, massa corrida e superfícies pintadas. Com 10.000 oscilações por minuto e base de 93 x 185 mm, deixa a superfície uniforme sem marcas. Alugue para pintura, marcenaria e reformas.",
+      "specs": {
+        "operatingWeight": "1,4 kg",
+        "power": "180 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Oscilações": "10.000 por minuto",
+          "Base": "93 x 185 mm",
+          "Lixa": "93 x 228 mm"
+        }
+      },
+      "features": [
+        "Acabamento fino e uniforme",
+        "Muito leve: 1,4 kg",
+        "Usa folha de lixa comum"
+      ],
+      "applications": [
+        "Preparação para pintura",
+        "Lixamento de massa corrida",
+        "Marcenaria e móveis"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-44",
+      "code": "EQ-POL-044",
+      "name": "Politriz GPO 12 Professional Bosch",
+      "slug": "aluguel-politriz-bosch-gpo-12",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-politriz-bosch-gpo-12.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-politriz-bosch-gpo-12.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Politriz de 1.200 W e 2.100 rpm para polimento com boina de 8\" e lixa de 7\".",
+      "description": "Alugue a politriz Bosch GPO 12 Professional para polir pisos, pedras, metais e pinturas. A baixa rotação de 2.100 rpm e o motor de 1.200 W garantem polimento uniforme, sem aquecer a superfície. Aceita boina de pele de 8\", disco de lixa de 7\" e escova de aço de 5\".",
+      "specs": {
+        "operatingWeight": "3,2 kg",
+        "power": "1.200 W",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Rotação": "2.100 rpm",
+          "Boina": "203 mm (8\")",
+          "Disco de lixa": "178 mm (7\")",
+          "Eixo": "M14"
+        }
+      },
+      "features": [
+        "Baixa rotação para polimento",
+        "Aceita boina, lixa e escova",
+        "Motor de 1.200 W"
+      ],
+      "applications": [
+        "Polimento de pedras e granitos",
+        "Acabamento de pisos",
+        "Polimento de metais"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-43",
+      "code": "EQ-PAR-043",
+      "name": "Parafusadeira para Drywall USE 8 Metabo",
+      "slug": "aluguel-parafusadeira-drywall-metabo-use-8",
+      "category": "Máquinas Elétricas",
+      "image": "/images/produtos/aluguel-parafusadeira-drywall-metabo-use-8.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-parafusadeira-drywall-metabo-use-8.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Parafusadeira com 40 Nm de torque, controle de torque e de profundidade e encaixe sextavado de 1/4\".",
+      "description": "Alugue a parafusadeira Metabo USE 8 para montar drywall, forros e estruturas com velocidade e acabamento padronizado. O controle de torque e de profundidade evita rasgar a placa e deixa todos os parafusos no mesmo nível. Tem 40 Nm de torque e encaixe sextavado de 1/4\".",
+      "specs": {
+        "operatingWeight": "Sob consulta",
+        "power": "Sob consulta",
+        "fuelType": "Elétrico",
+        "additional": {
+          "Torque": "40 Nm",
+          "Encaixe": "Sextavado 1/4\"",
+          "Controles": "Torque e profundidade"
+        }
+      },
+      "features": [
+        "Controle de profundidade do parafuso",
+        "Controle de torque",
+        "Encaixe rápido de 1/4\""
+      ],
+      "applications": [
+        "Montagem de drywall",
+        "Forros e divisórias",
+        "Estruturas metálicas leves"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-26",
+      "code": "EQ-CPP-026",
+      "name": "Compactador de Percussão (Sapo) BS50 Wacker Neuson",
+      "slug": "aluguel-compactador-de-solo-sapo-wacker-bs50",
+      "category": "Compactação de Solos",
+      "image": "/images/produtos/aluguel-compactador-de-solo-sapo-wacker-bs50.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-compactador-de-solo-sapo-wacker-bs50.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Compactador de solo tipo sapo de 59 kg, motor 2 tempos e rendimento de 301 m² por hora.",
+      "description": "Alugue o compactador de percussão Wacker Neuson BS50, o conhecido \"sapo\", para compactar solo em valas, fundações e reaterros. Com 59 kg e rendimento de 301 m² por hora, alcança espaços estreitos onde equipamentos maiores não entram.",
+      "specs": {
+        "operatingWeight": "59 kg",
+        "power": "Sob consulta",
+        "fuelType": "Gasolina 2 tempos",
+        "additional": {
+          "Rendimento": "301 m²/h"
+        }
+      },
+      "features": [
+        "Ideal para valas estreitas",
+        "Rendimento de 301 m²/h",
+        "Leve e de fácil transporte"
+      ],
+      "applications": [
+        "Reaterro de valas",
+        "Compactação de fundações",
+        "Base de calçadas e pisos"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-37",
+      "code": "EQ-CPP-037",
+      "name": "Compactador de Percussão (Sapo) LT700 Dynapac",
+      "slug": "aluguel-compactador-de-solo-sapo-dynapac-lt700",
+      "category": "Compactação de Solos",
+      "image": "/images/produtos/aluguel-compactador-de-solo-sapo-dynapac-lt700.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-compactador-de-solo-sapo-dynapac-lt700.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Compactador tipo sapo de 73 kg com 18,6 kN de força de golpe e compactação de até 60 cm.",
+      "description": "O compactador de percussão Dynapac LT700 compacta solo coesivo e misto com até 60 cm de profundidade. A força de golpe de 18,6 kN e a sapata de 28 x 32 cm garantem bom desempenho em valas e áreas confinadas. Alugue para redes de água, esgoto, drenagem e fundações.",
+      "specs": {
+        "operatingWeight": "73 kg",
+        "power": "3 HP",
+        "fuelType": "Gasolina 4 tempos",
+        "fuelTankCapacity": "2,5 L",
+        "additional": {
+          "Força de golpe": "18,6 kN",
+          "Profundidade de compactação": "Até 60 cm",
+          "Sapata": "28 x 32 cm",
+          "Velocidade de avanço": "18 m/min"
+        }
+      },
+      "features": [
+        "Compactação de até 60 cm",
+        "Força de golpe de 18,6 kN",
+        "Motor 4 tempos econômico"
+      ],
+      "applications": [
+        "Valas de redes de água e esgoto",
+        "Drenagem e galerias",
+        "Fundações e sapatas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-11",
+      "code": "EQ-CPP-011",
+      "name": "Compactador de Percussão (Sapo) SRV 620 Weber",
+      "slug": "aluguel-compactador-de-solo-sapo-weber-srv-620",
+      "category": "Compactação de Solos",
+      "image": "/images/produtos/aluguel-compactador-de-solo-sapo-weber-srv-620.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-compactador-de-solo-sapo-weber-srv-620.jpg"
+      ],
+      "status": "active",
+      "isFeatured": true,
+      "summary": "Compactador tipo sapo com 21 kN de força de golpe, 720 golpes por minuto e 320 m² por hora.",
+      "description": "Alugue o compactador de solo Weber SRV 620 para compactar valas, reaterros e bases com rapidez. São até 720 golpes por minuto com força de 21 kN, compactando até 60 cm de profundidade e 320 m² por hora. O consumo de apenas 1 litro por hora reduz o custo da operação.",
+      "specs": {
+        "operatingWeight": "65 kg",
+        "power": "3 HP",
+        "fuelType": "Gasolina 4 tempos",
+        "fuelTankCapacity": "2,5 L",
+        "additional": {
+          "Golpes": "Até 720 por minuto",
+          "Força de golpe": "21 kN",
+          "Profundidade de compactação": "Até 60 cm",
+          "Área de compactação": "320 m²/h",
+          "Consumo": "1,0 L/h",
+          "Sapata": "28 x 32 cm"
+        }
+      },
+      "features": [
+        "Força de golpe de 21 kN",
+        "Rende 320 m² por hora",
+        "Consumo de 1 litro por hora"
+      ],
+      "applications": [
+        "Reaterro de valas",
+        "Compactação de bases para pisos",
+        "Obras de saneamento"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-29",
+      "code": "EQ-PVB-029",
+      "name": "Placa Vibratória CPT 90 Menegotti",
+      "slug": "aluguel-placa-vibratoria-menegotti-cpt-90",
+      "category": "Compactação de Solos",
+      "image": "/images/produtos/aluguel-placa-vibratoria-menegotti-cpt-90.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-placa-vibratoria-menegotti-cpt-90.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Placa vibratória de 93 kg que compacta até 35 cm de profundidade e até 700 m² por hora.",
+      "description": "Alugue a placa vibratória Menegotti CPT 90 para compactar solos granulares, areia, brita e pisos intertravados. Com força centrífuga de 1.800 kgf e 6.000 vibrações por minuto, compacta de 620 a 700 m² por hora. É indicada para calçadas, estacionamentos e bases de pisos.",
+      "specs": {
+        "operatingWeight": "93 kg",
+        "power": "Sob consulta",
+        "fuelType": "Gasolina",
+        "dimensions": "820 x 360 x 900 mm",
+        "additional": {
+          "Base": "510 x 360 mm",
+          "Profundidade de compactação": "35 cm",
+          "Frequência": "6.000 vibrações por minuto",
+          "Força centrífuga": "1.800 kgf",
+          "Área compactada": "620 a 700 m²/h"
+        }
+      },
+      "features": [
+        "Rende até 700 m² por hora",
+        "Força centrífuga de 1.800 kgf",
+        "Compacta até 35 cm"
+      ],
+      "applications": [
+        "Assentamento de pisos intertravados",
+        "Base de brita e areia",
+        "Calçadas e estacionamentos"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-14",
+      "code": "EQ-PVB-014",
+      "name": "Placa Vibratória Reversível CR5 Weber",
+      "slug": "aluguel-placa-vibratoria-reversivel-weber-cr5",
+      "category": "Compactação de Solos",
+      "image": "/images/produtos/aluguel-placa-vibratoria-reversivel-weber-cr5.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-placa-vibratoria-reversivel-weber-cr5.jpg"
+      ],
+      "status": "active",
+      "isFeatured": true,
+      "summary": "Placa vibratória reversível de 295 kg e 45 kN, com compactação de até 50 cm e 1.200 m² por hora.",
+      "description": "A placa vibratória reversível Weber CR5 é indicada para compactação pesada de solos, bases e sub-bases. Com 45 kN de força centrífuga e motor de 13 HP, compacta até 50 cm de profundidade e até 1.200 m² por hora. Por avançar e recuar, trabalha bem em valas e áreas com obstáculos.",
+      "specs": {
+        "operatingWeight": "295 kg",
+        "power": "13 HP",
+        "fuelType": "Gasolina 4 tempos",
+        "additional": {
+          "Base": "55 x 89 cm",
+          "Força centrífuga": "45 kN",
+          "Frequência": "72 Hz",
+          "Profundidade de compactação": "Até 50 cm",
+          "Área de compactação": "Até 1.200 m²/h",
+          "Velocidade": "22 m/min",
+          "Consumo": "1,8 L/h"
+        }
+      },
+      "features": [
+        "Reversível: avança e recua",
+        "Força centrífuga de 45 kN",
+        "Compacta até 50 cm"
+      ],
+      "applications": [
+        "Bases e sub-bases de pavimentos",
+        "Reaterros de grande volume",
+        "Pátios e estacionamentos"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-31",
+      "code": "EQ-PVB-031",
+      "name": "Placa Vibratória Reversível LG160 Dynapac",
+      "slug": "aluguel-placa-vibratoria-reversivel-dynapac-lg160",
+      "category": "Compactação de Solos",
+      "image": "/images/produtos/aluguel-placa-vibratoria-reversivel-dynapac-lg160.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-placa-vibratoria-reversivel-dynapac-lg160.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Placa reversível de 155 kg, 28 kN de força centrífuga e motor de 5,5 HP, com baixa vibração no cabo.",
+      "description": "Alugue a placa vibratória reversível Dynapac LG160 para compactar solos e bases com conforto para o operador. Tem 28 kN de força centrífuga, frequência de 80 Hz e baixa vibração transmitida ao cabo. A reversão facilita o trabalho em valas e espaços limitados.",
+      "specs": {
+        "operatingWeight": "155 kg",
+        "power": "5,5 HP",
+        "fuelType": "Gasolina 4 tempos",
+        "dimensions": "1.143 x 330 x 1.088 mm",
+        "additional": {
+          "Força centrífuga": "28 kN",
+          "Frequência": "80 Hz",
+          "Amplitude": "1,4 mm",
+          "Velocidade": "22 m/min",
+          "Vibração no cabo": "1,5 m/s²",
+          "Ruído no ouvido do operador": "92 dB"
+        }
+      },
+      "features": [
+        "Reversível",
+        "Baixa vibração no cabo",
+        "Força centrífuga de 28 kN"
+      ],
+      "applications": [
+        "Valas e reaterros",
+        "Bases de pavimento",
+        "Pisos intertravados"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-13",
+      "code": "EQ-PVB-013",
+      "name": "Placa Vibratória Unidirecional CF2 Weber",
+      "slug": "aluguel-placa-vibratoria-weber-cf2",
+      "category": "Compactação de Solos",
+      "image": "/images/produtos/aluguel-placa-vibratoria-weber-cf2.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-placa-vibratoria-weber-cf2.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Placa vibratória de 80 kg com 15 kN, tanque de água e rendimento de até 660 m² por hora.",
+      "description": "A placa vibratória unidirecional Weber CF2 compacta areia, brita, pisos intertravados e asfalto até 30 cm de profundidade. O tanque de água de 12 litros evita que o asfalto grude na base, e a força de 15 kN garante bom acabamento. Alugue para calçadas, reparos de pavimento e bases de pisos.",
+      "specs": {
+        "operatingWeight": "80 kg",
+        "power": "5,5 HP",
+        "fuelType": "Gasolina 4 tempos",
+        "fuelTankCapacity": "3,6 L",
+        "additional": {
+          "Base": "45 x 55 cm",
+          "Força centrífuga": "15 kN",
+          "Frequência": "98 Hz",
+          "Profundidade de compactação": "Até 30 cm",
+          "Área de compactação": "Até 660 m²/h",
+          "Tanque de água": "12 L"
+        }
+      },
+      "features": [
+        "Tanque de água para asfalto",
+        "Rende até 660 m² por hora",
+        "Leve: 80 kg"
+      ],
+      "applications": [
+        "Reparos em asfalto",
+        "Pisos intertravados",
+        "Calçadas e bases granulares"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-25",
+      "code": "EQ-PVB-025",
+      "name": "Placa Vibratória VP 1550AW Wacker Neuson",
+      "slug": "aluguel-placa-vibratoria-wacker-vp-1550aw",
+      "category": "Compactação de Solos",
+      "image": "/images/produtos/aluguel-placa-vibratoria-wacker-vp-1550aw.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-placa-vibratoria-wacker-vp-1550aw.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Placa vibratória de 86 kg com 15 kN de força centrífuga e rendimento de 615 m² por hora.",
+      "description": "Alugue a placa vibratória Wacker Neuson VP 1550AW para compactar solos granulares, pisos intertravados e asfalto. Com 15 kN de força centrífuga e rendimento de 615 m² por hora, é compacta e fácil de transportar. Muito usada em calçadas, pátios e acabamento de pavimentos.",
+      "specs": {
+        "operatingWeight": "86 kg",
+        "power": "Sob consulta",
+        "fuelType": "Gasolina 4 tempos",
+        "additional": {
+          "Força centrífuga": "15 kN",
+          "Rendimento": "615 m²/h"
+        }
+      },
+      "features": [
+        "Rende 615 m² por hora",
+        "Compacta e leve",
+        "Indicada para asfalto e intertravados"
+      ],
+      "applications": [
+        "Pisos intertravados",
+        "Calçadas e pátios",
+        "Reparos de pavimento"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-15",
+      "code": "EQ-ROL-015",
+      "name": "Rolo Compactador Vibratório RCW 900 Weber",
+      "slug": "aluguel-rolo-compactador-vibratorio-weber-rcw-900",
+      "category": "Compactação de Solos",
+      "image": "/images/produtos/aluguel-rolo-compactador-vibratorio-weber-rcw-900.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-rolo-compactador-vibratorio-weber-rcw-900.jpg"
+      ],
+      "status": "active",
+      "isFeatured": true,
+      "summary": "Rolo compactador de 1.400 kg com motor de 18 HP, compactação de até 30 cm e até 2.000 m² por hora.",
+      "description": "O rolo compactador vibratório Weber RCW 900 tem 1.400 kg de peso operacional e compacta até 2.000 m² por hora. É indicado para asfalto, bases de pavimento, calçadas e estacionamentos onde um rolo grande não entra. Com tanque de água de 60 litros e velocidade de até 8 km/h, entrega acabamento uniforme. Alugue com orientação de uso.",
+      "specs": {
+        "operatingWeight": "1.400 kg",
+        "power": "18 HP",
+        "fuelType": "Gasolina 4 tempos",
+        "dimensions": "1.020 x 1.820 x 2.600 mm (transporte)",
+        "additional": {
+          "Peso": "1.200 kg",
+          "Frequência": "68 Hz",
+          "Força centrífuga": "15 kN",
+          "Profundidade de compactação": "15 a 30 cm",
+          "Área de compactação": "Até 2.000 m²/h",
+          "Velocidade": "0 a 8 km/h",
+          "Tanque de água": "60 L",
+          "Rampa máxima": "30%",
+          "Raio de giro": "2,6 m"
+        }
+      },
+      "features": [
+        "Rende até 2.000 m² por hora",
+        "Tanque de água de 60 L",
+        "Vence rampas de até 30%"
+      ],
+      "applications": [
+        "Asfalto e recapeamento",
+        "Bases de pavimento",
+        "Estacionamentos e condomínios"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Operação somente por profissional treinado e habilitado, conforme NR-11 e NR-12, com uso de EPIs.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-34",
+      "code": "EQ-GER-034",
+      "name": "Gerador de Energia 2,5 kVA TG2800MX Toyama",
+      "slug": "aluguel-gerador-2-5-kva-toyama-tg2800mx",
+      "category": "Geradores",
+      "image": "/images/produtos/aluguel-gerador-2-5-kva-toyama-tg2800mx.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-gerador-2-5-kva-toyama-tg2800mx.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Gerador a gasolina de 2,5 kVA, bivolt, com autonomia aproximada de 12 horas.",
+      "description": "Alugue o gerador Toyama TG2800MX para alimentar ferramentas elétricas, iluminação e pequenos equipamentos onde não há energia. Tem 2,5 kVA de potência máxima, saída 110/220 V e autonomia de cerca de 12 horas com o tanque de 15 litros. Leve e fácil de transportar.",
+      "specs": {
+        "operatingWeight": "42 kg",
+        "power": "2,5 kVA (nominal de 2,2 kVA)",
+        "fuelType": "Gasolina",
+        "fuelTankCapacity": "15 L",
+        "dimensions": "450 x 590 x 445 mm",
+        "additional": {
+          "Voltagem": "110/220 V",
+          "Fases": "Monofásico",
+          "Autonomia": "Cerca de 12 horas"
+        }
+      },
+      "features": [
+        "Autonomia de cerca de 12 horas",
+        "Saída 110/220 V",
+        "Leve: 42 kg"
+      ],
+      "applications": [
+        "Ferramentas elétricas na obra",
+        "Iluminação de canteiro",
+        "Eventos e uso emergencial"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-35",
+      "code": "EQ-GER-035",
+      "name": "Gerador de Energia 5,5 kVA TD6000CX Toyama",
+      "slug": "aluguel-gerador-5-5-kva-toyama-td6000cx",
+      "category": "Geradores",
+      "image": "/images/produtos/aluguel-gerador-5-5-kva-toyama-td6000cx.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-gerador-5-5-kva-toyama-td6000cx.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Gerador a diesel de 5,5 kVA, bivolt, para ferramentas pesadas e equipamentos de obra.",
+      "description": "O gerador Toyama TD6000CX fornece 5,5 kVA de potência máxima para betoneiras, serras, marteletes e iluminação. Tem saída 110/220 V, tanque de 15 litros e autonomia aproximada de 7 horas. Alugue para obras sem ligação elétrica, frentes de trabalho afastadas e emergências.",
+      "specs": {
+        "operatingWeight": "95 kg",
+        "power": "5,5 kVA (nominal de 5 kVA)",
+        "fuelType": "Diesel",
+        "fuelTankCapacity": "15 L",
+        "dimensions": "720 x 480 x 645 mm",
+        "additional": {
+          "Voltagem": "110/220 V",
+          "Fases": "Monofásico",
+          "Autonomia": "Cerca de 7 horas"
+        }
+      },
+      "features": [
+        "5,5 kVA de potência máxima",
+        "Saída 110/220 V",
+        "Motor a diesel econômico"
+      ],
+      "applications": [
+        "Obras sem rede elétrica",
+        "Betoneiras e serras",
+        "Energia de emergência"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-38",
+      "code": "EQ-BOM-038",
+      "name": "Motobomba Autoescorvante 3\" MB3AL Água Limpa CSM",
+      "slug": "aluguel-motobomba-autoescorvante-agua-limpa-csm-mb3al",
+      "category": "Bombas e Vibradores",
+      "image": "/images/produtos/aluguel-motobomba-autoescorvante-agua-limpa-csm-mb3al.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-motobomba-autoescorvante-agua-limpa-csm-mb3al.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Motobomba a gasolina de 6,5 HP para água limpa, com vazão de 48 m³/h e conexões de 3\".",
+      "description": "Alugue a motobomba autoescorvante CSM MB3AL para transferir e drenar água limpa com rapidez. O motor a gasolina de 6,5 HP bombeia até 48 m³ por hora, com altura máxima de 30 metros e conexões de 3\". Por ser autoescorvante, não precisa ser preenchida com água a cada partida.",
+      "specs": {
+        "operatingWeight": "30 kg",
+        "power": "6,5 HP",
+        "fuelType": "Gasolina",
+        "additional": {
+          "Sucção e recalque": "3\" (80 mm)",
+          "Vazão máxima": "48 m³/h",
+          "Altura máxima": "30 m.c.a.",
+          "Sucção máxima": "6 m.c.a."
+        }
+      },
+      "features": [
+        "Autoescorvante",
+        "Vazão de até 48 m³/h",
+        "Funciona sem energia elétrica"
+      ],
+      "applications": [
+        "Esgotamento de água limpa",
+        "Transferência entre reservatórios",
+        "Irrigação e abastecimento"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-40",
+      "code": "EQ-BOM-040",
+      "name": "Motobomba Autoescorvante 3\" MB3AS Água Suja CSM",
+      "slug": "aluguel-motobomba-autoescorvante-agua-suja-csm-mb3as",
+      "category": "Bombas e Vibradores",
+      "image": "/images/produtos/aluguel-motobomba-autoescorvante-agua-suja-csm-mb3as.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-motobomba-autoescorvante-agua-suja-csm-mb3as.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Motobomba para água suja com sólidos, 6,5 HP e vazão de até 66 m³/h.",
+      "description": "A motobomba autoescorvante CSM MB3AS foi feita para água suja, com barro e pequenos sólidos. Bombeia até 66 m³ por hora, com sucção de até 8 metros e conexões de 3\". Alugue para drenar valas, escavações, fundações e áreas alagadas.",
+      "specs": {
+        "operatingWeight": "38 kg",
+        "power": "6,5 HP",
+        "fuelType": "Gasolina",
+        "additional": {
+          "Sucção e recalque": "3\" (80 mm)",
+          "Vazão máxima": "66 m³/h",
+          "Altura máxima": "30 m.c.a.",
+          "Sucção máxima": "8 m.c.a."
+        }
+      },
+      "features": [
+        "Própria para água suja",
+        "Vazão de até 66 m³/h",
+        "Sucção de até 8 metros"
+      ],
+      "applications": [
+        "Drenagem de valas e escavações",
+        "Esgotamento de fundações",
+        "Áreas alagadas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-39",
+      "code": "EQ-BOM-039",
+      "name": "Motobomba Autoescorvante 4\" MB4AL Água Limpa CSM",
+      "slug": "aluguel-motobomba-autoescorvante-4-pol-csm-mb4al",
+      "category": "Bombas e Vibradores",
+      "image": "/images/produtos/aluguel-motobomba-autoescorvante-4-pol-csm-mb4al.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-motobomba-autoescorvante-4-pol-csm-mb4al.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Motobomba de 9 HP com conexões de 4\" e vazão de até 80 m³/h para grandes volumes de água.",
+      "description": "Alugue a motobomba autoescorvante CSM MB4AL quando precisar mover grandes volumes de água limpa. Com motor a gasolina de 9 HP e conexões de 4\", chega a 80 m³ por hora. É indicada para esvaziar reservatórios, piscinas e cisternas e para irrigação.",
+      "specs": {
+        "operatingWeight": "47 kg",
+        "power": "9 HP",
+        "fuelType": "Gasolina",
+        "additional": {
+          "Sucção e recalque": "4\" (100 mm)",
+          "Vazão máxima": "80 m³/h",
+          "Altura máxima": "26 m.c.a.",
+          "Sucção máxima": "6 m.c.a."
+        }
+      },
+      "features": [
+        "Vazão de até 80 m³/h",
+        "Conexões de 4\"",
+        "Autoescorvante"
+      ],
+      "applications": [
+        "Esvaziamento de reservatórios e piscinas",
+        "Transferência de grandes volumes",
+        "Irrigação"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-19",
+      "code": "EQ-BOM-019",
+      "name": "Bomba Submersível de Mangote BWA 500 Weber",
+      "slug": "aluguel-bomba-submersivel-de-mangote-weber-bwa-500",
+      "category": "Bombas e Vibradores",
+      "image": "/images/produtos/aluguel-bomba-submersivel-de-mangote-weber-bwa-500.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-bomba-submersivel-de-mangote-weber-bwa-500.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Bomba submersível acionada por motor Weber, com saída de 2\" e vazão de até 42 m³/h.",
+      "description": "A bomba submersível de mangote Weber BWA 500 é mergulhada direto no ponto de água e acionada por um motor de acionamento Weber. Com saída de 2\" e vazão de até 42 m³ por hora, drena poços, valas e caixas de passagem com facilidade. Alugue junto com o motor elétrico ou a gasolina.",
+      "specs": {
+        "operatingWeight": "18 kg (sem motor)",
+        "power": "Usa motor de acionamento",
+        "fuelType": "Conforme o motor de acionamento",
+        "additional": {
+          "Saída": "2\"",
+          "Vazão máxima": "42 m³/h"
+        }
+      },
+      "features": [
+        "Trabalha submersa no ponto de água",
+        "Vazão de até 42 m³/h",
+        "Compatível com motores Weber"
+      ],
+      "applications": [
+        "Drenagem de poços e valas",
+        "Caixas de passagem",
+        "Escavações com lençol freático"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-65",
+      "code": "EQ-GUI-065",
+      "name": "Guincho de Coluna Menegotti",
+      "slug": "aluguel-guincho-de-coluna-menegotti",
+      "category": "Betoneiras e Afins",
+      "image": "/images/produtos/aluguel-guincho-de-coluna-menegotti.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-guincho-de-coluna-menegotti.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Guincho de coluna com elevação a 25 m/min e altura de 30 m, opcional de 60 m.",
+      "description": "Alugue o guincho de coluna Menegotti para subir materiais entre pavimentos com segurança e rapidez. Eleva cargas a 25 metros por minuto, com cabo para até 30 metros (opcional de 60 metros). Funciona em rede bifásica ou trifásica (220/380 V) e pode ser usado com o balde para guincho.",
+      "specs": {
+        "operatingWeight": "Sob consulta",
+        "power": "Sob consulta",
+        "fuelType": "Elétrico bifásico ou trifásico 220/380 V",
+        "maxReach": "30 m de elevação (opcional de 60 m)",
+        "additional": {
+          "Velocidade de elevação": "25 m/min",
+          "Diâmetro do cabo": "4 mm"
+        }
+      },
+      "features": [
+        "Elevação de até 30 m (opcional 60 m)",
+        "Velocidade de 25 m/min",
+        "Uso com balde ou gancho"
+      ],
+      "applications": [
+        "Transporte de materiais entre lajes",
+        "Obras de sobrados e prédios",
+        "Reformas de fachadas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-62",
+      "code": "EQ-GUI-062",
+      "name": "Guincho de Coluna M400 Mecan",
+      "slug": "aluguel-guincho-de-coluna-mecan-m400",
+      "category": "Betoneiras e Afins",
+      "image": "/images/produtos/aluguel-guincho-de-coluna-mecan-m400.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-guincho-de-coluna-mecan-m400.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Guincho de coluna que eleva 200 kg com cabo simples e 400 kg com cabo duplo.",
+      "description": "O guincho de coluna Mecan M400 eleva até 200 kg com cabo simples e até 400 kg com cabo duplo. Com motor elétrico trifásico, agiliza a subida de blocos, sacos de cimento, argamassa e ferragens. Alugue para obras verticais de pequeno e médio porte.",
+      "specs": {
+        "operatingWeight": "94 kg",
+        "power": "Sob consulta",
+        "fuelType": "Elétrico trifásico",
+        "bucketCapacity": "200 kg (cabo simples) / 400 kg (cabo duplo)"
+      },
+      "features": [
+        "Até 400 kg com cabo duplo",
+        "Motor elétrico trifásico",
+        "Fixação na coluna da obra"
+      ],
+      "applications": [
+        "Elevação de blocos e cimento",
+        "Obras verticais",
+        "Reformas em prédios"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-64",
+      "code": "EQ-GRU-064",
+      "name": "Mini Grua PU500K Via Trade",
+      "slug": "aluguel-mini-grua-via-trade-pu500k",
+      "category": "Betoneiras e Afins",
+      "image": "/images/produtos/aluguel-mini-grua-via-trade-pu500k.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-mini-grua-via-trade-pu500k.jpg"
+      ],
+      "status": "active",
+      "isFeatured": true,
+      "summary": "Mini grua com capacidade de 500 kg, giro de 360° e cabo de até 35 m.",
+      "description": "Alugue a mini grua Via Trade PU500K para elevar até 500 kg com giro de 360° e posicionar a carga com precisão. Eleva a 20 metros por minuto, com cabo de até 35 metros, e funciona em 220 V. É uma alternativa prática ao guincho de coluna em sobrados, prédios baixos e reformas.",
+      "specs": {
+        "operatingWeight": "105 kg (tripé de 45 kg)",
+        "power": "Sob consulta",
+        "fuelType": "Elétrico 220 V",
+        "bucketCapacity": "500 kg",
+        "maxReach": "Cabo de até 35 m",
+        "additional": {
+          "Velocidade de elevação": "20 m/min",
+          "Giro": "360°",
+          "Diâmetro do cabo": "Até 6 mm"
+        }
+      },
+      "features": [
+        "Capacidade de 500 kg",
+        "Giro de 360°",
+        "Cabo de até 35 m"
+      ],
+      "applications": [
+        "Elevação de materiais em sobrados",
+        "Reformas de telhados e lajes",
+        "Obras em prédios baixos"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-66",
+      "code": "EQ-BAL-066",
+      "name": "Balde para Guincho de Coluna",
+      "slug": "aluguel-balde-para-guincho-de-coluna",
+      "category": "Betoneiras e Afins",
+      "image": "/images/produtos/aluguel-balde-para-guincho-de-coluna.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-balde-para-guincho-de-coluna.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Balde metálico para transportar concreto, argamassa e entulho com guincho de coluna.",
+      "description": "Alugue o balde para guincho de coluna para subir concreto, argamassa e areia e descer entulho entre pavimentos. Acoplado ao guincho, reduz o esforço da equipe e o desperdício de material no transporte vertical.",
+      "specs": {
+        "operatingWeight": "Sob consulta",
+        "power": "Não se aplica",
+        "fuelType": "Não se aplica"
+      },
+      "features": [
+        "Encaixe no gancho do guincho",
+        "Estrutura metálica resistente",
+        "Facilita o transporte vertical"
+      ],
+      "applications": [
+        "Transporte de concreto e argamassa",
+        "Descida de entulho",
+        "Concretagem de lajes pequenas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-72",
+      "code": "EQ-MEX-072",
+      "name": "Miniescavadeira E50 New Holland",
+      "slug": "aluguel-miniescavadeira-new-holland-e50",
+      "category": "Equipamentos Compactos",
+      "image": "/images/produtos/aluguel-miniescavadeira-new-holland-e50.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-miniescavadeira-new-holland-e50.jpg"
+      ],
+      "status": "active",
+      "isFeatured": true,
+      "summary": "Miniescavadeira de 4.800 kg e 40 HP, com 1,96 m de largura para obras em espaços restritos.",
+      "description": "Alugue a miniescavadeira New Holland E50 para escavar valas, fundações e piscinas com precisão em áreas apertadas. Com 4.800 kg, 40 HP e apenas 1,96 m de largura, tem força de escavação de máquina maior e passa por acessos estreitos. Pode receber rompedor hidráulico.",
+      "specs": {
+        "operatingWeight": "4.800 kg",
+        "power": "40 HP",
+        "fuelType": "Diesel",
+        "dimensions": "Largura de 1,96 m e altura de 2,60 m"
+      },
+      "features": [
+        "Largura de 1,96 m para acessos estreitos",
+        "Motor de 40 HP",
+        "Aceita rompedor hidráulico"
+      ],
+      "applications": [
+        "Valas para redes e drenagem",
+        "Fundações e sapatas",
+        "Escavação de piscinas"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Operação somente por profissional treinado e habilitado, conforme NR-11 e NR-12, com uso de EPIs.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-70",
+      "code": "EQ-MCA-070",
+      "name": "Minicarregadeira L170 New Holland",
+      "slug": "aluguel-minicarregadeira-new-holland-l170",
+      "category": "Equipamentos Compactos",
+      "image": "/images/produtos/aluguel-minicarregadeira-new-holland-l170.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-minicarregadeira-new-holland-l170.jpg"
+      ],
+      "status": "active",
+      "isFeatured": true,
+      "summary": "Minicarregadeira (bobcat) de 2.512 kg e 52 HP, compatível com vassoura, garfo e rompedor.",
+      "description": "Alugue a minicarregadeira New Holland L170 para movimentar terra, entulho e materiais em áreas compactas. Com 52 HP e 2.512 kg, carrega caminhões, nivela terrenos e limpa obras com agilidade. Aceita acessórios como vassoura hidráulica, garfo pallet e rompedor hidráulico.",
+      "specs": {
+        "operatingWeight": "2.512 kg",
+        "power": "52 HP",
+        "fuelType": "Diesel",
+        "dimensions": "Largura de 1,64 m e altura de 1,91 m"
+      },
+      "features": [
+        "Motor de 52 HP",
+        "Compacta: 1,64 m de largura",
+        "Aceita vassoura, garfo e rompedor"
+      ],
+      "applications": [
+        "Movimentação de terra e entulho",
+        "Limpeza e nivelamento de terrenos",
+        "Carregamento de caminhões"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Operação somente por profissional treinado e habilitado, conforme NR-11 e NR-12, com uso de EPIs.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-71",
+      "code": "EQ-RET-071",
+      "name": "Retroescavadeira 1CX JCB",
+      "slug": "aluguel-retroescavadeira-compacta-jcb-1cx",
+      "category": "Equipamentos Compactos",
+      "image": "/images/produtos/aluguel-retroescavadeira-compacta-jcb-1cx.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-retroescavadeira-compacta-jcb-1cx.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Retroescavadeira compacta que escava e carrega, ideal para obras urbanas com pouco espaço.",
+      "description": "A retroescavadeira compacta JCB 1CX reúne pá carregadeira e braço escavador em uma máquina do tamanho de uma minicarregadeira. Alugue para abrir valas, carregar material e nivelar terreno em obras urbanas, condomínios e áreas com acesso restrito.",
+      "specs": {
+        "operatingWeight": "Sob consulta",
+        "power": "Sob consulta",
+        "fuelType": "Diesel"
+      },
+      "features": [
+        "Escava e carrega na mesma máquina",
+        "Tamanho compacto",
+        "Ágil em espaços restritos"
+      ],
+      "applications": [
+        "Valas para redes urbanas",
+        "Carregamento de entulho",
+        "Nivelamento de terrenos"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Operação somente por profissional treinado e habilitado, conforme NR-11 e NR-12, com uso de EPIs.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-75",
+      "code": "EQ-ACR-075",
+      "name": "Rompedor Hidráulico para Minicarregadeira e Miniescavadeira",
+      "slug": "aluguel-rompedor-hidraulico-para-minicarregadeira",
+      "category": "Equipamentos Compactos",
+      "image": "/images/produtos/aluguel-rompedor-hidraulico-para-minicarregadeira.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-rompedor-hidraulico-para-minicarregadeira.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Rompedor hidráulico de 160 kg para demolir concreto e rocha acoplado a equipamentos compactos.",
+      "description": "Alugue o rompedor hidráulico de 160 kg para transformar a minicarregadeira ou a miniescavadeira em uma demolidora. Quebra concreto, asfalto e rocha com muito mais produtividade que martelos manuais e sem expor a equipe à vibração.",
+      "specs": {
+        "operatingWeight": "160 kg",
+        "power": "Sistema hidráulico da máquina",
+        "fuelType": "Não se aplica"
+      },
+      "features": [
+        "Peso operacional de 160 kg",
+        "Acoplamento em equipamentos compactos",
+        "Reduz o trabalho manual de demolição"
+      ],
+      "applications": [
+        "Demolição de pisos e calçadas",
+        "Quebra de rocha",
+        "Remoção de concreto"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Operação somente por profissional treinado e habilitado, conforme NR-11 e NR-12, com uso de EPIs.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-74",
+      "code": "EQ-ACV-074",
+      "name": "Vassoura Hidráulica para Minicarregadeira",
+      "slug": "aluguel-vassoura-hidraulica-para-minicarregadeira",
+      "category": "Equipamentos Compactos",
+      "image": "/images/produtos/aluguel-vassoura-hidraulica-para-minicarregadeira.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-vassoura-hidraulica-para-minicarregadeira.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Vassoura recolhedora acoplada à minicarregadeira para limpar pátios, ruas e obras.",
+      "description": "A vassoura hidráulica acoplada à minicarregadeira varre e recolhe terra, areia e resíduos de obras, pátios e vias. Alugue para limpeza de canteiros, entregas de obra e manutenção de áreas pavimentadas, com muito mais rendimento que a varrição manual.",
+      "specs": {
+        "operatingWeight": "Sob consulta",
+        "power": "Sistema hidráulico da máquina",
+        "fuelType": "Não se aplica"
+      },
+      "features": [
+        "Varre e recolhe em uma passada",
+        "Acoplamento rápido",
+        "Alto rendimento em grandes áreas"
+      ],
+      "applications": [
+        "Limpeza de canteiros",
+        "Pátios e estacionamentos",
+        "Limpeza de vias após obras"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Operação somente por profissional treinado e habilitado, conforme NR-11 e NR-12, com uso de EPIs.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-73",
+      "code": "EQ-ACG-073",
+      "name": "Garfo Pallet para Minicarregadeira",
+      "slug": "aluguel-garfo-pallet-para-minicarregadeira",
+      "category": "Equipamentos Compactos",
+      "image": "/images/produtos/aluguel-garfo-pallet-para-minicarregadeira.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-garfo-pallet-para-minicarregadeira.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Garfo para minicarregadeira que transforma a máquina em empilhadeira de obra.",
+      "description": "Alugue o garfo pallet para minicarregadeira e movimente paletes de blocos, telhas, sacos de cimento e outros materiais pelo canteiro. O acessório transforma a minicarregadeira em uma empilhadeira para terrenos irregulares.",
+      "specs": {
+        "operatingWeight": "Sob consulta",
+        "power": "Não se aplica",
+        "fuelType": "Não se aplica"
+      },
+      "features": [
+        "Transforma a minicarregadeira em empilhadeira",
+        "Trabalha em terreno irregular",
+        "Acoplamento rápido"
+      ],
+      "applications": [
+        "Descarga de caminhões",
+        "Movimentação de paletes de blocos",
+        "Organização de materiais no canteiro"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Operação somente por profissional treinado e habilitado, conforme NR-11 e NR-12, com uso de EPIs.",
+      "deliveryTime": "Consulte a disponibilidade"
+    },
+    {
+      "id": "eq-mq-42",
+      "code": "EQ-ROC-042",
+      "name": "Roçadeira Lateral L26 Nakashi",
+      "slug": "aluguel-rocadeira-lateral-nakashi-l26",
+      "category": "Roçadeiras",
+      "image": "/images/produtos/aluguel-rocadeira-lateral-nakashi-l26.jpg",
+      "gallery": [
+        "/images/produtos/aluguel-rocadeira-lateral-nakashi-l26.jpg"
+      ],
+      "status": "active",
+      "isFeatured": false,
+      "summary": "Roçadeira lateral a gasolina de 25,6 cc, leve, para residências, sítios e chácaras.",
+      "description": "Alugue a roçadeira lateral Nakashi L26 para limpar terrenos, lotes e áreas verdes. O motor 2 tempos de 25,6 cc e o peso de 5,6 kg tornam o trabalho confortável. É indicada para residências, sítios, chácaras e limpeza de terrenos antes da obra.",
+      "specs": {
+        "operatingWeight": "5,6 kg",
+        "power": "25,6 cc",
+        "fuelType": "Gasolina 2 tempos (mistura)",
+        "fuelTankCapacity": "0,6 L",
+        "additional": {
+          "Tipo": "Lateral"
+        }
+      },
+      "features": [
+        "Leve: 5,6 kg",
+        "Motor 2 tempos de 25,6 cc",
+        "Fácil de operar"
+      ],
+      "applications": [
+        "Limpeza de terrenos e lotes",
+        "Manutenção de áreas verdes",
+        "Sítios e chácaras"
+      ],
+      "safetyNotes": "Entregue revisado e testado. Use óculos de proteção, luvas, protetor auricular e calçado de segurança, e siga o manual do fabricante.",
+      "deliveryTime": "Consulte a disponibilidade"
+    }
+  ]
+}

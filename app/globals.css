@@ -1,0 +1,218 @@
+@import "tailwindcss";
+
+/*
+ * Identidade "placa de identificação": a linguagem das plaquetas rebitadas
+ * nas máquinas pesadas. Aço e concreto como base; laranja só nas ações.
+ */
+@theme {
+  /* Paleta principal */
+  --color-aco: #1B2228;          /* textos, rodapé, placas escuras */
+  --color-aco-medio: #4F5B66;    /* texto secundário (contraste 7:1 no claro) */
+  --color-concreto: #E3E5E1;     /* fundo de seções */
+  --color-chapa: #F7F7F5;        /* fundo principal */
+  --color-laranja: #FF6500;      /* somente botões e ações */
+  --color-laranja-escuro: #E05800;
+  --color-liberado: #2F7A4E;     /* disponibilidade / pronta entrega */
+  --color-laranja-texto: #B84700; /* laranja legível em texto pequeno (5,3:1 no branco) */
+
+  /* Cores antigas (mantidas para as páginas ainda não redesenhadas) */
+  --color-orange-brand: #FF6500;
+  --color-orange-hover: #E55B00;
+  --color-orange-subtle: #FFF3EB;
+  --color-graphite-950: #0C1218;
+  --color-graphite-900: #101820;
+  --color-graphite-800: #192430;
+  --color-graphite-700: #263646;
+  --color-graphite-600: #3E5164;
+  --color-amber-brand: #F5A623;
+  --color-tech-gray: #F2F3F5;
+  --color-tech-gray-dark: #E2E5E9;
+
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color: #1B2228;
+    background-color: #FFFFFF;
+    font-feature-settings: "tnum" 1; /* números alinhados (especificações e preços) */
+  }
+
+  /* Títulos: Archivo estreita e pesada, como a letra pintada nas máquinas */
+  h1,
+  h2 {
+    font-stretch: 78%;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  /* Tipografia ótica: quanto maior o título, mais justas as letras e as linhas */
+  h1 {
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+  }
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Toque sem atraso de 300 ms e sem o flash cinza do navegador */
+  a,
+  button,
+  [role='button'],
+  [role='option'],
+  input,
+  select,
+  textarea,
+  label {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Resposta no momento do toque (não na soltura): o botão afunda um pouco */
+  button:not(:disabled),
+  .btn-acao,
+  a[class*='rounded'] {
+    transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  button:not(:disabled):active,
+  .btn-acao:active,
+  a[class*='rounded']:active {
+    transform: scale(0.97);
+    transition-duration: 80ms;
+  }
+
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    button:active,
+    .btn-acao:active,
+    a[class*='rounded']:active {
+      transform: none;
+    }
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+
+  :focus-visible {
+    outline: 3px solid #FF6500;
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: #FF6500;
+    color: #1B2228;
+  }
+}
+
+@layer components {
+  /* Texto de destaque estreito (números de especificação, títulos grandes) */
+  .type-display {
+    font-stretch: 72%;
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+  }
+
+  /* Placa rebitada: borda de metal + 4 rebites nos cantos */
+  .placa {
+    position: relative;
+    border-radius: 6px;
+    background-image:
+      radial-gradient(circle at 10px 10px, var(--rebite, #9AA3AB) 2.5px, transparent 3px),
+      radial-gradient(circle at calc(100% - 10px) 10px, var(--rebite, #9AA3AB) 2.5px, transparent 3px),
+      radial-gradient(circle at 10px calc(100% - 10px), var(--rebite, #9AA3AB) 2.5px, transparent 3px),
+      radial-gradient(circle at calc(100% - 10px) calc(100% - 10px), var(--rebite, #9AA3AB) 2.5px, transparent 3px);
+  }
+
+  /* Botão principal: texto aço sobre laranja (contraste 5,9:1, como placa de obra) */
+  .btn-acao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 4px;
+    background-color: #FF6500;
+    color: #1B2228;
+    font-weight: 700;
+    transition: background-color 150ms;
+  }
+  .btn-acao:hover {
+    background-color: #E05800;
+  }
+}
+
+/*
+ * Material translúcido do cabeçalho: o conteúdo rola por baixo, desfocado.
+ * O desfoque fica numa camada própria (::before) para não prender as janelas
+ * (position: fixed) que abrem de dentro do cabeçalho.
+ */
+.header-material {
+  isolation: isolate;
+}
+.header-material::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(255, 255, 255, 0.78);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .header-material::before {
+    background: #fff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (prefers-contrast: more) {
+  .header-material::before {
+    background: #fff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-bottom: 1px solid #1B2228;
+  }
+}
+
+/* Abertura: a foto assenta devagar ao carregar (desligado com movimento reduzido) */
+@keyframes hero-assentar {
+  from { transform: scale(1.06); }
+  to { transform: scale(1); }
+}
+.hero-foto {
+  animation: hero-assentar 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-foto { animation: none; }
+}
+
+/* Barra de rolagem de tabelas e filtros */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F2F3F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
