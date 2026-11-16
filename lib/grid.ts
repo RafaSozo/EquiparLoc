@@ -22,3 +22,15 @@ export function gridColsFor(n: number, from: 'sm' | 'md' = 'md'): string {
   }
   return from === 'sm' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
 }
+
+/**
+ * Página inicial: quantos cards mostrar para as linhas de 3 colunas fecharem cheias
+ * (no máximo 2 linhas). Até 3 aparecem todos, sempre do mesmo tamanho.
+ */
+export function evenCount(total: number, max = 6): number {
+  if (total <= 3) return total;
+  return Math.min(max, total - (total % 3));
+}
+
+/** Grade da página inicial: cards sempre do mesmo tamanho (3 colunas a partir do tablet). */
+export const EVEN_GRID = 'grid-cols-1 md:grid-cols-3';

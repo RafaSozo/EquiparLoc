@@ -2,11 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Equipment } from '@/lib/types';
 import { useQuoteModal } from '@/lib/quote-modal-context';
 import { keySpec, isReadyToShip } from '@/lib/spec';
 import { equipmentPath } from '@/lib/site';
+import { PhotoWithLoader } from './PhotoWithLoader';
 
 interface EquipmentCardProps {
   equipment: Equipment;
@@ -23,13 +23,7 @@ export function EquipmentCard({ equipment }: EquipmentCardProps) {
     <article className="group flex flex-col bg-white border border-concreto rounded-[6px] overflow-hidden hover:border-aco transition-colors">
       {/* Foto sempre inteira, sem cortar, centralizada no fundo branco */}
       <Link href={href} className="block relative aspect-[4/3] overflow-hidden bg-white" tabIndex={-1} aria-hidden="true">
-        <Image
-          src={equipment.image}
-          alt=""
-          fill
-          sizes="(min-width: 1280px) 30vw, (min-width: 640px) 50vw, 100vw"
-          className="object-contain p-3"
-        />
+        <PhotoWithLoader src={equipment.image} alt="" sizes="(min-width: 1280px) 30vw, (min-width: 640px) 50vw, 100vw" />
       </Link>
 
       <div className="placa flex-1 flex flex-col px-5 pt-5 pb-5 bg-chapa border-t border-concreto">

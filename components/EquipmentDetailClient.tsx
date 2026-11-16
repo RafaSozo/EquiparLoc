@@ -5,6 +5,7 @@ import { useCompany } from '@/lib/company-context';
 import { waHref } from '@/lib/company';
 import Link from 'next/link';
 import Image from 'next/image';
+import { PhotoWithLoader } from './PhotoWithLoader';
 import { Equipment } from '@/lib/types';
 import { useQuoteModal } from '@/lib/quote-modal-context';
 import { trackWhatsAppClick } from '@/lib/analytics';
@@ -83,14 +84,13 @@ export function EquipmentDetailClient({
         <div className="lg:col-span-7 space-y-4">
           {/* Foto inteira e proporcional, sem cortes */}
           <div className="relative w-full aspect-[4/3] rounded-[6px] overflow-hidden border border-concreto bg-white">
-            <Image
+            <PhotoWithLoader
+              key={selectedImage}
               src={selectedImage}
               alt={equipment.name}
-              fill
               priority
               sizes="(min-width: 1024px) 58vw, 100vw"
-              className="object-contain p-4"
-              referrerPolicy="no-referrer"
+              className="p-4"
             />
           </div>
 

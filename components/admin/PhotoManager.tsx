@@ -33,9 +33,15 @@ interface PhotoManagerProps {
   nameHint?: string;
   /** Uma foto só (categorias) */
   single?: boolean;
+  /** Orientação de tamanho mostrada acima da área de envio */
+  guide?: string;
 }
 
-export function PhotoManager({ photos, main, onChange, nameHint, single = false }: PhotoManagerProps) {
+/** Os cards do site têm proporção 4:3: fotos nesse formato aparecem maiores e sem faixas. */
+export const PHOTO_GUIDE_4x3 =
+  'Tamanho ideal: 1200 × 900 pixels (deitada, proporção 4:3). Mínimo de 500 pixels de largura. Equipamento inteiro e centralizado, de preferência em fundo branco ou claro, sem textos ou marcas por cima.';
+
+export function PhotoManager({ photos, main, onChange, nameHint, single = false, guide = PHOTO_GUIDE_4x3 }: PhotoManagerProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState<{ done: number; total: number } | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
@@ -86,6 +92,12 @@ export function PhotoManager({ photos, main, onChange, nameHint, single = false 
 
   return (
     <div className="space-y-3">
+      {guide && (
+        <p className="text-[11px] leading-relaxed text-slate-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+          <strong className="font-semibold text-slate-800">Foto no tamanho certo: </strong>
+          {guide}
+        </p>
+      )}
       {list.length > 0 && (
         <ul className={single ? 'grid grid-cols-1' : 'grid grid-cols-2 sm:grid-cols-3 gap-3'}>
           {list.map((src, i) => {
@@ -97,8 +109,9 @@ export function PhotoManager({ photos, main, onChange, nameHint, single = false 
                   isMain ? 'border-[#FF6500]' : 'border-transparent'
                 }`}
               >
-                <div className={`relative ${single ? 'aspect-[16/9]' : 'aspect-[4/3]'}`}>
-                  <Image src={src} alt="" fill unoptimized sizes="240px" className="object-cover" />
+                {/* Mesmo enquadramento do site: foto inteira num quadro 4:3 */}
+                <div className="relative aspect-[4/3] bg-white">
+                  <Image src={src} alt="" fill unoptimized sizes="240px" className="object-contain p-1" />
                 </div>
                 {isMain && !single && (
                   <span className="absolute top-1.5 left-1.5 inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold text-white bg-[#FF6500] rounded">
@@ -204,7 +217,7 @@ export function PhotoManager({ photos, main, onChange, nameHint, single = false 
               <Upload className="w-3.5 h-3.5" aria-hidden="true" />
               {single ? (list.length ? 'Trocar foto' : 'Escolher foto') : 'Escolher fotos'}
             </button>
-            <p className="text-[11px] text-slate-400">JPG, PNG ou WEBP. O site ajusta o tamanho sozinho.</p>
+            <p className="text-[11px] text-slate-500">JPG, PNG ou WEBP, até 12 MB.</p>
           </>
         )}
         <input

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Equipment } from '@/lib/types';
 import { EquipmentCard } from './EquipmentCard';
 import { ArrowRight } from 'lucide-react';
-import { fitCount, gridColsFor } from '@/lib/grid';
+import { evenCount, EVEN_GRID } from '@/lib/grid';
 
 interface FeaturedEquipmentsProps {
   equipments: Equipment[];
@@ -70,9 +70,9 @@ export function FeaturedEquipments({ equipments, categoryNames = [], topCategory
         )}
 
         {/* Equipment Cards Grid */}
-        {/* Quantidade que fecha as linhas: 6 (3x2), 4 (4x1), 3 ou menos */}
-        <div className={`grid ${gridColsFor(fitCount(filtered.length), 'sm')} gap-6`}>
-          {filtered.slice(0, fitCount(filtered.length)).map((equipment) => (
+        {/* Linhas de 3 sempre cheias, todos os cards do mesmo tamanho */}
+        <div className={`grid ${EVEN_GRID} gap-6`}>
+          {filtered.slice(0, evenCount(filtered.length)).map((equipment) => (
             <EquipmentCard key={equipment.id} equipment={equipment} />
           ))}
         </div>
