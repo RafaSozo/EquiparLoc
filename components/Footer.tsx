@@ -3,11 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useCompany } from '@/lib/company-context';
+import { addressLines, formatPhone, hoursParts, telHref, waHref } from '@/lib/company';
 import { MapPin, Phone, Mail, Clock, Lock } from 'lucide-react';
 import { categoryPath } from '@/lib/site';
 import type { SiteMenu } from '@/lib/types';
 
 export function Footer({ menu }: { menu?: SiteMenu }) {
+  const company = useCompany();
   const categories = menu?.categories || [];
   const services = menu?.services || [];
   return (
@@ -29,7 +32,7 @@ export function Footer({ menu }: { menu?: SiteMenu }) {
               Locação de máquinas pesadas e ferramentas para obras civis e industriais.
             </p>
             <div className="text-xs text-[#9AA4AD]">
-              CNPJ 57.309.078/0001-00
+              {company.cnpj && <>CNPJ {company.cnpj}</>}
             </div>
           </div>
 
@@ -73,31 +76,35 @@ export function Footer({ menu }: { menu?: SiteMenu }) {
             <ul className="space-y-2.5">
               <li className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-[#FF6500] shrink-0 mt-0.5" aria-hidden="true" />
-                <address className="not-italic">Av. Elias Antônio Issa, 695<br />Candelária, Belo Horizonte - MG<br />CEP 31570-010</address>
+                <address className="not-italic">
+                  {addressLines(company.address).map((line) => (
+                    <span key={line} className="block">{line}</span>
+                  ))}
+                </address>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-[#FF6500] shrink-0" />
-                <a href="tel:+553134181500" className="hover:text-white transition-colors">
-                  (31) 3418-1500
+                <a href={telHref(company.phone)} className="hover:text-white transition-colors">
+                  {company.phone}
                 </a>
-                <span className="text-[#9AA4AD]">telefone e WhatsApp</span>
+                <span className="text-[#9AA4AD]">telefone</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-3.5 h-3.5 text-[#FF6500] shrink-0" />
-                <a href="https://wa.me/5531991970322" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                  (31) 99197-0322
+                <a href={waHref(company.whatsapp)} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  {formatPhone(company.whatsapp)}
                 </a>
                 <span className="text-[#9AA4AD]">WhatsApp</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-[#FF6500] shrink-0" />
-                <a href="mailto:comercial@equiparloc.com.br" className="hover:text-white transition-colors">
-                  comercial@equiparloc.com.br
+                <a href={`mailto:${company.email}`} className="hover:text-white transition-colors">
+                  {company.email}
                 </a>
               </li>
               <li className="flex items-start gap-2">
                 <Clock className="w-3.5 h-3.5 text-[#9AA4AD] shrink-0 mt-0.5" />
-                <span>Segunda a Sexta: 08h às 17h | Suporte de Emergência 24h</span>
+                <span>{hoursParts(company.businessHours).join(' | ')}</span>
               </li>
             </ul>
           </div>

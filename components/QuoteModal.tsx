@@ -6,11 +6,14 @@ import React, { useState } from 'react';
 import { useQuoteModal } from '@/lib/quote-modal-context';
 import { trackQuoteSubmission, trackWhatsAppClick } from '@/lib/analytics';
 import { X, CheckCircle2, ShieldCheck, Clock, Send, MessageSquare, MessageCircle } from 'lucide-react';
-import { whatsappQuoteUrl, WHATSAPP_NUMBER } from '@/lib/whatsapp';
+import { whatsappQuoteUrl } from '@/lib/whatsapp';
+import { useCompany } from '@/lib/company-context';
+import { waHref } from '@/lib/company';
 import Image from 'next/image';
 import { Dialog } from '@/components/ui/Dialog';
 
 export function QuoteModal() {
+  const company = useCompany();
   const { isOpen, closeQuoteModal, selectedEquipment } = useQuoteModal();
 
   const [customerName, setCustomerName] = useState('');
@@ -101,14 +104,14 @@ export function QuoteModal() {
       : `Olá EquiparLoc! Gostaria de agilizar uma cotação de locação de maquinário pesado (Protocolo: ${submittedProtocol || 'Novo'}).`;
 
     trackWhatsAppClick(selectedEquipment?.name, selectedEquipment?.code);
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    window.open(waHref(company.whatsapp, text), '_blank', 'noopener,noreferrer');
   };
 
   // Alternativa ao envio: abre o WhatsApp com o que já foi preenchido
   const handleWhatsAppInstead = () => {
     const equipmentName = selectedEquipment ? `${selectedEquipment.name} (${selectedEquipment.code})` : equipmentText;
     trackWhatsAppClick(selectedEquipment?.name || equipmentText, selectedEquipment?.code || 'MODAL_FORM');
-    const url = whatsappQuoteUrl({ customerName, companyName, equipmentName, rentalPeriod, siteLocation, needsTransport, needsOperator, message });
+    const url = whatsappQuoteUrl(company.whatsapp, { customerName, companyName, equipmentName, rentalPeriod, siteLocation, needsTransport, needsOperator, message });
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 

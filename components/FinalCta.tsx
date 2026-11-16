@@ -4,14 +4,17 @@ import React from 'react';
 import { useQuoteModal } from '@/lib/quote-modal-context';
 import { trackWhatsAppClick } from '@/lib/analytics';
 import { MessageSquare } from 'lucide-react';
+import { useCompany } from '@/lib/company-context';
+import { telHref, waHref } from '@/lib/company';
 
 export function FinalCta() {
   const { openQuoteModal } = useQuoteModal();
+  const company = useCompany();
 
   const handleWhatsApp = () => {
     trackWhatsAppClick('CTA Final', 'FINAL');
     window.open(
-      'https://wa.me/5531991970322?text=Ol%C3%A1%20EquiparLoc!%20Gostaria%20de%20falar%20com%20um%20especialista%20para%20dimensionar%20equipamentos%20para%20minha%20obra.',
+      waHref(company.whatsapp, 'Olá EquiparLoc! Gostaria de falar com um especialista para dimensionar equipamentos para minha obra.'),
       '_blank',
       'noopener,noreferrer'
     );
@@ -46,7 +49,7 @@ export function FinalCta() {
               Conversar pelo WhatsApp
             </button>
             <p className="text-sm text-[#C6CDD3]">
-              Ou ligue: <a href="tel:+553134181500" className="font-semibold text-white underline underline-offset-4">(31) 3418-1500</a>
+              Ou ligue: <a href={telHref(company.phone)} className="font-semibold text-white underline underline-offset-4">{company.phone}</a>
             </p>
           </div>
         </div>

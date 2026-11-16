@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation';
 import { MotionConfig } from 'motion/react';
 import { QuoteModalProvider } from '@/lib/quote-modal-context';
 import { Header } from './Header';
-import type { SiteMenu } from '@/lib/types';
+import type { PublicCompany, SiteMenu } from '@/lib/types';
+import { CompanyProvider } from '@/lib/company-context';
 import { Footer } from './Footer';
 import { QuoteModal } from './QuoteModal';
 import { CookieBanner } from './CookieBanner';
@@ -13,13 +14,22 @@ import { GlobalSearchModal } from './search/GlobalSearchModal';
 
 import { AuthProvider } from './auth/AuthProvider';
 
-export function ClientLayoutWrapper({ children, menu }: { children: React.ReactNode; menu?: SiteMenu }) {
+export function ClientLayoutWrapper({
+  children,
+  menu,
+  company,
+}: {
+  children: React.ReactNode;
+  menu?: SiteMenu;
+  company: PublicCompany;
+}) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin');
 
   return (
     // reducedMotion="user": quem pediu menos movimento no sistema recebe só transições de opacidade
     <MotionConfig reducedMotion="user">
+    <CompanyProvider company={company}>
     <AuthProvider>
       <QuoteModalProvider>
         {!isAdmin && (
@@ -40,6 +50,7 @@ export function ClientLayoutWrapper({ children, menu }: { children: React.ReactN
         {!isAdmin && <GlobalSearchModal />}
       </QuoteModalProvider>
     </AuthProvider>
+    </CompanyProvider>
     </MotionConfig>
   );
 }

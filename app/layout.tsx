@@ -3,6 +3,8 @@ import { Archivo } from 'next/font/google';
 import './globals.css';
 import { ClientLayoutWrapper } from '@/components/ClientLayoutWrapper';
 import { getSiteMenu } from '@/lib/site-menu';
+import { getCompanySettings } from '@/lib/db';
+import { toPublicCompany, digits, parseAddress, parseHours } from '@/lib/company';
 import { SITE_URL, SITE_NAME, SITE_LEGAL_NAME, DEFAULT_OG_IMAGE, absoluteUrl, jsonLdHtml } from '@/lib/site';
 
 // Archivo com eixo de largura: estreita nos títulos, normal no texto
@@ -60,6 +62,14 @@ export const dynamic = 'force-dynamic';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // Menu e rodapé: linhas, categorias principais e serviços cadastrados no painel
   const menu = getSiteMenu();
+  // Dados de Configurações no painel (telefone, e-mail, endereço...) para o site todo
+  const company = toPublicCompany(getCompanySettings());
+  const intlPhone = (v: string) => {
+    const d = digits(v).replace(/^55(?=\d{10,11}$)/, '');
+    return d.length >= 10 ? `+55-${d.slice(0, 2)}-${d.slice(2, -4)}-${d.slice(-4)}` : undefined;
+  };
+  const addr = parseAddress(company.address);
+  const hours = parseHours(company.businessHours);
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -72,29 +82,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         logo: absoluteUrl('/images/logo-equiparloc.png'),
         image: absoluteUrl(DEFAULT_OG_IMAGE),
         description: defaultDescription,
-        telephone: '+55-31-3418-1500',
-        email: 'comercial@equiparloc.com.br',
-        taxID: '57.309.078/0001-00',
-        contactPoint: [
-          { '@type': 'ContactPoint', telephone: '+55-31-3418-1500', contactType: 'sales', availableLanguage: 'Portuguese' },
-          { '@type': 'ContactPoint', telephone: '+55-31-99197-0322', contactType: 'sales', availableLanguage: 'Portuguese' },
-        ],
+        telephone: intlPhone(company.phone),
+        email: company.email || undefined,
+        taxID: company.cnpj || undefined,
+        contactPoint: [company.phone, company.whatsapp]
+          .map(intlPhone)
+          .filter(Boolean)
+          .map((telephone) => ({ '@type': 'ContactPoint', telephone, contactType: 'sales', availableLanguage: 'Portuguese' })),
         address: {
           '@type': 'PostalAddress',
-          streetAddress: 'Av. Elias Antônio Issa, 695',
-          addressLocality: 'Belo Horizonte',
-          addressRegion: 'MG',
-          postalCode: '31570-010',
+          streetAddress: addr.street,
+          addressLocality: addr.city,
+          addressRegion: addr.state,
+          postalCode: addr.cep,
           addressCountry: 'BR',
         },
-        openingHoursSpecification: [
-          {
-            '@type': 'OpeningHoursSpecification',
-            dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-            opens: '08:00',
-            closes: '17:00',
-          },
-        ],
+        openingHoursSpecification: hours
+          ? [
+              {
+                '@type': 'OpeningHoursSpecification',
+                dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                opens: hours.opens,
+                closes: hours.closes,
+              },
+            ]
+          : undefined,
       },
       {
         '@type': 'WebSite',
@@ -121,7 +133,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="font-sans antialiased bg-white text-aco" suppressHydrationWarning>
-        <ClientLayoutWrapper menu={menu}>{children}</ClientLayoutWrapper>
+        <ClientLayoutWrapper menu={menu} company={company}>
+          {children}
+        </ClientLayoutWrapper>
       </body>
     </html>
   );

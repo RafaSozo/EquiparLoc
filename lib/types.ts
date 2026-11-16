@@ -220,6 +220,62 @@ export interface DatabaseSchema {
   settings: CompanySettings;
   /** Abertura da página inicial, editável no painel */
   hero?: HeroSettings;
+  /** Mensagens do formulário da página Contato */
+  contactMessages?: ContactMessage[];
+  /** Textos e foto da página Empresa, editáveis no painel */
+  about?: AboutPageContent;
+}
+
+/** Dados da empresa que o site mostra (sem PIN nem integrações) */
+export type PublicCompany = Pick<
+  CompanySettings,
+  'companyName' | 'tradeName' | 'cnpj' | 'phone' | 'whatsapp' | 'email' | 'address' | 'businessHours'
+>;
+
+export type ContactStatus = 'novo' | 'respondido' | 'arquivado';
+
+export const CONTACT_STATUS_LABELS: Record<ContactStatus, string> = {
+  novo: 'Nova',
+  respondido: 'Respondida',
+  arquivado: 'Arquivada',
+};
+
+/** Mensagem enviada pelo formulário da página Contato */
+export interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  subject: string;
+  equipment?: string;
+  message: string;
+  status: ContactStatus;
+  /** Anotação interna da equipe (não aparece para o cliente) */
+  note?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AboutCard {
+  title: string;
+  text: string;
+}
+
+/** Conteúdo da página Empresa */
+export interface AboutPageContent {
+  heroTitle: string;
+  heroText: string;
+  sectionTitle: string;
+  /** Parágrafos separados por linha em branco */
+  sectionText: string;
+  image: string;
+  imageAlt: string;
+  cards: AboutCard[];
+  pillarsTitle: string;
+  pillarsText: string;
+  pillars: AboutCard[];
+  ctaTitle: string;
+  ctaText: string;
 }
 
 /** Abertura (hero) da página inicial */

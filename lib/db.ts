@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { DatabaseSchema, Equipment, QuoteRequest, BlogPost, CompanySettings, BlogComment, Category, CategoryGroup, CategoryWithCount, HeroSettings, ProductLine, DEFAULT_PRODUCT_LINES } from './types';
+import { DatabaseSchema, Equipment, QuoteRequest, BlogPost, CompanySettings, BlogComment, Category, CategoryGroup, CategoryWithCount, HeroSettings, ProductLine, DEFAULT_PRODUCT_LINES, ContactMessage, ContactStatus, AboutPageContent } from './types';
+import { DEFAULT_ABOUT } from './about';
+import { EDITABLE_SETTINGS } from './company';
 import { SERVICOS } from './servicos';
 import { namesInBranch } from './category-tree';
 import { DEFAULT_HERO } from './hero';
@@ -368,8 +370,33 @@ function upgradeContent(db: DatabaseSchema): boolean {
   return changed;
 }
 
+/** Mensagens da página Contato antes ficavam junto dos orçamentos: passam para a lista própria. */
+function upgradeContactMessages(db: DatabaseSchema): boolean {
+  if (Array.isArray(db.contactMessages)) return false;
+  db.contactMessages = [];
+  const FROM_CONTACT = 'Informado via formulário de contato';
+  for (const q of db.quotes.filter((q) => q.siteLocation === FROM_CONTACT)) {
+    const m = q.equipmentName.match(/^(?:(.*) \()?Contato: (.*?)\)?$/);
+    db.contactMessages.push({
+      id: q.id.replace(/^orc-/, 'msg-'),
+      name: q.customerName,
+      email: q.email,
+      phone: q.phone,
+      subject: m?.[2] || 'Contato',
+      equipment: m?.[1] || undefined,
+      message: q.message || '',
+      status: q.status === 'novo' ? 'novo' : 'respondido',
+      createdAt: q.createdAt,
+      updatedAt: q.updatedAt,
+    });
+  }
+  db.quotes = db.quotes.filter((q) => q.siteLocation !== FROM_CONTACT);
+  return true;
+}
+
 function upgradeDatabase(db: DatabaseSchema): boolean {
-  const contentChanged = upgradeContent(db);
+  const messagesChanged = upgradeContactMessages(db);
+  const contentChanged = upgradeContent(db) || messagesChanged;
   if (Array.isArray(db.productLines) && db.productLines.length) return contentChanged;
   db.productLines = DEFAULT_PRODUCT_LINES.map((l) => ({ ...l }));
   if (!db.categories.some((c) => c.group === 'servicos')) {
@@ -939,9 +966,76 @@ export function getCompanySettings(): CompanySettings {
 
 export function updateCompanySettings(settings: Partial<CompanySettings>): CompanySettings {
   const db = getDatabase();
-  db.settings = { ...db.settings, ...settings };
+  // Só os campos da tela Configurações; o resto (ex.: PIN) não muda por aqui
+  const next = { ...db.settings };
+  for (const key of EDITABLE_SETTINGS) {
+    const v = settings[key];
+    if (typeof v === 'string') next[key] = v.trim().slice(0, 300);
+  }
+  db.settings = next;
   saveDatabase(db);
   return db.settings;
+}
+
+// Mensagens do formulário de contato
+export function getContactMessages(): ContactMessage[] {
+  const db = getDatabase();
+  return [...(db.contactMessages || [])].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+}
+
+export function createContactMessage(
+  data: Omit<ContactMessage, 'id' | 'status' | 'createdAt' | 'updatedAt' | 'note'>
+): ContactMessage {
+  const db = getDatabase();
+  const now = new Date().toISOString();
+  const msg: ContactMessage = {
+    ...data,
+    id: `msg-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    status: 'novo',
+    createdAt: now,
+    updatedAt: now,
+  };
+  db.contactMessages = [msg, ...(db.contactMessages || [])];
+  saveDatabase(db);
+  return msg;
+}
+
+export function updateContactMessage(
+  id: string,
+  changes: { status?: ContactStatus; note?: string }
+): ContactMessage | null {
+  const db = getDatabase();
+  const msg = (db.contactMessages || []).find((m) => m.id === id);
+  if (!msg) return null;
+  if (changes.status) msg.status = changes.status;
+  if (typeof changes.note === 'string') msg.note = changes.note;
+  msg.updatedAt = new Date().toISOString();
+  saveDatabase(db);
+  return msg;
+}
+
+export function deleteContactMessage(id: string): boolean {
+  const db = getDatabase();
+  const before = (db.contactMessages || []).length;
+  db.contactMessages = (db.contactMessages || []).filter((m) => m.id !== id);
+  if (db.contactMessages.length === before) return false;
+  saveDatabase(db);
+  return true;
+}
+
+// Página Empresa
+export function getAboutPage(): AboutPageContent {
+  const db = getDatabase();
+  return { ...DEFAULT_ABOUT, ...(db.about || {}) };
+}
+
+export function saveAboutPage(about: AboutPageContent): AboutPageContent {
+  const db = getDatabase();
+  db.about = about;
+  saveDatabase(db);
+  return about;
 }
 
 // Abertura (hero) da página inicial

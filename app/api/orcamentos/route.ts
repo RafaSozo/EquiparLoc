@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/api-auth';
 import { clientIp, hitLimit, tooManyRequests, readJsonLimited, cleanText, tooLong, EMAIL_RE, FIELD_LIMITS as L } from '@/lib/rate-limit';
-import { getAllQuotes, createQuote } from '@/lib/db';
+import { getAllQuotes, createQuote, getCompanySettings } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
   const auth = await requireAuth({ permission: 'quotes_manage' });
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     const limit = hitLimit(`orcamento:${clientIp(req)}`, 5, 10 * 60_000);
     if (limit.limited) {
       return tooManyRequests(
-        'Recebemos vários pedidos seguidos deste endereço. Aguarde alguns minutos ou fale pelo telefone (31) 3418-1500.',
+        `Recebemos vários pedidos seguidos deste endereço. Aguarde alguns minutos ou fale pelo telefone ${getCompanySettings().phone}.`,
         limit.retryAfterSec
       );
     }

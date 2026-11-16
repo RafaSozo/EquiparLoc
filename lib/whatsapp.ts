@@ -1,5 +1,4 @@
-/** WhatsApp comercial da EquiparLoc (DDI + DDD + número, só dígitos) */
-export const WHATSAPP_NUMBER = '5531991970322';
+import { waHref } from './company';
 
 export interface WhatsAppQuote {
   customerName?: string;
@@ -16,7 +15,7 @@ export interface WhatsAppQuote {
  * Link do WhatsApp com o pedido já escrito a partir do que o cliente preencheu
  * no formulário (só entram os campos preenchidos).
  */
-export function whatsappQuoteUrl(q: WhatsAppQuote): string {
+export function whatsappQuoteUrl(whatsapp: string, q: WhatsAppQuote): string {
   const lines = ['Olá, EquiparLoc! Quero um orçamento de locação.'];
   const add = (label: string, v?: string) => {
     const t = (v || '').trim();
@@ -30,5 +29,5 @@ export function whatsappQuoteUrl(q: WhatsAppQuote): string {
   if (q.needsTransport) lines.push('Preciso de frete / entrega na obra.');
   if (q.needsOperator) lines.push('Preciso de operador.');
   add('Observações', q.message);
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join('\n'))}`;
+  return waHref(whatsapp, lines.join('\n'));
 }

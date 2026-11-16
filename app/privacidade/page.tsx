@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { getCompanySettings } from '@/lib/db';
 import { ShieldCheck, Lock, FileText, CheckCircle2 } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPolicyPage() {
+  const company = getCompanySettings();
   return (
     <main className="min-h-screen bg-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -27,7 +29,7 @@ export default function PrivacyPolicyPage() {
             1. Introdução e Finalidade
           </h2>
           <p>
-            A <strong>EQUIPAR Locação de Equipamentos Ltda.</strong> (CNPJ 57.309.078/0001-00) valoriza a privacidade e o controle sobre os dados de seus clientes, parceiros e usuários. Esta Política descreve como coletamos, tratamos, armazenamos e protegemos suas informações no âmbito da Lei Federal nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais – LGPD).
+            A <strong>EQUIPAR Locação de Equipamentos Ltda.</strong> (CNPJ {company.cnpj}) valoriza a privacidade e o controle sobre os dados de seus clientes, parceiros e usuários. Esta Política descreve como coletamos, tratamos, armazenamos e protegemos suas informações no âmbito da Lei Federal nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais – LGPD).
           </p>
 
           <h2 className="text-xl font-bold text-aco pt-4">
@@ -82,7 +84,7 @@ export default function PrivacyPolicyPage() {
           </p>
           <div className="p-4 bg-chapa border border-concreto rounded-[6px]">
             <strong className="block text-aco text-xs font-semibold">Encarregado de Proteção de Dados (DPO)</strong>
-            <span className="text-xs text-aco-medio">comercial@equiparloc.com.br</span>
+            <span className="text-xs text-aco-medio">{company.email}</span>
             <span className="block text-[11px] text-aco-medio mt-1">Atendimento de solicitações em até 15 dias úteis, conforme preconiza a legislação.</span>
           </div>
         </section>

@@ -6,7 +6,9 @@ import { parsePeriod, periodLabel } from '@/lib/periodo';
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { trackQuoteSubmission, trackWhatsAppClick } from '@/lib/analytics';
-import { whatsappQuoteUrl, WHATSAPP_NUMBER } from '@/lib/whatsapp';
+import { whatsappQuoteUrl } from '@/lib/whatsapp';
+import { useCompany } from '@/lib/company-context';
+import { waHref, telHref } from '@/lib/company';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -19,6 +21,7 @@ import {
 } from 'lucide-react';
 
 function StandaloneQuoteForm() {
+  const company = useCompany();
   const searchParams = useSearchParams();
   const preEquipment = searchParams.get('equipamento') || '';
   // Período escolhido no calendário da página inicial (?retirada=AAAA-MM-DD&devolucao=AAAA-MM-DD)
@@ -101,13 +104,13 @@ function StandaloneQuoteForm() {
   const handleWhatsApp = () => {
     trackWhatsAppClick(equipmentName, 'ORCAMENTO_PAGE');
     const text = `Olá EquiparLoc! Acabei de enviar um pedido de cotação para ${equipmentName} (Protocolo: ${submittedProtocol || 'Site'}). Gostaria de agilizar a análise técnica.`;
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    window.open(waHref(company.whatsapp, text), '_blank', 'noopener,noreferrer');
   };
 
   // Alternativa ao envio: abre o WhatsApp com o que já foi preenchido
   const handleWhatsAppInstead = () => {
     trackWhatsAppClick(equipmentName, 'ORCAMENTO_FORM');
-    const url = whatsappQuoteUrl({ customerName, companyName, equipmentName, rentalPeriod, siteLocation, needsTransport, needsOperator, message });
+    const url = whatsappQuoteUrl(company.whatsapp, { customerName, companyName, equipmentName, rentalPeriod, siteLocation, needsTransport, needsOperator, message });
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
@@ -402,10 +405,10 @@ function StandaloneQuoteForm() {
           </p>
           <div className="pt-1">
             <a
-              href="tel:+553134181500"
+              href={telHref(company.phone)}
               className="block text-sm font-bold text-aco hover:text-laranja-texto"
             >
-              (31) 3418-1500
+              {company.phone}
             </a>
             <span className="text-[11px] text-aco-medio">Plantão técnico 24 horas</span>
           </div>

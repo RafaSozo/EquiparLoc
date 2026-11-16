@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useCompany } from '@/lib/company-context';
+import { waHref } from '@/lib/company';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Equipment } from '@/lib/types';
@@ -41,11 +43,12 @@ export function EquipmentDetailClient({
 }: EquipmentDetailClientProps) {
   const [selectedImage, setSelectedImage] = useState(equipment.image);
   const { openQuoteModal } = useQuoteModal();
+  const company = useCompany();
 
   const handleWhatsApp = () => {
     trackWhatsAppClick(equipment.name, equipment.code);
     const text = `Olá EquiparLoc! Gostaria de mais informações e cotação de locação para o equipamento: ${equipment.name} (Cód: ${equipment.code}). Poderiam me atender?`;
-    window.open(`https://wa.me/5531991970322?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    window.open(waHref(company.whatsapp, text), '_blank', 'noopener,noreferrer');
   };
 
   const gallery = equipment.gallery && equipment.gallery.length ? equipment.gallery : [equipment.image];

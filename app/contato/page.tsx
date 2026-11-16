@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { trackWhatsAppClick } from '@/lib/analytics';
 import { FIELD_LIMITS as L } from '@/lib/form-limits';
 import { SuggestInput } from '@/components/search/SuggestInput';
+import { useCompany } from '@/lib/company-context';
+import { addressLines, formatPhone, hoursParts, telHref, waHref } from '@/lib/company';
 import {
   MapPin,
   Phone,
@@ -16,6 +18,8 @@ import {
 } from 'lucide-react';
 
 export default function ContactPage() {
+  const company = useCompany();
+  const hours = hoursParts(company.businessHours);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -32,27 +36,20 @@ export default function ContactPage() {
     setError(null);
 
     try {
-      // Registra o contato no CRM (mesma lista dos pedidos de orçamento)
-      const res = await fetch('/api/orcamentos', {
+      // Vai para "Mensagens de contato" no painel
+      const res = await fetch('/api/contatos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customerName: name,
-          email,
-          phone,
-          equipmentName: equipment.trim() ? `${equipment.trim()} (Contato: ${subject})` : `Contato: ${subject}`,
-          siteLocation: 'Informado via formulário de contato',
-          message,
-        }),
+        body: JSON.stringify({ name, email, phone, subject, equipment, message }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data.error || 'Não foi possível enviar a mensagem. Tente de novo ou ligue para (31) 3418-1500.');
+        setError(data.error || `Não foi possível enviar a mensagem. Tente de novo ou ligue para ${company.phone}.`);
         return;
       }
       setSent(true);
     } catch {
-      setError('Sem conexão com o servidor. Verifique sua internet ou ligue para (31) 3418-1500.');
+      setError(`Sem conexão com o servidor. Verifique sua internet ou ligue para ${company.phone}.`);
     } finally {
       setLoading(false);
     }
@@ -61,7 +58,7 @@ export default function ContactPage() {
   const handleWhatsApp = () => {
     trackWhatsAppClick('Contato Geral', 'CONTACT_PAGE');
     window.open(
-      'https://wa.me/5531991970322?text=Ol%C3%A1%20EquiparLoc!%20Estou%20entrando%20em%20contato%20pelo%20site%20para%20falar%20com%20o%20comercial.',
+      waHref(company.whatsapp, 'Olá EquiparLoc! Estou entrando em contato pelo site para falar com o comercial.'),
       '_blank',
       'noopener,noreferrer'
     );
@@ -94,9 +91,13 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <strong className="block text-aco font-semibold mb-0.5">Endereço</strong>
-                    <address className="not-italic">Av. Elias Antônio Issa, 695<br />Candelária, Belo Horizonte - MG<br />CEP 31570-010</address>
+                    <address className="not-italic">
+                      {addressLines(company.address).map((line) => (
+                        <span key={line} className="block">{line}</span>
+                      ))}
+                    </address>
                     <a
-                      href="https://www.google.com/maps/search/?api=1&query=Av.%20Elias%20Ant%C3%B4nio%20Issa%2C%20695%20-%20Candel%C3%A1ria%2C%20Belo%20Horizonte%20-%20MG%2C%20CEP%2031570-010"
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(company.address)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-block mt-1 font-semibold text-aco underline underline-offset-4 decoration-laranja decoration-2"
@@ -112,12 +113,12 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <strong className="block text-aco font-semibold mb-0.5">Telefones</strong>
-                    <a href="tel:+553134181500" className="text-aco font-bold hover:text-laranja-texto">
-                      (31) 3418-1500
+                    <a href={telHref(company.phone)} className="text-aco font-bold hover:text-laranja-texto">
+                      {company.phone}
                     </a>
-                    <span className="block text-aco-medio mt-0.5">Telefone e WhatsApp</span>
-                    <a href="https://wa.me/5531991970322" target="_blank" rel="noopener noreferrer" className="block mt-2 text-aco font-bold hover:text-laranja-texto">
-                      (31) 99197-0322
+                    <span className="block text-aco-medio mt-0.5">Telefone</span>
+                    <a href={waHref(company.whatsapp)} target="_blank" rel="noopener noreferrer" className="block mt-2 text-aco font-bold hover:text-laranja-texto">
+                      {formatPhone(company.whatsapp)}
                     </a>
                     <span className="block text-aco-medio mt-0.5">WhatsApp</span>
                   </div>
@@ -129,8 +130,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <strong className="block text-aco font-semibold mb-0.5">E-mail Comercial</strong>
-                    <a href="mailto:comercial@equiparloc.com.br" className="text-aco hover:text-laranja-texto">
-                      comercial@equiparloc.com.br
+                    <a href={`mailto:${company.email}`} className="text-aco hover:text-laranja-texto">
+                      {company.email}
                     </a>
                   </div>
                 </li>
@@ -141,8 +142,10 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <strong className="block text-aco font-semibold mb-0.5">Horário de Operação</strong>
-                    <span>Segunda a Sexta: 08h às 17h</span>
-                    <span className="block text-liberado font-medium mt-0.5">Plantão técnico 24h para emergências em canteiro</span>
+                    <span>{hours[0]}</span>
+                    {hours.slice(1).map((h) => (
+                      <span key={h} className="block text-liberado font-medium mt-0.5">{h}</span>
+                    ))}
                   </div>
                 </li>
               </ul>

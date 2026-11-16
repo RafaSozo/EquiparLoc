@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { getAllEquipments, getAllQuotes, getAllBlogPosts, getCompanySettings, getCategoriesWithCount, getProductLines } from '@/lib/db';
+import { getAllEquipments, getAllQuotes, getAllBlogPosts, getCompanySettings, getCategoriesWithCount, getProductLines, getContactMessages, getAboutPage } from '@/lib/db';
 import { getServerAuthSession, hasConfiguredUsers } from '@/lib/auth';
 import { AdminDashboard } from '@/components/admin/AdminDashboard';
 import type { CompanySettings } from '@/lib/types';
@@ -45,6 +45,8 @@ export default async function AdminPage() {
         initialQuotes={[]}
         initialBlog={[]}
         initialSettings={EMPTY_SETTINGS}
+        initialMessages={[]}
+        initialAbout={null}
       />
     );
   }
@@ -62,6 +64,8 @@ export default async function AdminPage() {
       initialQuotes={getAllQuotes()}
       initialBlog={getAllBlogPosts()}
       initialSettings={{ ...settings, adminPin: '' }}
+      initialMessages={getContactMessages()}
+      initialAbout={getAboutPage()}
     />
   );
 }

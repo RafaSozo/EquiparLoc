@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useCompany } from '@/lib/company-context';
+import { telHref } from '@/lib/company';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'motion/react';
 import { Dialog } from './ui/Dialog';
@@ -31,6 +33,7 @@ const NAV: { label: string; href: string; dropdown?: Exclude<Dropdown, null> }[]
 const PANEL_SPRING = { type: 'spring', bounce: 0, duration: 0.28 } as const;
 
 export function Header({ menu = EMPTY_MENU }: { menu?: SiteMenu }) {
+  const company = useCompany();
   const { categories, services } = menu;
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -107,9 +110,9 @@ export function Header({ menu = EMPTY_MENU }: { menu?: SiteMenu }) {
             <span className="hidden sm:inline">Frota inspecionada com laudos NR-12 e NR-18 vigentes</span>
             <span className="sm:hidden">Equipamentos inspecionados</span>
           </span>
-          <a href="tel:+553134181500" className="hover:text-white transition-colors flex items-center gap-1 text-slate-300 text-[11px]">
+          <a href={telHref(company.phone)} className="hover:text-white transition-colors flex items-center gap-1 text-slate-300 text-[11px]">
             <Phone className="w-3 h-3 text-[#FF6500]" />
-            <span>(31) 3418-1500</span>
+            <span>{company.phone}</span>
           </a>
         </div>
       </div>
