@@ -36,6 +36,7 @@ import {
   ImageIcon,
   Inbox,
   Building2,
+  BookOpen,
 } from 'lucide-react';
 import { BlogManager } from '@/components/admin/BlogManager';
 import { CategoryManager } from '@/components/admin/CategoryManager';
@@ -43,6 +44,7 @@ import { HeroManager } from '@/components/admin/HeroManager';
 import { CatalogManager } from '@/components/admin/CatalogManager';
 import { ContactManager } from '@/components/admin/ContactManager';
 import { AboutManager } from '@/components/admin/AboutManager';
+import { HelpManual } from '@/components/admin/HelpManual';
 
 interface AdminDashboardProps {
   /** Login confirmado no servidor. Sem login, nenhum dado da empresa é enviado ao navegador. */
@@ -93,7 +95,7 @@ export function AdminDashboard({
   };
 
   // Active module
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'equipamentos' | 'categorias' | 'orcamentos' | 'contatos' | 'conteudo' | 'abertura' | 'empresa' | 'configuracoes'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'manual' | 'equipamentos' | 'categorias' | 'orcamentos' | 'contatos' | 'conteudo' | 'abertura' | 'empresa' | 'configuracoes'>('dashboard');
 
   // Data states
   const [equipments, setEquipments] = useState<Equipment[]>(initialEquipments);
@@ -486,6 +488,20 @@ export function AdminDashboard({
             <span>Dashboard & Indicadores</span>
           </button>
 
+          {/* Manual sempre à mão, logo abaixo do Dashboard */}
+          <button
+            type="button"
+            onClick={() => setActiveTab('manual')}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors ${
+              activeTab === 'manual'
+                ? 'bg-[#101820] text-white'
+                : 'text-[#C24D00] bg-orange-50 hover:bg-orange-100'
+            }`}
+          >
+            <BookOpen className="w-4 h-4 text-[#FF6500]" />
+            <span>Manual do painel</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setActiveTab('equipamentos')}
@@ -615,9 +631,27 @@ export function AdminDashboard({
 
         {/* Tab Viewport */}
         <main className="flex-1 p-6 overflow-y-auto">
+          {/* MANUAL DO PAINEL */}
+          {activeTab === 'manual' && (
+            <HelpManual isAdmin={currentUser.role === 'admin'} onGo={(target) => setActiveTab(target)} />
+          )}
+
           {/* TAB 1: DASHBOARD */}
           {activeTab === 'dashboard' && (
             <div className="space-y-6 max-w-6xl">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-orange-50 border border-orange-200 rounded-xl">
+                <BookOpen className="w-6 h-6 text-[#FF6500] shrink-0" aria-hidden="true" />
+                <p className="flex-1 text-sm text-slate-700">
+                  <strong className="text-slate-900">Dúvida de como fazer algo?</strong> O manual mostra o passo a passo de cada tela do painel.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('manual')}
+                  className="px-4 py-2 text-xs font-bold text-white bg-[#FF6500] hover:bg-[#E55B00] rounded-lg whitespace-nowrap"
+                >
+                  Abrir o manual
+                </button>
+              </div>
               <div>
                 <h2 className="text-xl font-bold text-slate-900">Visão Geral da Operação</h2>
                 <p className="text-xs text-slate-500">Métricas em tempo real de frota e funil de conversão de orçamentos.</p>
