@@ -43,6 +43,13 @@ apt install -y nodejs
 node -v
 ```
 
+Memória extra em disco (swap), necessária em VPS de 1 GB para gerar o site:
+
+```bash
+fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+echo '/swapfile none swap sw 0 0' >> /etc/fstab
+```
+
 Firewall: deixe passar só SSH e o site:
 
 ```bash
