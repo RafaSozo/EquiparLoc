@@ -1,0 +1,30 @@
+# Serviço do site EquiparLoc no VPS (systemd).
+# Copiar para /etc/systemd/system/equiparloc.service e rodar:
+#   sudo systemctl daemon-reload && sudo systemctl enable --now equiparloc
+[Unit]
+Description=Site EquiparLoc (Next.js)
+After=network.target
+
+[Service]
+Type=simple
+User=equiparloc
+Group=equiparloc
+WorkingDirectory=/opt/equiparloc/app/.next/standalone
+# Senhas e chaves ficam fora do código, só legíveis pelo root e pelo serviço
+EnvironmentFile=/etc/equiparloc.env
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=5
+
+# Proteções: o site só escreve na pasta de dados
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/equiparloc
+
+[Install]
+WantedBy=multi-user.target

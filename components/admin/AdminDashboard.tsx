@@ -1206,6 +1206,28 @@ export function AdminDashboard({
                   </button>
                 </div>
               </form>
+
+              {/* Cópia completa: para trocar de servidor ou guardar fora da hospedagem */}
+              {currentUser.role === 'admin' && (
+                <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-3">
+                  <h3 className="text-sm font-bold text-slate-900">Cópia de segurança completa</h3>
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    Baixa num arquivo só os produtos, categorias, orçamentos, mensagens, textos e todas as fotos enviadas pelo painel.
+                    Use para trocar de servidor ou para guardar uma cópia fora da hospedagem.
+                  </p>
+                  <p className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+                    O arquivo tem dados pessoais de clientes (nome, telefone, e-mail). Guarde em local seguro e não envie por e-mail ou WhatsApp.
+                  </p>
+                  <a
+                    href="/api/backup"
+                    download
+                    className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-slate-800 hover:bg-slate-900 rounded-lg"
+                  >
+                    <Save className="w-3.5 h-3.5" aria-hidden="true" />
+                    Baixar cópia de segurança
+                  </a>
+                </div>
+              )}
             </div>
           )}
         </main>
