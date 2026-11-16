@@ -79,7 +79,7 @@ export function EquipmentDetailClient({
       </nav>
 
       {/* Main Showcase Top Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-6">
         {/* Gallery Column (7 cols) */}
         <div className="lg:col-span-7 space-y-4">
           <div className={`relative w-full h-[320px] sm:h-[420px] rounded-[6px] overflow-hidden border border-concreto ${isCutout(selectedImage) ? 'bg-white' : 'bg-concreto'}`}>
@@ -120,7 +120,7 @@ export function EquipmentDetailClient({
         </div>
 
         {/* Essential Info Column (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col justify-between">
+        <div className="lg:col-span-5 lg:row-span-2 lg:self-start flex flex-col gap-6">
           <div className="space-y-4">
             <p className="text-sm text-aco-medio">
               <span className="font-semibold text-aco">{equipment.code}</span> / {equipment.category}
@@ -191,13 +191,9 @@ export function EquipmentDetailClient({
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Detailed Technical Specs & Applications Tabs */}
-      <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Specifications Table (7 cols) */}
-        <div className="lg:col-span-7 bg-white border border-concreto rounded-[6px] p-6 sm:p-8">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-aco leading-[0.95] mb-6">
+        {/* Ficha técnica: logo abaixo da foto (no celular, depois das informações principais) */}
+        <div className="lg:col-span-7 lg:col-start-1 bg-white border border-concreto rounded-[6px] p-6 sm:p-7">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-aco leading-[0.95] mb-4">
             Ficha técnica
           </h2>
 
@@ -254,8 +250,10 @@ export function EquipmentDetailClient({
           </div>
         </div>
 
-        {/* Features & Applications (5 cols) */}
-        <div className="lg:col-span-5 space-y-6">
+      </div>
+
+      {/* Onde usar, recursos e entrega */}
+      <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           {/* Applications */}
           <div className="bg-white border border-concreto rounded-[6px] p-6 sm:p-8">
             <h3 className="text-lg font-bold text-aco mb-4">
@@ -296,7 +294,6 @@ export function EquipmentDetailClient({
               Dispomos de frota própria de pranchas rebaixadas para levar e retirar o equipamento no canteiro. O frete é informado no orçamento.
             </p>
           </div>
-        </div>
       </div>
 
       {/* Related Equipments Section */}
