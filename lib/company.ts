@@ -18,6 +18,7 @@ export function toPublicCompany(s: CompanySettings): PublicCompany {
     email: s.email,
     address: s.address,
     businessHours: s.businessHours,
+    socialLinks: s.socialLinks || {},
   };
 }
 

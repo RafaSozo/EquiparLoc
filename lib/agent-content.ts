@@ -10,6 +10,7 @@ import { getServiceCategories } from './site-menu';
 import { absoluteUrl, categoryPath, equipmentPath, slugify, SITE_NAME, SITE_LEGAL_NAME } from './site';
 import { formatPhone, hoursParts, waHref } from './company';
 import { isPublished } from './public-data';
+import { socialList } from './social';
 import type { Equipment } from './types';
 
 /*
@@ -31,6 +32,7 @@ function contactBlock(): string {
     `- Endereço: ${c.address}`,
     ...hoursParts(c.businessHours).map((h) => `- Horário: ${h}`),
     `- Pedir orçamento: ${absoluteUrl('/orcamento')}`,
+    ...socialList(c.socialLinks).map((s) => `- ${s.label}: ${s.url}`),
   ].join('\n');
 }
 

@@ -5,6 +5,8 @@ import { trackWhatsAppClick } from '@/lib/analytics';
 import { FIELD_LIMITS as L } from '@/lib/form-limits';
 import { SuggestInput } from '@/components/search/SuggestInput';
 import { useCompany } from '@/lib/company-context';
+import { SocialLinks } from '@/components/SocialLinks';
+import { socialList } from '@/lib/social';
 import { addressLines, formatPhone, hoursParts, telHref, waHref } from '@/lib/company';
 import {
   MapPin,
@@ -149,6 +151,13 @@ export default function ContactPage() {
                   </div>
                 </li>
               </ul>
+
+              {socialList(company.socialLinks).length > 0 && (
+                <div className="pt-4 border-t border-concreto">
+                  <strong className="block text-xs text-aco font-semibold mb-2">Siga a EquiparLoc</strong>
+                  <SocialLinks tone="light" />
+                </div>
+              )}
 
               {/* WhatsApp direct card */}
               <div className="p-4 bg-chapa border border-concreto rounded-[6px] space-y-2">

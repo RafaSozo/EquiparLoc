@@ -208,7 +208,12 @@ export interface CompanySettings {
   businessHours: string;
   gaMeasurementId: string;
   adminPin: string;
+  /** Perfis da empresa nas redes sociais (só os preenchidos) */
+  socialLinks?: SocialLinks;
 }
+
+export type SocialId = 'instagram' | 'facebook' | 'linkedin' | 'youtube' | 'tiktok' | 'google';
+export type SocialLinks = Partial<Record<SocialId, string>>;
 
 export interface DatabaseSchema {
   /** Linhas de produto (máquinas, ferramentas, serviços...). Bancos antigos não têm. */
@@ -229,7 +234,7 @@ export interface DatabaseSchema {
 /** Dados da empresa que o site mostra (sem PIN nem integrações) */
 export type PublicCompany = Pick<
   CompanySettings,
-  'companyName' | 'tradeName' | 'cnpj' | 'phone' | 'whatsapp' | 'email' | 'address' | 'businessHours'
+  'companyName' | 'tradeName' | 'cnpj' | 'phone' | 'whatsapp' | 'email' | 'address' | 'businessHours' | 'socialLinks'
 >;
 
 export type ContactStatus = 'novo' | 'respondido' | 'arquivado';

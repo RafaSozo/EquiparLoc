@@ -3,6 +3,7 @@ import path from 'path';
 import { DatabaseSchema, Equipment, QuoteRequest, BlogPost, CompanySettings, BlogComment, Category, CategoryGroup, CategoryWithCount, HeroSettings, ProductLine, DEFAULT_PRODUCT_LINES, ContactMessage, ContactStatus, AboutPageContent } from './types';
 import { DEFAULT_ABOUT } from './about';
 import { EDITABLE_SETTINGS } from './company';
+import { sanitizeSocialLinks } from './social';
 import { SERVICOS } from './servicos';
 import { namesInBranch } from './category-tree';
 import { DEFAULT_HERO } from './hero';
@@ -972,6 +973,7 @@ export function updateCompanySettings(settings: Partial<CompanySettings>): Compa
     const v = settings[key];
     if (typeof v === 'string') next[key] = v.trim().slice(0, 300);
   }
+  if (settings.socialLinks !== undefined) next.socialLinks = sanitizeSocialLinks(settings.socialLinks);
   db.settings = next;
   saveDatabase(db);
   return db.settings;

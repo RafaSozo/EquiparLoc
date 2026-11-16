@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useCompany } from '@/lib/company-context';
 import { equipmentPath } from '@/lib/site';
 import { formatPhone, hoursParts, waHref } from '@/lib/company';
+import { socialList } from '@/lib/social';
 
 /*
  * WebMCP: ferramentas que assistentes de IA dentro do navegador podem usar nesta página
@@ -83,6 +84,7 @@ export function AgentTools() {
               `Endereço: ${company.address}`,
               ...hoursParts(company.businessHours).map((h) => `Horário: ${h}`),
               `Pedir orçamento: ${origin}/orcamento`,
+              ...socialList(company.socialLinks).map((s) => `${s.label}: ${s.url}`),
             ].join('\n')
           );
         },

@@ -5,6 +5,7 @@ import { ClientLayoutWrapper } from '@/components/ClientLayoutWrapper';
 import { getSiteMenu } from '@/lib/site-menu';
 import { getCompanySettings } from '@/lib/db';
 import { toPublicCompany, digits, parseAddress, parseHours } from '@/lib/company';
+import { socialList } from '@/lib/social';
 import { SITE_URL, SITE_NAME, SITE_LEGAL_NAME, DEFAULT_OG_IMAGE, absoluteUrl, jsonLdHtml } from '@/lib/site';
 
 // Archivo com eixo de largura: estreita nos títulos, normal no texto
@@ -85,6 +86,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         telephone: intlPhone(company.phone),
         email: company.email || undefined,
         taxID: company.cnpj || undefined,
+        // Perfis oficiais (Dados da empresa > Redes sociais)
+        sameAs: socialList(company.socialLinks).map((s) => s.url),
         contactPoint: [company.phone, company.whatsapp]
           .map(intlPhone)
           .filter(Boolean)

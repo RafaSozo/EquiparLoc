@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCompany } from '@/lib/company-context';
+import { SocialLinks } from './SocialLinks';
 import { addressLines, formatPhone, hoursParts, telHref, waHref } from '@/lib/company';
 import { MapPin, Phone, Mail, Clock, Lock } from 'lucide-react';
 import { categoryPath } from '@/lib/site';
@@ -107,6 +108,7 @@ export function Footer({ menu }: { menu?: SiteMenu }) {
                 <span>{hoursParts(company.businessHours).join(' | ')}</span>
               </li>
             </ul>
+            <SocialLinks className="pt-2" />
           </div>
         </div>
 

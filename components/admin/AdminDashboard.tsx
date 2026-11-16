@@ -45,6 +45,7 @@ import { CatalogManager } from '@/components/admin/CatalogManager';
 import { ContactManager } from '@/components/admin/ContactManager';
 import { AboutManager } from '@/components/admin/AboutManager';
 import { HelpManual } from '@/components/admin/HelpManual';
+import { SOCIAL_NETWORKS, normalizeSocialUrl } from '@/lib/social';
 
 interface AdminDashboardProps {
   /** Login confirmado no servidor. Sem login, nenhum dado da empresa é enviado ao navegador. */
@@ -1145,6 +1146,44 @@ export function AdminDashboard({
                     className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-[#FF6500]"
                   />
                 </div>
+
+                {/* Redes sociais: aparecem no rodapé e na página Contato */}
+                <fieldset className="pt-4 border-t border-slate-100 space-y-3">
+                  <legend className="text-sm font-bold text-slate-900">Redes sociais</legend>
+                  <p className="text-[11px] text-slate-500">
+                    Cole o link do perfil da empresa. Só as redes preenchidas aparecem no site (rodapé e página Contato). Deixe em branco para não mostrar.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {SOCIAL_NETWORKS.map((net) => {
+                      const value = settings.socialLinks?.[net.id] || '';
+                      const invalid = value.trim() !== '' && !normalizeSocialUrl(net.id, value);
+                      return (
+                        <div key={net.id}>
+                          <label htmlFor={`cfg-rede-${net.id}`} className="block text-xs font-semibold text-slate-700 mb-1">
+                            {net.label}
+                          </label>
+                          <input
+                            id={`cfg-rede-${net.id}`}
+                            type="url"
+                            inputMode="url"
+                            value={value}
+                            placeholder={net.placeholder}
+                            aria-invalid={invalid}
+                            onChange={(e) =>
+                              setSettings({ ...settings, socialLinks: { ...(settings.socialLinks || {}), [net.id]: e.target.value } })
+                            }
+                            className={`w-full px-3 py-2 text-xs border rounded-lg focus:ring-2 focus:ring-[#FF6500] ${
+                              invalid ? 'border-red-400' : 'border-slate-300'
+                            }`}
+                          />
+                          {invalid && (
+                            <p className="text-[11px] text-red-700 mt-0.5">Esse link não é do {net.label}. Confira e cole de novo.</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </fieldset>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">ID Google Analytics 4 (GA4)</label>
