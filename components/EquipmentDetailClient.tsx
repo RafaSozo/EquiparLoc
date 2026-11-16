@@ -255,7 +255,7 @@ export function EquipmentDetailClient({
       </div>
 
       {/* Onde usar, recursos e entrega */}
-      <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+      <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Applications */}
           <div className="bg-white border border-concreto rounded-[6px] p-6 sm:p-8">
             <h3 className="text-lg font-bold text-aco mb-4">

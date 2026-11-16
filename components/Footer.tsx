@@ -6,20 +6,31 @@ import Image from 'next/image';
 import { useCompany } from '@/lib/company-context';
 import { SocialLinks } from './SocialLinks';
 import { addressLines, formatPhone, hoursParts, telHref, waHref } from '@/lib/company';
-import { MapPin, Phone, Mail, Clock, Lock } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Lock, MessageCircle } from 'lucide-react';
 import { categoryPath } from '@/lib/site';
 import type { SiteMenu } from '@/lib/types';
 
+const linkCls = 'inline-block py-1 hover:text-white transition-colors';
+const titleCls = 'text-base font-bold text-white [font-stretch:100%] tracking-normal mb-3';
+
+/*
+ * Rodapé
+ * Celular: marca, contato, e os dois menus lado a lado.
+ * Tablet: marca + contato numa linha, menus na outra.
+ * Computador: 4 colunas (marca | empresa | locação em 2 colunas | contato).
+ */
 export function Footer({ menu }: { menu?: SiteMenu }) {
   const company = useCompany();
   const categories = menu?.categories || [];
   const services = menu?.services || [];
+  const hours = hoursParts(company.businessHours);
+
   return (
     <footer className="bg-aco text-[#C6CDD3] text-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-          {/* Brand info */}
-          <div className="space-y-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 lg:pt-14">
+        <div className="grid grid-cols-2 lg:grid-cols-12 gap-x-6 gap-y-10">
+          {/* Marca */}
+          <div className="col-span-2 sm:col-span-1 lg:col-span-3 space-y-4">
             <Link href="/" aria-label="EquiparLoc – página inicial" className="inline-flex">
               <Image
                 src="/images/logo-equiparloc-branca.png"
@@ -29,99 +40,108 @@ export function Footer({ menu }: { menu?: SiteMenu }) {
                 className="h-11 w-auto"
               />
             </Link>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-sm text-[#9AA4AD] leading-relaxed max-w-xs">
               Locação de máquinas pesadas e ferramentas para obras civis e industriais.
             </p>
-            <div className="text-xs text-[#9AA4AD]">
-              {company.cnpj && <>CNPJ {company.cnpj}</>}
-            </div>
+            {company.cnpj && <p className="text-xs text-[#9AA4AD]">CNPJ {company.cnpj}</p>}
+            <SocialLinks />
           </div>
 
-          {/* Mesma organização do menu */}
-          <nav aria-label="Navegação do rodapé" className="space-y-3">
-            <h2 className="text-base font-bold text-white [font-stretch:100%] tracking-normal">Empresa</h2>
-            <ul className="space-y-2">
-              <li><Link href="/" className="hover:text-white transition-colors">Início</Link></li>
-              <li><Link href="/empresa" className="hover:text-white transition-colors">Empresa</Link></li>
-              {services.map((sv) => (
-                <li key={sv.slug}>
-                  <Link href={`/servicos#${sv.slug}`} className="hover:text-white transition-colors">{sv.name}</Link>
-                </li>
-              ))}
-              <li><Link href="/localizacao" className="hover:text-white transition-colors">Localização</Link></li>
-              <li><Link href="/contato" className="hover:text-white transition-colors">Fale conosco</Link></li>
-              <li><Link href="/blog" className="hover:text-white transition-colors">Blog: artigos técnicos</Link></li>
-              <li><Link href="/orcamento" className="hover:text-white transition-colors">Pedir orçamento</Link></li>
-            </ul>
-          </nav>
-
-          {/* Grupos de equipamentos (os mesmos do menu Locação) */}
-          <nav aria-label="Locação" className="space-y-3">
-            <h2 className="text-base font-bold text-white [font-stretch:100%] tracking-normal">
-              <Link href="/locacao" className="hover:text-laranja transition-colors">Locação</Link>
-            </h2>
-            <ul className="space-y-2">
-              {categories.map((c) => (
-                <li key={c.name}>
-                  <Link href={categoryPath(c.name)} className="hover:text-white transition-colors">{c.name}</Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          {/* Contact Details */}
-          <div className="space-y-3">
-            <h2 className="text-base font-bold text-white [font-stretch:100%] tracking-normal">
-              Contato
-            </h2>
-            <ul className="space-y-2.5">
-              <li className="flex items-start gap-2">
-                <MapPin className="w-3.5 h-3.5 text-[#FF6500] shrink-0 mt-0.5" aria-hidden="true" />
-                <address className="not-italic">
+          {/* Contato: no celular vem logo depois da marca */}
+          <div className="col-span-2 sm:col-span-1 lg:col-span-3 lg:order-last">
+            <h2 className={titleCls}>Contato</h2>
+            <ul className="space-y-3">
+              <li>
+                <a href={telHref(company.phone)} className="flex items-center gap-2.5 hover:text-white transition-colors">
+                  <Phone className="w-4 h-4 text-[#FF6500] shrink-0" aria-hidden="true" />
+                  <span>{company.phone}</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={waHref(company.whatsapp)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 hover:text-white transition-colors"
+                >
+                  <MessageCircle className="w-4 h-4 text-[#FF6500] shrink-0" aria-hidden="true" />
+                  <span>
+                    {formatPhone(company.whatsapp)} <span className="text-[#9AA4AD]">WhatsApp</span>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${company.email}`} className="flex items-center gap-2.5 hover:text-white transition-colors">
+                  <Mail className="w-4 h-4 text-[#FF6500] shrink-0" aria-hidden="true" />
+                  <span className="break-all">{company.email}</span>
+                </a>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <MapPin className="w-4 h-4 text-[#FF6500] shrink-0 mt-0.5" aria-hidden="true" />
+                <address className="not-italic leading-relaxed">
                   {addressLines(company.address).map((line) => (
-                    <span key={line} className="block">{line}</span>
+                    <span key={line} className="block">
+                      {line}
+                    </span>
                   ))}
                 </address>
               </li>
-              <li className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-[#FF6500] shrink-0" />
-                <a href={telHref(company.phone)} className="hover:text-white transition-colors">
-                  {company.phone}
-                </a>
-                <span className="text-[#9AA4AD]">telefone</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Phone className="w-3.5 h-3.5 text-[#FF6500] shrink-0" />
-                <a href={waHref(company.whatsapp)} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                  {formatPhone(company.whatsapp)}
-                </a>
-                <span className="text-[#9AA4AD]">WhatsApp</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-[#FF6500] shrink-0" />
-                <a href={`mailto:${company.email}`} className="hover:text-white transition-colors">
-                  {company.email}
-                </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <Clock className="w-3.5 h-3.5 text-[#9AA4AD] shrink-0 mt-0.5" />
-                <span>{hoursParts(company.businessHours).join(' | ')}</span>
-              </li>
+              {hours.length > 0 && (
+                <li className="flex items-start gap-2.5">
+                  <Clock className="w-4 h-4 text-[#9AA4AD] shrink-0 mt-0.5" aria-hidden="true" />
+                  <span className="leading-relaxed">
+                    {hours.map((h) => (
+                      <span key={h} className="block">
+                        {h}
+                      </span>
+                    ))}
+                  </span>
+                </li>
+              )}
             </ul>
-            <SocialLinks className="pt-2" />
           </div>
+
+          {/* Empresa */}
+          <nav aria-label="Navegação do rodapé" className="col-span-1 lg:col-span-2">
+            <h2 className={titleCls}>Empresa</h2>
+            <ul className="space-y-1">
+              <li><Link href="/" className={linkCls}>Início</Link></li>
+              <li><Link href="/empresa" className={linkCls}>Empresa</Link></li>
+              {services.map((sv) => (
+                <li key={sv.slug}>
+                  <Link href={`/servicos#${sv.slug}`} className={linkCls}>{sv.name}</Link>
+                </li>
+              ))}
+              <li><Link href="/localizacao" className={linkCls}>Localização</Link></li>
+              <li><Link href="/contato" className={linkCls}>Fale conosco</Link></li>
+              <li><Link href="/blog" className={linkCls}>Blog</Link></li>
+              <li><Link href="/orcamento" className={linkCls}>Pedir orçamento</Link></li>
+            </ul>
+          </nav>
+
+          {/* Locação: duas colunas no computador */}
+          <nav aria-label="Locação" className="col-span-1 lg:col-span-4">
+            <h2 className={titleCls}>
+              <Link href="/locacao" className="hover:text-[#FF6500] transition-colors">Locação</Link>
+            </h2>
+            <ul className="space-y-1 lg:columns-2 lg:gap-x-6">
+              {categories.map((c) => (
+                <li key={c.name} className="break-inside-avoid">
+                  <Link href={categoryPath(c.name)} className={linkCls}>{c.name}</Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
 
-        {/* Bottom hairline row */}
-        <div className="mt-12 pt-6 border-t border-white/15 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#9AA4AD]">
-          <div>
-            © {new Date().getFullYear()} EQUIPAR Locação de Equipamentos Ltda. Todos os direitos reservados.
-          </div>
+        {/* Linha final */}
+        <div className="mt-10 pt-6 border-t border-white/15 flex flex-col-reverse lg:flex-row items-center justify-between gap-4 text-xs text-[#9AA4AD] text-center lg:text-left">
+          <p>© {new Date().getFullYear()} EQUIPAR Locação de Equipamentos Ltda. Todos os direitos reservados.</p>
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
-            <Link href="/privacidade" className="hover:text-slate-300 transition-colors">
-              Política de Privacidade & LGPD
+            <Link href="/privacidade" className="py-1 hover:text-slate-300 transition-colors">
+              Política de Privacidade &amp; LGPD
             </Link>
-            <Link href="/contato" className="hover:text-slate-300 transition-colors">
+            <Link href="/contato" className="py-1 hover:text-slate-300 transition-colors">
               Fale Conosco
             </Link>
             {/* Acesso ao painel: nofollow para robôs não seguirem (a área já é noindex e bloqueada no robots.txt) */}
@@ -129,7 +149,7 @@ export function Footer({ menu }: { menu?: SiteMenu }) {
               href="/admin"
               rel="nofollow"
               prefetch={false}
-              className="hover:text-[#FF6500] transition-colors flex items-center gap-1"
+              className="py-1 hover:text-[#FF6500] transition-colors inline-flex items-center gap-1"
             >
               <Lock className="w-3 h-3" aria-hidden="true" />
               <span>Login</span>
@@ -138,7 +158,7 @@ export function Footer({ menu }: { menu?: SiteMenu }) {
         </div>
 
         {/* Crédito da agência */}
-        <div className="mt-6 flex justify-center sm:justify-end">
+        <div className="mt-6 flex justify-center lg:justify-end">
           <a
             href="https://wa.me/5531983263133?text=Ol%C3%A1!%20Vi%20o%20site%20da%20EquiparLoc%20e%20quero%20falar%20sobre%20um%20projeto."
             target="_blank"
