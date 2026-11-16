@@ -13,9 +13,9 @@ interface BlogPreviewProps {
 
 export function BlogPreview({ posts }: BlogPreviewProps) {
   return (
-    <section className="py-16 sm:py-24 bg-chapa border-b border-concreto">
+    <section className="py-12 sm:py-16 bg-chapa border-b border-concreto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
             <h2 className="text-4xl sm:text-5xl font-extrabold text-aco leading-[0.95]">
               Guias para planejar a obra
@@ -41,12 +41,13 @@ export function BlogPreview({ posts }: BlogPreviewProps) {
               className="group bg-white border border-concreto rounded-[6px] overflow-hidden hover:border-aco transition-colors flex flex-col justify-between"
             >
               <div>
-                <div className="relative w-full h-48 bg-slate-200 overflow-hidden">
+                <div className="relative w-full aspect-[16/10] bg-concreto overflow-hidden">
                   <Image
                     src={post.image}
                     alt={post.imageAlt || post.title}
                     fill
-                    className="object-cover"
+                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    className="object-contain"
                     referrerPolicy="no-referrer"
                   />
                 </div>

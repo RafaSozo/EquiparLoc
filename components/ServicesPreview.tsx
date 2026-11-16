@@ -7,9 +7,9 @@ import type { SiteMenu } from '@/lib/types';
 export function ServicesPreview({ services }: { services: SiteMenu['services'] }) {
   if (!services.length) return null;
   return (
-    <section className="py-16 sm:py-24 bg-white border-b border-concreto">
+    <section className="py-12 sm:py-16 bg-white border-b border-concreto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
           <div>
             <h2 className="text-4xl sm:text-5xl font-extrabold text-aco leading-[0.95]">Serviços</h2>
             <p className="text-base text-aco-medio mt-3 max-w-xl">
@@ -24,7 +24,7 @@ export function ServicesPreview({ services }: { services: SiteMenu['services'] }
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className={`grid grid-cols-1 gap-6 ${services.length > 1 ? 'md:grid-cols-2' : ''}`}>
           {services.map((s) => (
             <Link
               key={s.slug}

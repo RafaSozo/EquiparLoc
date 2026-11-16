@@ -160,13 +160,15 @@ export default async function BlogPostDetailPage({ params }: Props) {
         </header>
 
         {/* Featured Image */}
-        <div className="relative w-full h-[320px] sm:h-[440px] rounded-[6px] overflow-hidden border border-concreto">
+        <div className="rounded-[6px] overflow-hidden border border-concreto bg-concreto">
           <Image
             src={post.image}
             alt={post.imageAlt || post.title}
-            fill
+            width={1600}
+            height={1000}
             priority
-            className="object-cover"
+            sizes="(min-width: 1024px) 896px, 100vw"
+            className="w-full h-auto max-h-[560px] object-contain"
             referrerPolicy="no-referrer"
           />
         </div>
@@ -229,7 +231,8 @@ export default async function BlogPostDetailPage({ params }: Props) {
                       src={op.image}
                       alt={op.imageAlt || op.title}
                       fill
-                      className="object-cover"
+                      sizes="80px"
+                      className="object-contain"
                       referrerPolicy="no-referrer"
                     />
                   </div>

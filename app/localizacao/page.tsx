@@ -26,7 +26,7 @@ export default function LocalizacaoPage() {
   return (
     <main className="min-h-screen bg-white">
       <section className="bg-concreto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-aco leading-[0.95]">Onde estamos</h1>
           <p className="mt-4 text-base sm:text-lg text-aco-medio max-w-2xl leading-relaxed">
             Venha retirar o seu equipamento no nosso pátio ou peça a entrega na obra.
@@ -34,7 +34,7 @@ export default function LocalizacaoPage() {
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 grid grid-cols-1 lg:grid-cols-12 gap-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className="lg:col-span-5 space-y-6">
           <div className="flex gap-3">
             <MapPin className="w-5 h-5 text-laranja-texto shrink-0 mt-1" aria-hidden="true" />

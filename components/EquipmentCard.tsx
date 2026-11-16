@@ -18,18 +18,17 @@ export function EquipmentCard({ equipment }: EquipmentCardProps) {
   const spec = keySpec(equipment);
   const ready = isReadyToShip(equipment);
   const href = equipmentPath(equipment);
-  // Fotos de catálogo com fundo branco aparecem inteiras
-  const cutout = equipment.image.startsWith('/images/produtos/');
 
   return (
     <article className="group flex flex-col bg-white border border-concreto rounded-[6px] overflow-hidden hover:border-aco transition-colors">
-      <Link href={href} className={`block relative aspect-[4/3] overflow-hidden ${cutout ? 'bg-white' : 'bg-concreto'}`} tabIndex={-1} aria-hidden="true">
+      {/* Foto sempre inteira, sem cortar, centralizada no fundo branco */}
+      <Link href={href} className="block relative aspect-[4/3] overflow-hidden bg-white" tabIndex={-1} aria-hidden="true">
         <Image
           src={equipment.image}
           alt=""
           fill
           sizes="(min-width: 1280px) 30vw, (min-width: 640px) 50vw, 100vw"
-          className={cutout ? 'object-contain p-4' : 'object-cover'}
+          className="object-contain p-3"
         />
       </Link>
 

@@ -23,7 +23,7 @@ export default function AboutPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero */}
-      <section className="relative py-16 sm:py-20 bg-concreto">
+      <section className="relative py-12 sm:py-16 bg-concreto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl space-y-4">
             <h1 className="text-4xl sm:text-5xl font-extrabold text-aco leading-[0.95] text-balance">{about.heroTitle}</h1>
@@ -33,7 +33,7 @@ export default function AboutPage() {
       </section>
 
       {/* Main Content Grid */}
-      <section className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-12 sm:py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-6 space-y-6">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-aco leading-[0.95]">{about.sectionTitle}</h2>
@@ -60,14 +60,15 @@ export default function AboutPage() {
           </div>
 
           <div className="lg:col-span-6">
-            <div className="relative w-full h-[380px] sm:h-[460px] rounded-[6px] overflow-hidden border border-concreto">
+            <div className="rounded-[6px] overflow-hidden border border-concreto bg-concreto">
               <Image
                 src={about.image}
                 alt={about.imageAlt}
-                fill
+                width={1200}
+                height={900}
                 unoptimized={about.image.startsWith('/api/')}
                 sizes="(min-width: 1024px) 50vw, 100vw"
-                className="object-cover"
+                className="w-full h-auto max-h-[560px] object-contain"
                 referrerPolicy="no-referrer"
               />
             </div>

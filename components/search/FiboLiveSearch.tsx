@@ -624,7 +624,7 @@ export function FiboLiveSearch({
                                 alt={post.title}
                                 fill
                                 sizes="50px"
-                                className="object-cover group-hover:scale-105 transition-transform"
+                                className="object-contain"
                                 referrerPolicy="no-referrer"
                               />
                             </div>

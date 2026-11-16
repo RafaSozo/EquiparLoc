@@ -21,7 +21,7 @@ export function FinalCta() {
   };
 
   return (
-    <section className="bg-chapa py-16 sm:py-20">
+    <section className="bg-chapa py-12 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div
           className="placa bg-aco text-white px-6 sm:px-12 py-10 sm:py-14 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end"

@@ -33,7 +33,6 @@ interface EquipmentDetailClientProps {
 }
 
 /** Fotos de catálogo com fundo branco: mostrar inteiras, sem cortar */
-const isCutout = (src: string) => src.startsWith('/images/produtos/');
 
 export function EquipmentDetailClient({
   equipment,
@@ -82,14 +81,15 @@ export function EquipmentDetailClient({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-10 gap-y-6">
         {/* Gallery Column (7 cols) */}
         <div className="lg:col-span-7 space-y-4">
-          <div className={`relative w-full h-[320px] sm:h-[420px] rounded-[6px] overflow-hidden border border-concreto ${isCutout(selectedImage) ? 'bg-white' : 'bg-concreto'}`}>
+          {/* Foto inteira e proporcional, sem cortes */}
+          <div className="relative w-full aspect-[4/3] rounded-[6px] overflow-hidden border border-concreto bg-white">
             <Image
               src={selectedImage}
               alt={equipment.name}
               fill
               priority
               sizes="(min-width: 1024px) 58vw, 100vw"
-              className={isCutout(selectedImage) ? 'object-contain p-6' : 'object-cover'}
+              className="object-contain p-4"
               referrerPolicy="no-referrer"
             />
           </div>
@@ -102,15 +102,17 @@ export function EquipmentDetailClient({
                   key={`thumb-${i}`}
                   type="button"
                   onClick={() => setSelectedImage(imgUrl)}
-                  className={` relative w-20 h-16 rounded-[4px] overflow-hidden border-2 transition-all shrink-0 ${
+                  aria-label={`Ver foto ${i + 1}`}
+                  className={`relative w-20 h-16 rounded-[4px] overflow-hidden border-2 bg-white transition-all shrink-0 ${
                     selectedImage === imgUrl ? 'border-laranja ring-2 ring-orange-200' : 'border-concreto opacity-70 hover:opacity-100'
                   }`}
                 >
                   <Image
                     src={imgUrl}
-                    alt={`${equipment.name} ângulo ${i + 1}`}
+                    alt=""
                     fill
-                    className="object-cover"
+                    sizes="80px"
+                    className="object-contain p-1"
                     referrerPolicy="no-referrer"
                   />
                 </button>
@@ -298,7 +300,7 @@ export function EquipmentDetailClient({
 
       {/* Related Equipments Section */}
       {relatedEquipments.length > 0 && (
-        <div className="mt-16 pt-12 border-t border-concreto">
+        <div className="mt-12 pt-10 border-t border-concreto">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl sm:text-4xl font-extrabold text-aco leading-[0.95]">
               Outros itens desta categoria

@@ -199,12 +199,13 @@ export function BlogCatalogClient({ posts }: BlogCatalogClientProps) {
               className="group bg-white border border-concreto rounded-[6px] overflow-hidden hover:border-aco transition-colors flex flex-col justify-between"
             >
               <div>
-                <div className="relative w-full h-52 bg-concreto overflow-hidden">
+                <div className="relative w-full aspect-[16/10] bg-concreto overflow-hidden">
                   <Image
                     src={post.image}
                     alt={post.imageAlt || post.title}
                     fill
-                    className="object-cover"
+                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    className="object-contain"
                     referrerPolicy="no-referrer"
                   />
                   {post.featured && (

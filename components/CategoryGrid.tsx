@@ -19,14 +19,14 @@ function CategoryCard({ cat }: { cat: CategoryWithCount }) {
       href={categoryPath(cat.name)}
       className="group relative bg-white border border-concreto rounded-[6px] overflow-hidden hover:border-aco transition-colors flex flex-col justify-between"
     >
-      <div className={`relative w-full aspect-[16/10] overflow-hidden ${(cat.image || '').startsWith('/images/produtos/') ? 'bg-white' : 'bg-concreto'}`}>
+      <div className="relative w-full aspect-[4/3] overflow-hidden bg-white border-b border-concreto">
         {cat.image ? (
           <Image
             src={cat.image}
             alt=""
             fill
             sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-            className={(cat.image || '').startsWith('/images/produtos/') ? 'object-contain p-4' : 'object-cover object-center'}
+            className="object-contain p-3"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -62,9 +62,9 @@ export function CategoryGrid({ categories, lines }: CategoryGridProps) {
   const showGroupTitles = groups.length > 1;
 
   return (
-    <section className="py-16 sm:py-24 bg-chapa border-b border-concreto">
+    <section className="py-12 sm:py-16 bg-chapa border-b border-concreto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
             <h2 className="text-4xl sm:text-5xl font-extrabold text-aco leading-[0.95]">
               {showGroupTitles ? 'Máquinas e ferramentas para a sua obra' : 'Categorias de equipamentos'}

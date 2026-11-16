@@ -30,7 +30,7 @@ const differentials = [
 
 export function WhyChooseUs() {
   return (
-    <section className="py-16 sm:py-24 bg-concreto">
+    <section className="py-12 sm:py-16 bg-concreto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className="lg:col-span-4">
           <h2 className="text-4xl sm:text-5xl font-extrabold text-aco leading-[0.95]">

@@ -55,7 +55,7 @@ export default function ServicosPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }} />
 
       <section className="bg-concreto border-b border-concreto">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-aco leading-[0.95] text-balance max-w-3xl">
             Serviços para a sua obra
           </h1>
@@ -97,7 +97,7 @@ export default function ServicosPage() {
           <section
             key={s.id}
             id={serviceAnchor(s.name)}
-            className={`scroll-mt-24 py-16 sm:py-24 ${i % 2 ? 'bg-chapa' : 'bg-white'}`}
+            className={`scroll-mt-24 py-12 sm:py-16 ${i % 2 ? 'bg-chapa' : 'bg-white'}`}
           >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className={`grid grid-cols-1 ${hasImage ? 'lg:grid-cols-12' : ''} gap-10 lg:gap-14 items-center`}>
@@ -140,8 +140,15 @@ export default function ServicosPage() {
                 </div>
                 {hasImage && (
                   <div className={`lg:col-span-6 ${i % 2 ? 'lg:order-1' : ''}`}>
-                    <div className="relative aspect-[4/3] rounded-[6px] overflow-hidden bg-concreto">
-                      <Image src={s.image} alt={s.name} fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
+                    <div className="rounded-[6px] overflow-hidden border border-concreto bg-concreto">
+                      <Image
+                        src={s.image}
+                        alt={s.name}
+                        width={1200}
+                        height={900}
+                        sizes="(min-width: 1024px) 50vw, 100vw"
+                        className="w-full h-auto max-h-[520px] object-contain"
+                      />
                     </div>
                   </div>
                 )}

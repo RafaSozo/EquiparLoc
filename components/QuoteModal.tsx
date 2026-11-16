@@ -198,12 +198,13 @@ export function QuoteModal() {
               {/* Equipment Highlight if selected */}
               {selectedEquipment && (
                 <div className="flex items-center gap-3 p-3 bg-chapa border border-concreto rounded-[4px]">
-                  <div className="relative w-16 h-12 bg-slate-200 rounded overflow-hidden shrink-0">
+                  <div className="relative w-16 h-12 bg-white border border-concreto rounded overflow-hidden shrink-0">
                     <Image
                       src={selectedEquipment.image}
                       alt={selectedEquipment.name}
                       fill
-                      className="object-cover"
+                      sizes="64px"
+                      className="object-contain p-0.5"
                       referrerPolicy="no-referrer"
                     />
                   </div>

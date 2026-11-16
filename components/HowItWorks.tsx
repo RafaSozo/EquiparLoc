@@ -22,7 +22,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="como-funciona" className="py-16 sm:py-24 bg-white border-b border-concreto">
+    <section id="como-funciona" className="py-12 sm:py-16 bg-white border-b border-concreto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-4xl sm:text-5xl font-extrabold text-aco leading-[0.95] max-w-xl">
           Como funciona a locação
