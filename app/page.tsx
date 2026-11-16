@@ -13,6 +13,7 @@ import { BlogPreview } from '@/components/BlogPreview';
 import { FinalCta } from '@/components/FinalCta';
 import { ServicesPreview } from '@/components/ServicesPreview';
 import { LocationStrip } from '@/components/LocationStrip';
+import { SITE_URL, absoluteUrl, categoryPath, equipmentPath, jsonLdHtml, slugify } from '@/lib/site';
 
 // Conteúdo vem do banco editável pelo CRM: renderiza a cada acesso
 export const dynamic = 'force-dynamic';
@@ -36,8 +37,72 @@ export default async function HomePage() {
   const settings = getCompanySettings();
   const blogPosts = getAllBlogPosts().filter(isPublished).map(toPublicPost);
 
+  // Dados estruturados da página inicial: catálogo, destaques, serviços e artigos
+  const business = { '@id': `${SITE_URL}/#empresa` };
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'OfferCatalog',
+        '@id': `${SITE_URL}/#catalogo`,
+        name: 'Locação de máquinas e ferramentas',
+        url: absoluteUrl('/locacao'),
+        provider: business,
+        itemListElement: categories.map((c, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          item: { '@type': 'OfferCatalog', name: c.name, url: absoluteUrl(categoryPath(c.name)), numberOfItems: c.count },
+        })),
+      },
+      ...(featured.length
+        ? [
+            {
+              '@type': 'ItemList',
+              name: 'Destaques para locação',
+              itemListElement: featured.slice(0, 12).map((eq, i) => ({
+                '@type': 'ListItem',
+                position: i + 1,
+                item: {
+                  '@type': 'Product',
+                  name: eq.name,
+                  sku: eq.code,
+                  category: eq.category,
+                  image: absoluteUrl(eq.image),
+                  description: eq.summary || eq.description,
+                  url: absoluteUrl(equipmentPath(eq)),
+                },
+              })),
+            },
+          ]
+        : []),
+      ...menu.services.map((s) => ({
+        '@type': 'Service',
+        name: s.name,
+        description: s.summary,
+        serviceType: s.name,
+        provider: business,
+        areaServed: 'Belo Horizonte e região metropolitana',
+        url: absoluteUrl(`/servicos#${slugify(s.name)}`),
+      })),
+      ...(blogPosts.length
+        ? [
+            {
+              '@type': 'ItemList',
+              name: 'Guias para planejar a obra',
+              itemListElement: blogPosts.slice(0, 6).map((p, i) => ({
+                '@type': 'ListItem',
+                position: i + 1,
+                item: { '@type': 'BlogPosting', headline: p.title, url: absoluteUrl(`/blog/${p.slug}`), image: absoluteUrl(p.image) },
+              })),
+            },
+          ]
+        : []),
+    ],
+  };
+
   return (
     <main className="min-h-screen bg-white">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }} />
       {/* Abertura com o quadro do pátio */}
       <Hero hero={getHeroSettings()} boardItems={featured} totalItems={active.length} />
 

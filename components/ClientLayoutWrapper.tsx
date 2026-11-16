@@ -10,6 +10,7 @@ import { CompanyProvider } from '@/lib/company-context';
 import { Footer } from './Footer';
 import { QuoteModal } from './QuoteModal';
 import { CookieBanner } from './CookieBanner';
+import { AgentTools } from './AgentTools';
 import { GlobalSearchModal } from './search/GlobalSearchModal';
 
 import { AuthProvider } from './auth/AuthProvider';
@@ -48,6 +49,7 @@ export function ClientLayoutWrapper({
         <QuoteModal />
         <CookieBanner />
         {!isAdmin && <GlobalSearchModal />}
+        {!isAdmin && <AgentTools />}
       </QuoteModalProvider>
     </AuthProvider>
     </CompanyProvider>
